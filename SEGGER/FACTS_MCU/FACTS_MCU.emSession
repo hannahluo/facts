@@ -13,9 +13,7 @@
  <Project>
   <ProjectSessionItem path="FACTS_MCU"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU"/>
-  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Source"/>
-  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Source;Drivers"/>
-  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Source;Lib"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;BLE_Test"/>
  </Project>
  <Register1/>
  <Register2/>
@@ -40,7 +38,7 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="20" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/main.c" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="78" y="33" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Config/sdk_config.h" selected="1" top="6" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/facts/SEGGER/FACTS_MCU/Source/Drivers" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/jackj/Documents/Tron Files/4B/MTE 482/facts/SEGGER/FACTS_MCU/Source/Drivers" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
