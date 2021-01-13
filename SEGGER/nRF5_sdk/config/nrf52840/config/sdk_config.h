@@ -46,19 +46,6 @@
 #ifdef USE_APP_CONFIG
 #include "app_config.h"
 #endif
-// <h> Board Support 
-
-//==========================================================
-// <q> BSP_BTN_BLE_ENABLED  - bsp_btn_ble - Button Control for BLE
- 
-
-#ifndef BSP_BTN_BLE_ENABLED
-#define BSP_BTN_BLE_ENABLED 1
-#endif
-
-// </h> 
-//==========================================================
-
 // <h> nRF_BLE 
 
 //==========================================================
@@ -66,7 +53,7 @@
  
 
 #ifndef BLE_ADVERTISING_ENABLED
-#define BLE_ADVERTISING_ENABLED 1
+#define BLE_ADVERTISING_ENABLED 0
 #endif
 
 // <e> BLE_DTM_ENABLED - ble_dtm - Module for testing RF/PHY using DTM commands
@@ -128,38 +115,10 @@
 #define BLE_RACP_ENABLED 0
 #endif
 
-// <e> NRF_BLE_CONN_PARAMS_ENABLED - ble_conn_params - Initiating and executing a connection parameters negotiation procedure
-//==========================================================
-#ifndef NRF_BLE_CONN_PARAMS_ENABLED
-#define NRF_BLE_CONN_PARAMS_ENABLED 1
-#endif
-// <o> NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION - The largest acceptable deviation in slave latency. 
-// <i> The largest deviation (+ or -) from the requested slave latency that will not be renegotiated.
-
-#ifndef NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION
-#define NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION 499
-#endif
-
-// <o> NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION - The largest acceptable deviation (in 10 ms units) in supervision timeout. 
-// <i> The largest deviation (+ or -, in 10 ms units) from the requested supervision timeout that will not be renegotiated.
-
-#ifndef NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION
-#define NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION 65535
-#endif
-
-// </e>
-
-// <q> NRF_BLE_GATT_ENABLED  - nrf_ble_gatt - GATT module
- 
-
-#ifndef NRF_BLE_GATT_ENABLED
-#define NRF_BLE_GATT_ENABLED 1
-#endif
-
 // <e> NRF_BLE_QWR_ENABLED - nrf_ble_qwr - Queued writes support module (prepare/execute write)
 //==========================================================
 #ifndef NRF_BLE_QWR_ENABLED
-#define NRF_BLE_QWR_ENABLED 1
+#define NRF_BLE_QWR_ENABLED 0
 #endif
 // <o> NRF_BLE_QWR_MAX_ATTR - Maximum number of attribute handles that can be registered. This number must be adjusted according to the number of attributes for which Queued Writes will be enabled. If it is zero, the module will reject all Queued Write requests. 
 #ifndef NRF_BLE_QWR_MAX_ATTR
@@ -171,7 +130,7 @@
 // <e> PEER_MANAGER_ENABLED - peer_manager - Peer Manager
 //==========================================================
 #ifndef PEER_MANAGER_ENABLED
-#define PEER_MANAGER_ENABLED 1
+#define PEER_MANAGER_ENABLED 0
 #endif
 // <o> PM_MAX_REGISTRANTS - Number of event handlers that can be registered. 
 #ifndef PM_MAX_REGISTRANTS
@@ -191,7 +150,7 @@
 // <i> Enable/disable central-specific Peer Manager functionality.
 
 #ifndef PM_CENTRAL_ENABLED
-#define PM_CENTRAL_ENABLED 0
+#define PM_CENTRAL_ENABLED 1
 #endif
 
 // <q> PM_SERVICE_CHANGED_ENABLED  - Enable/disable the service changed management for GATT server in Peer Manager.
@@ -491,13 +450,13 @@
  
 
 #ifndef BLE_NUS_C_ENABLED
-#define BLE_NUS_C_ENABLED 1
+#define BLE_NUS_C_ENABLED 0
 #endif
 
 // <e> BLE_NUS_ENABLED - ble_nus - Nordic UART Service
 //==========================================================
 #ifndef BLE_NUS_ENABLED
-#define BLE_NUS_ENABLED 1
+#define BLE_NUS_ENABLED 0
 #endif
 // <e> BLE_NUS_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
@@ -1454,11 +1413,11 @@
 // <e> GPIOTE_ENABLED - nrf_drv_gpiote - GPIOTE peripheral driver - legacy layer
 //==========================================================
 #ifndef GPIOTE_ENABLED
-#define GPIOTE_ENABLED 1
+#define GPIOTE_ENABLED 0
 #endif
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
-#define GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 4
+#define GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
 #endif
 
 // <o> GPIOTE_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -1760,7 +1719,7 @@
 // <e> NRFX_CLOCK_ENABLED - nrfx_clock - CLOCK peripheral driver
 //==========================================================
 #ifndef NRFX_CLOCK_ENABLED
-#define NRFX_CLOCK_ENABLED 1
+#define NRFX_CLOCK_ENABLED 0
 #endif
 // <o> NRFX_CLOCK_CONFIG_LF_SRC  - LF Clock Source
  
@@ -1984,7 +1943,7 @@
 // <e> NRFX_GPIOTE_ENABLED - nrfx_gpiote - GPIOTE peripheral driver
 //==========================================================
 #ifndef NRFX_GPIOTE_ENABLED
-#define NRFX_GPIOTE_ENABLED 1
+#define NRFX_GPIOTE_ENABLED 0
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -2053,6 +2012,403 @@
 
 #ifndef NRFX_GPIOTE_CONFIG_DEBUG_COLOR
 #define NRFX_GPIOTE_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NRFX_I2S_ENABLED - nrfx_i2s - I2S peripheral driver
+//==========================================================
+#ifndef NRFX_I2S_ENABLED
+#define NRFX_I2S_ENABLED 0
+#endif
+// <o> NRFX_I2S_CONFIG_SCK_PIN - SCK pin  <0-31> 
+
+
+#ifndef NRFX_I2S_CONFIG_SCK_PIN
+#define NRFX_I2S_CONFIG_SCK_PIN 31
+#endif
+
+// <o> NRFX_I2S_CONFIG_LRCK_PIN - LRCK pin  <1-31> 
+
+
+#ifndef NRFX_I2S_CONFIG_LRCK_PIN
+#define NRFX_I2S_CONFIG_LRCK_PIN 30
+#endif
+
+// <o> NRFX_I2S_CONFIG_MCK_PIN - MCK pin 
+#ifndef NRFX_I2S_CONFIG_MCK_PIN
+#define NRFX_I2S_CONFIG_MCK_PIN 255
+#endif
+
+// <o> NRFX_I2S_CONFIG_SDOUT_PIN - SDOUT pin  <0-31> 
+
+
+#ifndef NRFX_I2S_CONFIG_SDOUT_PIN
+#define NRFX_I2S_CONFIG_SDOUT_PIN 29
+#endif
+
+// <o> NRFX_I2S_CONFIG_SDIN_PIN - SDIN pin  <0-31> 
+
+
+#ifndef NRFX_I2S_CONFIG_SDIN_PIN
+#define NRFX_I2S_CONFIG_SDIN_PIN 28
+#endif
+
+// <o> NRFX_I2S_CONFIG_MASTER  - Mode
+ 
+// <0=> Master 
+// <1=> Slave 
+
+#ifndef NRFX_I2S_CONFIG_MASTER
+#define NRFX_I2S_CONFIG_MASTER 0
+#endif
+
+// <o> NRFX_I2S_CONFIG_FORMAT  - Format
+ 
+// <0=> I2S 
+// <1=> Aligned 
+
+#ifndef NRFX_I2S_CONFIG_FORMAT
+#define NRFX_I2S_CONFIG_FORMAT 0
+#endif
+
+// <o> NRFX_I2S_CONFIG_ALIGN  - Alignment
+ 
+// <0=> Left 
+// <1=> Right 
+
+#ifndef NRFX_I2S_CONFIG_ALIGN
+#define NRFX_I2S_CONFIG_ALIGN 0
+#endif
+
+// <o> NRFX_I2S_CONFIG_SWIDTH  - Sample width (bits)
+ 
+// <0=> 8 
+// <1=> 16 
+// <2=> 24 
+
+#ifndef NRFX_I2S_CONFIG_SWIDTH
+#define NRFX_I2S_CONFIG_SWIDTH 1
+#endif
+
+// <o> NRFX_I2S_CONFIG_CHANNELS  - Channels
+ 
+// <0=> Stereo 
+// <1=> Left 
+// <2=> Right 
+
+#ifndef NRFX_I2S_CONFIG_CHANNELS
+#define NRFX_I2S_CONFIG_CHANNELS 1
+#endif
+
+// <o> NRFX_I2S_CONFIG_MCK_SETUP  - MCK behavior
+ 
+// <0=> Disabled 
+// <2147483648=> 32MHz/2 
+// <1342177280=> 32MHz/3 
+// <1073741824=> 32MHz/4 
+// <805306368=> 32MHz/5 
+// <671088640=> 32MHz/6 
+// <536870912=> 32MHz/8 
+// <402653184=> 32MHz/10 
+// <369098752=> 32MHz/11 
+// <285212672=> 32MHz/15 
+// <268435456=> 32MHz/16 
+// <201326592=> 32MHz/21 
+// <184549376=> 32MHz/23 
+// <142606336=> 32MHz/30 
+// <138412032=> 32MHz/31 
+// <134217728=> 32MHz/32 
+// <100663296=> 32MHz/42 
+// <68157440=> 32MHz/63 
+// <34340864=> 32MHz/125 
+
+#ifndef NRFX_I2S_CONFIG_MCK_SETUP
+#define NRFX_I2S_CONFIG_MCK_SETUP 536870912
+#endif
+
+// <o> NRFX_I2S_CONFIG_RATIO  - MCK/LRCK ratio
+ 
+// <0=> 32x 
+// <1=> 48x 
+// <2=> 64x 
+// <3=> 96x 
+// <4=> 128x 
+// <5=> 192x 
+// <6=> 256x 
+// <7=> 384x 
+// <8=> 512x 
+
+#ifndef NRFX_I2S_CONFIG_RATIO
+#define NRFX_I2S_CONFIG_RATIO 2000
+#endif
+
+// <o> NRFX_I2S_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_I2S_CONFIG_IRQ_PRIORITY
+#define NRFX_I2S_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <e> NRFX_I2S_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_I2S_CONFIG_LOG_ENABLED
+#define NRFX_I2S_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_I2S_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRFX_I2S_CONFIG_LOG_LEVEL
+#define NRFX_I2S_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_I2S_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_I2S_CONFIG_INFO_COLOR
+#define NRFX_I2S_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_I2S_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_I2S_CONFIG_DEBUG_COLOR
+#define NRFX_I2S_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NRFX_LPCOMP_ENABLED - nrfx_lpcomp - LPCOMP peripheral driver
+//==========================================================
+#ifndef NRFX_LPCOMP_ENABLED
+#define NRFX_LPCOMP_ENABLED 0
+#endif
+// <o> NRFX_LPCOMP_CONFIG_REFERENCE  - Reference voltage
+ 
+// <0=> Supply 1/8 
+// <1=> Supply 2/8 
+// <2=> Supply 3/8 
+// <3=> Supply 4/8 
+// <4=> Supply 5/8 
+// <5=> Supply 6/8 
+// <6=> Supply 7/8 
+// <8=> Supply 1/16 (nRF52) 
+// <9=> Supply 3/16 (nRF52) 
+// <10=> Supply 5/16 (nRF52) 
+// <11=> Supply 7/16 (nRF52) 
+// <12=> Supply 9/16 (nRF52) 
+// <13=> Supply 11/16 (nRF52) 
+// <14=> Supply 13/16 (nRF52) 
+// <15=> Supply 15/16 (nRF52) 
+// <7=> External Ref 0 
+// <65543=> External Ref 1 
+
+#ifndef NRFX_LPCOMP_CONFIG_REFERENCE
+#define NRFX_LPCOMP_CONFIG_REFERENCE 3
+#endif
+
+// <o> NRFX_LPCOMP_CONFIG_DETECTION  - Detection
+ 
+// <0=> Crossing 
+// <1=> Up 
+// <2=> Down 
+
+#ifndef NRFX_LPCOMP_CONFIG_DETECTION
+#define NRFX_LPCOMP_CONFIG_DETECTION 2
+#endif
+
+// <o> NRFX_LPCOMP_CONFIG_INPUT  - Analog input
+ 
+// <0=> 0 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_LPCOMP_CONFIG_INPUT
+#define NRFX_LPCOMP_CONFIG_INPUT 0
+#endif
+
+// <q> NRFX_LPCOMP_CONFIG_HYST  - Hysteresis
+ 
+
+#ifndef NRFX_LPCOMP_CONFIG_HYST
+#define NRFX_LPCOMP_CONFIG_HYST 0
+#endif
+
+// <o> NRFX_LPCOMP_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_LPCOMP_CONFIG_IRQ_PRIORITY
+#define NRFX_LPCOMP_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <e> NRFX_LPCOMP_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_LPCOMP_CONFIG_LOG_ENABLED
+#define NRFX_LPCOMP_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_LPCOMP_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRFX_LPCOMP_CONFIG_LOG_LEVEL
+#define NRFX_LPCOMP_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_LPCOMP_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_LPCOMP_CONFIG_INFO_COLOR
+#define NRFX_LPCOMP_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_LPCOMP_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_LPCOMP_CONFIG_DEBUG_COLOR
+#define NRFX_LPCOMP_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NRFX_NFCT_ENABLED - nrfx_nfct - NFCT peripheral driver
+//==========================================================
+#ifndef NRFX_NFCT_ENABLED
+#define NRFX_NFCT_ENABLED 0
+#endif
+// <o> NRFX_NFCT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_NFCT_CONFIG_IRQ_PRIORITY
+#define NRFX_NFCT_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <e> NRFX_NFCT_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_NFCT_CONFIG_LOG_ENABLED
+#define NRFX_NFCT_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_NFCT_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRFX_NFCT_CONFIG_LOG_LEVEL
+#define NRFX_NFCT_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_NFCT_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_NFCT_CONFIG_INFO_COLOR
+#define NRFX_NFCT_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_NFCT_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_NFCT_CONFIG_DEBUG_COLOR
+#define NRFX_NFCT_CONFIG_DEBUG_COLOR 0
 #endif
 
 // </e>
@@ -2163,7 +2519,7 @@
 // <e> NRFX_POWER_ENABLED - nrfx_power - POWER peripheral driver
 //==========================================================
 #ifndef NRFX_POWER_ENABLED
-#define NRFX_POWER_ENABLED 0
+#define NRFX_POWER_ENABLED 1
 #endif
 // <o> NRFX_POWER_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -2258,99 +2614,6 @@
 
 // </e>
 
-// <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
-//==========================================================
-#ifndef NRFX_PRS_ENABLED
-#define NRFX_PRS_ENABLED 1
-#endif
-// <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_0_ENABLED
-#define NRFX_PRS_BOX_0_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_1_ENABLED  - Enables box 1 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_1_ENABLED
-#define NRFX_PRS_BOX_1_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_2_ENABLED  - Enables box 2 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_2_ENABLED
-#define NRFX_PRS_BOX_2_ENABLED 1
-#endif
-
-// <q> NRFX_PRS_BOX_3_ENABLED  - Enables box 3 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_3_ENABLED
-#define NRFX_PRS_BOX_3_ENABLED 0
-#endif
-
-// <q> NRFX_PRS_BOX_4_ENABLED  - Enables box 4 in the module.
- 
-
-#ifndef NRFX_PRS_BOX_4_ENABLED
-#define NRFX_PRS_BOX_4_ENABLED 1
-#endif
-
-// <e> NRFX_PRS_CONFIG_LOG_ENABLED - Enables logging in the module.
-//==========================================================
-#ifndef NRFX_PRS_CONFIG_LOG_ENABLED
-#define NRFX_PRS_CONFIG_LOG_ENABLED 0
-#endif
-// <o> NRFX_PRS_CONFIG_LOG_LEVEL  - Default Severity level
- 
-// <0=> Off 
-// <1=> Error 
-// <2=> Warning 
-// <3=> Info 
-// <4=> Debug 
-
-#ifndef NRFX_PRS_CONFIG_LOG_LEVEL
-#define NRFX_PRS_CONFIG_LOG_LEVEL 3
-#endif
-
-// <o> NRFX_PRS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef NRFX_PRS_CONFIG_INFO_COLOR
-#define NRFX_PRS_CONFIG_INFO_COLOR 0
-#endif
-
-// <o> NRFX_PRS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
- 
-// <0=> Default 
-// <1=> Black 
-// <2=> Red 
-// <3=> Green 
-// <4=> Yellow 
-// <5=> Blue 
-// <6=> Magenta 
-// <7=> Cyan 
-// <8=> White 
-
-#ifndef NRFX_PRS_CONFIG_DEBUG_COLOR
-#define NRFX_PRS_CONFIG_DEBUG_COLOR 0
-#endif
-
-// </e>
-
-// </e>
-
 // <e> NRFX_PWM_ENABLED - nrfx_pwm - PWM peripheral driver
 //==========================================================
 #ifndef NRFX_PWM_ENABLED
@@ -2361,6 +2624,27 @@
 
 #ifndef NRFX_PWM0_ENABLED
 #define NRFX_PWM0_ENABLED 0
+#endif
+
+// <q> NRFX_PWM1_ENABLED  - Enable PWM1 instance
+ 
+
+#ifndef NRFX_PWM1_ENABLED
+#define NRFX_PWM1_ENABLED 0
+#endif
+
+// <q> NRFX_PWM2_ENABLED  - Enable PWM2 instance
+ 
+
+#ifndef NRFX_PWM2_ENABLED
+#define NRFX_PWM2_ENABLED 0
+#endif
+
+// <q> NRFX_PWM3_ENABLED  - Enable PWM3 instance
+ 
+
+#ifndef NRFX_PWM3_ENABLED
+#define NRFX_PWM3_ENABLED 0
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31> 
@@ -2660,6 +2944,134 @@
 
 // </e>
 
+// <e> NRFX_QSPI_ENABLED - nrfx_qspi - QSPI peripheral driver
+//==========================================================
+#ifndef NRFX_QSPI_ENABLED
+#define NRFX_QSPI_ENABLED 0
+#endif
+// <o> NRFX_QSPI_CONFIG_SCK_DELAY - tSHSL, tWHSL and tSHWL in number of 16 MHz periods (62.5 ns).  <0-255> 
+
+
+#ifndef NRFX_QSPI_CONFIG_SCK_DELAY
+#define NRFX_QSPI_CONFIG_SCK_DELAY 1
+#endif
+
+// <o> NRFX_QSPI_CONFIG_XIP_OFFSET - Address offset in the external memory for Execute in Place operation. 
+#ifndef NRFX_QSPI_CONFIG_XIP_OFFSET
+#define NRFX_QSPI_CONFIG_XIP_OFFSET 0
+#endif
+
+// <o> NRFX_QSPI_CONFIG_READOC  - Number of data lines and opcode used for reading.
+ 
+// <0=> FastRead 
+// <1=> Read2O 
+// <2=> Read2IO 
+// <3=> Read4O 
+// <4=> Read4IO 
+
+#ifndef NRFX_QSPI_CONFIG_READOC
+#define NRFX_QSPI_CONFIG_READOC 0
+#endif
+
+// <o> NRFX_QSPI_CONFIG_WRITEOC  - Number of data lines and opcode used for writing.
+ 
+// <0=> PP 
+// <1=> PP2O 
+// <2=> PP4O 
+// <3=> PP4IO 
+
+#ifndef NRFX_QSPI_CONFIG_WRITEOC
+#define NRFX_QSPI_CONFIG_WRITEOC 0
+#endif
+
+// <o> NRFX_QSPI_CONFIG_ADDRMODE  - Addressing mode.
+ 
+// <0=> 24bit 
+// <1=> 32bit 
+
+#ifndef NRFX_QSPI_CONFIG_ADDRMODE
+#define NRFX_QSPI_CONFIG_ADDRMODE 0
+#endif
+
+// <o> NRFX_QSPI_CONFIG_MODE  - SPI mode.
+ 
+// <0=> Mode 0 
+// <1=> Mode 1 
+
+#ifndef NRFX_QSPI_CONFIG_MODE
+#define NRFX_QSPI_CONFIG_MODE 0
+#endif
+
+// <o> NRFX_QSPI_CONFIG_FREQUENCY  - Frequency divider.
+ 
+// <0=> 32MHz/1 
+// <1=> 32MHz/2 
+// <2=> 32MHz/3 
+// <3=> 32MHz/4 
+// <4=> 32MHz/5 
+// <5=> 32MHz/6 
+// <6=> 32MHz/7 
+// <7=> 32MHz/8 
+// <8=> 32MHz/9 
+// <9=> 32MHz/10 
+// <10=> 32MHz/11 
+// <11=> 32MHz/12 
+// <12=> 32MHz/13 
+// <13=> 32MHz/14 
+// <14=> 32MHz/15 
+// <15=> 32MHz/16 
+
+#ifndef NRFX_QSPI_CONFIG_FREQUENCY
+#define NRFX_QSPI_CONFIG_FREQUENCY 15
+#endif
+
+// <s> NRFX_QSPI_PIN_SCK - SCK pin value.
+#ifndef NRFX_QSPI_PIN_SCK
+#define NRFX_QSPI_PIN_SCK NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <s> NRFX_QSPI_PIN_CSN - CSN pin value.
+#ifndef NRFX_QSPI_PIN_CSN
+#define NRFX_QSPI_PIN_CSN NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <s> NRFX_QSPI_PIN_IO0 - IO0 pin value.
+#ifndef NRFX_QSPI_PIN_IO0
+#define NRFX_QSPI_PIN_IO0 NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <s> NRFX_QSPI_PIN_IO1 - IO1 pin value.
+#ifndef NRFX_QSPI_PIN_IO1
+#define NRFX_QSPI_PIN_IO1 NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <s> NRFX_QSPI_PIN_IO2 - IO2 pin value.
+#ifndef NRFX_QSPI_PIN_IO2
+#define NRFX_QSPI_PIN_IO2 NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <s> NRFX_QSPI_PIN_IO3 - IO3 pin value.
+#ifndef NRFX_QSPI_PIN_IO3
+#define NRFX_QSPI_PIN_IO3 NRF_QSPI_PIN_NOT_CONNECTED
+#endif
+
+// <o> NRFX_QSPI_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_QSPI_CONFIG_IRQ_PRIORITY
+#define NRFX_QSPI_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// </e>
+
 // <e> NRFX_RNG_ENABLED - nrfx_rng - RNG peripheral driver
 //==========================================================
 #ifndef NRFX_RNG_ENABLED
@@ -2757,6 +3169,13 @@
 
 #ifndef NRFX_RTC1_ENABLED
 #define NRFX_RTC1_ENABLED 0
+#endif
+
+// <q> NRFX_RTC2_ENABLED  - Enable RTC2 instance
+ 
+
+#ifndef NRFX_RTC2_ENABLED
+#define NRFX_RTC2_ENABLED 0
 #endif
 
 // <o> NRFX_RTC_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
@@ -2965,6 +3384,34 @@
 #define NRFX_SPIM0_ENABLED 0
 #endif
 
+// <q> NRFX_SPIM1_ENABLED  - Enable SPIM1 instance
+ 
+
+#ifndef NRFX_SPIM1_ENABLED
+#define NRFX_SPIM1_ENABLED 0
+#endif
+
+// <q> NRFX_SPIM2_ENABLED  - Enable SPIM2 instance
+ 
+
+#ifndef NRFX_SPIM2_ENABLED
+#define NRFX_SPIM2_ENABLED 0
+#endif
+
+// <q> NRFX_SPIM3_ENABLED  - Enable SPIM3 instance
+ 
+
+#ifndef NRFX_SPIM3_ENABLED
+#define NRFX_SPIM3_ENABLED 0
+#endif
+
+// <q> NRFX_SPIM_EXTENDED_ENABLED  - Enable extended SPIM features
+ 
+
+#ifndef NRFX_SPIM_EXTENDED_ENABLED
+#define NRFX_SPIM_EXTENDED_ENABLED 0
+#endif
+
 // <o> NRFX_SPIM_MISO_PULL_CFG  - MISO pin pull configuration.
  
 // <0=> NRF_GPIO_PIN_NOPULL 
@@ -3053,6 +3500,20 @@
 
 #ifndef NRFX_SPIS0_ENABLED
 #define NRFX_SPIS0_ENABLED 0
+#endif
+
+// <q> NRFX_SPIS1_ENABLED  - Enable SPIS1 instance
+ 
+
+#ifndef NRFX_SPIS1_ENABLED
+#define NRFX_SPIS1_ENABLED 0
+#endif
+
+// <q> NRFX_SPIS2_ENABLED  - Enable SPIS2 instance
+ 
+
+#ifndef NRFX_SPIS2_ENABLED
+#define NRFX_SPIS2_ENABLED 0
 #endif
 
 // <o> NRFX_SPIS_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -3147,6 +3608,20 @@
 
 #ifndef NRFX_SPI0_ENABLED
 #define NRFX_SPI0_ENABLED 0
+#endif
+
+// <q> NRFX_SPI1_ENABLED  - Enable SPI1 instance
+ 
+
+#ifndef NRFX_SPI1_ENABLED
+#define NRFX_SPI1_ENABLED 0
+#endif
+
+// <q> NRFX_SPI2_ENABLED  - Enable SPI2 instance
+ 
+
+#ifndef NRFX_SPI2_ENABLED
+#define NRFX_SPI2_ENABLED 0
 #endif
 
 // <o> NRFX_SPI_MISO_PULL_CFG  - MISO pin pull configuration.
@@ -3360,6 +3835,20 @@
 #define NRFX_TIMER2_ENABLED 0
 #endif
 
+// <q> NRFX_TIMER3_ENABLED  - Enable TIMER3 instance
+ 
+
+#ifndef NRFX_TIMER3_ENABLED
+#define NRFX_TIMER3_ENABLED 0
+#endif
+
+// <q> NRFX_TIMER4_ENABLED  - Enable TIMER4 instance
+ 
+
+#ifndef NRFX_TIMER4_ENABLED
+#define NRFX_TIMER4_ENABLED 0
+#endif
+
 // <o> NRFX_TIMER_DEFAULT_CONFIG_FREQUENCY  - Timer frequency if in Timer mode
  
 // <0=> 16 MHz 
@@ -3477,6 +3966,13 @@
 #define NRFX_TWIM0_ENABLED 0
 #endif
 
+// <q> NRFX_TWIM1_ENABLED  - Enable TWIM1 instance
+ 
+
+#ifndef NRFX_TWIM1_ENABLED
+#define NRFX_TWIM1_ENABLED 0
+#endif
+
 // <o> NRFX_TWIM_DEFAULT_CONFIG_FREQUENCY  - Frequency
  
 // <26738688=> 100k 
@@ -3572,6 +4068,13 @@
 
 #ifndef NRFX_TWIS0_ENABLED
 #define NRFX_TWIS0_ENABLED 0
+#endif
+
+// <q> NRFX_TWIS1_ENABLED  - Enable TWIS1 instance
+ 
+
+#ifndef NRFX_TWIS1_ENABLED
+#define NRFX_TWIS1_ENABLED 0
 #endif
 
 // <q> NRFX_TWIS_ASSUME_INIT_AFTER_RESET_ONLY  - Assume that any instance would be initialized only once
@@ -3693,13 +4196,20 @@
 // <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
 //==========================================================
 #ifndef NRFX_TWI_ENABLED
-#define NRFX_TWI_ENABLED 1
+#define NRFX_TWI_ENABLED 0
 #endif
 // <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
  
 
 #ifndef NRFX_TWI0_ENABLED
-#define NRFX_TWI0_ENABLED 1
+#define NRFX_TWI0_ENABLED 0
+#endif
+
+// <q> NRFX_TWI1_ENABLED  - Enable TWI1 instance
+ 
+
+#ifndef NRFX_TWI1_ENABLED
+#define NRFX_TWI1_ENABLED 0
 #endif
 
 // <o> NRFX_TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
@@ -3790,11 +4300,16 @@
 // <e> NRFX_UARTE_ENABLED - nrfx_uarte - UARTE peripheral driver
 //==========================================================
 #ifndef NRFX_UARTE_ENABLED
-#define NRFX_UARTE_ENABLED 1
+#define NRFX_UARTE_ENABLED 0
 #endif
 // <o> NRFX_UARTE0_ENABLED - Enable UARTE0 instance 
 #ifndef NRFX_UARTE0_ENABLED
 #define NRFX_UARTE0_ENABLED 0
+#endif
+
+// <o> NRFX_UARTE1_ENABLED - Enable UARTE1 instance 
+#ifndef NRFX_UARTE1_ENABLED
+#define NRFX_UARTE1_ENABLED 0
 #endif
 
 // <o> NRFX_UARTE_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
@@ -3911,7 +4426,7 @@
 // <e> NRFX_UART_ENABLED - nrfx_uart - UART peripheral driver
 //==========================================================
 #ifndef NRFX_UART_ENABLED
-#define NRFX_UART_ENABLED 1
+#define NRFX_UART_ENABLED 0
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance 
 #ifndef NRFX_UART0_ENABLED
@@ -4029,6 +4544,71 @@
 
 // </e>
 
+// <e> NRFX_USBD_ENABLED - nrfx_usbd - USBD peripheral driver
+//==========================================================
+#ifndef NRFX_USBD_ENABLED
+#define NRFX_USBD_ENABLED 0
+#endif
+// <o> NRFX_USBD_CONFIG_IRQ_PRIORITY  - Interrupt priority
+ 
+// <0=> 0 (highest) 
+// <1=> 1 
+// <2=> 2 
+// <3=> 3 
+// <4=> 4 
+// <5=> 5 
+// <6=> 6 
+// <7=> 7 
+
+#ifndef NRFX_USBD_CONFIG_IRQ_PRIORITY
+#define NRFX_USBD_CONFIG_IRQ_PRIORITY 6
+#endif
+
+// <o> NRFX_USBD_CONFIG_DMASCHEDULER_MODE  - USBD DMA scheduler working scheme
+ 
+// <0=> Prioritized access 
+// <1=> Round Robin 
+
+#ifndef NRFX_USBD_CONFIG_DMASCHEDULER_MODE
+#define NRFX_USBD_CONFIG_DMASCHEDULER_MODE 0
+#endif
+
+// <q> NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST  - Give priority to isochronous transfers
+ 
+
+// <i> This option gives priority to isochronous transfers.
+// <i> Enabling it assures that isochronous transfers are always processed,
+// <i> even if multiple other transfers are pending.
+// <i> Isochronous endpoints are prioritized before the usbd_dma_scheduler_algorithm
+// <i> function is called, so the option is independent of the algorithm chosen.
+
+#ifndef NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST
+#define NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST 1
+#endif
+
+// <q> NRFX_USBD_CONFIG_ISO_IN_ZLP  - Respond to an IN token on ISO IN endpoint with ZLP when no data is ready
+ 
+
+// <i> If set, ISO IN endpoint will respond to an IN token with ZLP when no data is ready to be sent.
+// <i> Else, there will be no response.
+
+#ifndef NRFX_USBD_CONFIG_ISO_IN_ZLP
+#define NRFX_USBD_CONFIG_ISO_IN_ZLP 0
+#endif
+
+// <q> NRFX_USBD_USE_WORKAROUND_FOR_ANOMALY_211  - Use workaround for anomaly 211
+ 
+
+// <i> If set, workaround for anomaly 211 will be enabled.
+// <i> Anomaly 211 - Device remains in SUSPEND too long when host resumes
+// <i> bus activity (sending SOF packets) without a RESUME condition.
+
+#ifndef NRFX_USBD_USE_WORKAROUND_FOR_ANOMALY_211
+#define NRFX_USBD_USE_WORKAROUND_FOR_ANOMALY_211 0
+#endif
+
+// </e>
+
 // <e> NRFX_WDT_ENABLED - nrfx_wdt - WDT peripheral driver
 //==========================================================
 #ifndef NRFX_WDT_ENABLED
@@ -4132,7 +4712,7 @@
 // <e> NRF_CLOCK_ENABLED - nrf_drv_clock - CLOCK peripheral driver - legacy layer
 //==========================================================
 #ifndef NRF_CLOCK_ENABLED
-#define NRF_CLOCK_ENABLED 1
+#define NRF_CLOCK_ENABLED 0
 #endif
 // <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
  
@@ -4227,7 +4807,7 @@
 // <e> POWER_ENABLED - nrf_drv_power - POWER peripheral driver - legacy layer
 //==========================================================
 #ifndef POWER_ENABLED
-#define POWER_ENABLED 0
+#define POWER_ENABLED 1
 #endif
 // <o> POWER_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -4391,6 +4971,13 @@
 
 #ifndef PWM2_ENABLED
 #define PWM2_ENABLED 0
+#endif
+
+// <q> PWM3_ENABLED  - Enable PWM3 instance
+ 
+
+#ifndef PWM3_ENABLED
+#define PWM3_ENABLED 0
 #endif
 
 // </e>
@@ -4849,6 +5436,20 @@
 #define SPIS0_ENABLED 0
 #endif
 
+// <q> SPIS1_ENABLED  - Enable SPIS1 instance
+ 
+
+#ifndef SPIS1_ENABLED
+#define SPIS1_ENABLED 0
+#endif
+
+// <q> SPIS2_ENABLED  - Enable SPIS2 instance
+ 
+
+#ifndef SPIS2_ENABLED
+#define SPIS2_ENABLED 0
+#endif
+
 // </e>
 
 // <e> SPI_ENABLED - nrf_drv_spi - SPI/SPIM peripheral driver - legacy layer
@@ -4893,6 +5494,34 @@
 
 #ifndef SPI0_USE_EASY_DMA
 #define SPI0_USE_EASY_DMA 1
+#endif
+
+// </e>
+
+// <e> SPI1_ENABLED - Enable SPI1 instance
+//==========================================================
+#ifndef SPI1_ENABLED
+#define SPI1_ENABLED 0
+#endif
+// <q> SPI1_USE_EASY_DMA  - Use EasyDMA
+ 
+
+#ifndef SPI1_USE_EASY_DMA
+#define SPI1_USE_EASY_DMA 1
+#endif
+
+// </e>
+
+// <e> SPI2_ENABLED - Enable SPI2 instance
+//==========================================================
+#ifndef SPI2_ENABLED
+#define SPI2_ENABLED 0
+#endif
+// <q> SPI2_USE_EASY_DMA  - Use EasyDMA
+ 
+
+#ifndef SPI2_USE_EASY_DMA
+#define SPI2_USE_EASY_DMA 1
 #endif
 
 // </e>
@@ -5084,7 +5713,7 @@
 // <e> TWI_ENABLED - nrf_drv_twi - TWI/TWIM peripheral driver - legacy layer
 //==========================================================
 #ifndef TWI_ENABLED
-#define TWI_ENABLED 1
+#define TWI_ENABLED 0
 #endif
 // <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
  
@@ -5141,12 +5770,26 @@
 
 // </e>
 
+// <e> TWI1_ENABLED - Enable TWI1 instance
+//==========================================================
+#ifndef TWI1_ENABLED
+#define TWI1_ENABLED 0
+#endif
+// <q> TWI1_USE_EASY_DMA  - Use EasyDMA (if present)
+ 
+
+#ifndef TWI1_USE_EASY_DMA
+#define TWI1_USE_EASY_DMA 0
+#endif
+
+// </e>
+
 // </e>
 
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
  
@@ -5223,7 +5866,7 @@
 // <e> UART0_ENABLED - Enable UART0 instance
 //==========================================================
 #ifndef UART0_ENABLED
-#define UART0_ENABLED 1
+#define UART0_ENABLED 0
 #endif
 // <q> UART0_CONFIG_USE_EASY_DMA  - Default setting for using EasyDMA
  
@@ -5232,6 +5875,13 @@
 #define UART0_CONFIG_USE_EASY_DMA 1
 #endif
 
+// </e>
+
+// <e> UART1_ENABLED - Enable UART1 instance
+//==========================================================
+#ifndef UART1_ENABLED
+#define UART1_ENABLED 0
+#endif
 // </e>
 
 // </e>
@@ -5335,30 +5985,6 @@
 
 // </e>
 
-// <h> nrfx_i2s - I2S peripheral driver
-
-//==========================================================
-// </h> 
-//==========================================================
-
-// <h> nrfx_lpcomp - LPCOMP peripheral driver
-
-//==========================================================
-// </h> 
-//==========================================================
-
-// <h> nrfx_qspi - QSPI peripheral driver
-
-//==========================================================
-// </h> 
-//==========================================================
-
-// <h> nrfx_usbd - USBD peripheral driver
-
-//==========================================================
-// </h> 
-//==========================================================
-
 // </h> 
 //==========================================================
 
@@ -5369,7 +5995,7 @@
  
 
 #ifndef NRF_TWI_SENSOR_ENABLED
-#define NRF_TWI_SENSOR_ENABLED 1
+#define NRF_TWI_SENSOR_ENABLED 0
 #endif
 
 // </h> 
@@ -5395,7 +6021,7 @@
 // <e> APP_SCHEDULER_ENABLED - app_scheduler - Events scheduler
 //==========================================================
 #ifndef APP_SCHEDULER_ENABLED
-#define APP_SCHEDULER_ENABLED 1
+#define APP_SCHEDULER_ENABLED 0
 #endif
 // <q> APP_SCHEDULER_WITH_PAUSE  - Enabling pause feature
  
@@ -5461,7 +6087,7 @@
 // <e> APP_TIMER_ENABLED - app_timer - Application timer functionality
 //==========================================================
 #ifndef APP_TIMER_ENABLED
-#define APP_TIMER_ENABLED 1
+#define APP_TIMER_ENABLED 0
 #endif
 // <o> APP_TIMER_CONFIG_RTC_FREQUENCY  - Configure RTC prescaler.
  
@@ -5891,7 +6517,7 @@
  
 
 #ifndef CRC16_ENABLED
-#define CRC16_ENABLED 1
+#define CRC16_ENABLED 0
 #endif
 
 // <q> CRC32_ENABLED  - crc32 - CRC32 calculation routines
@@ -5911,7 +6537,7 @@
 // <e> FDS_ENABLED - fds - Flash data storage module
 //==========================================================
 #ifndef FDS_ENABLED
-#define FDS_ENABLED 1
+#define FDS_ENABLED 0
 #endif
 // <h> Pages - Virtual page settings
 
@@ -6093,22 +6719,22 @@
 
 // <o> HCI_UART_RX_PIN - UART RX pin 
 #ifndef HCI_UART_RX_PIN
-#define HCI_UART_RX_PIN 8
+#define HCI_UART_RX_PIN 31
 #endif
 
 // <o> HCI_UART_TX_PIN - UART TX pin 
 #ifndef HCI_UART_TX_PIN
-#define HCI_UART_TX_PIN 6
+#define HCI_UART_TX_PIN 31
 #endif
 
 // <o> HCI_UART_RTS_PIN - UART RTS pin 
 #ifndef HCI_UART_RTS_PIN
-#define HCI_UART_RTS_PIN 5
+#define HCI_UART_RTS_PIN 31
 #endif
 
 // <o> HCI_UART_CTS_PIN - UART CTS pin 
 #ifndef HCI_UART_CTS_PIN
-#define HCI_UART_CTS_PIN 7
+#define HCI_UART_CTS_PIN 31
 #endif
 
 // </e>
@@ -6435,7 +7061,7 @@
 // <e> NRF_FSTORAGE_ENABLED - nrf_fstorage - Flash abstraction library
 //==========================================================
 #ifndef NRF_FSTORAGE_ENABLED
-#define NRF_FSTORAGE_ENABLED 1
+#define NRF_FSTORAGE_ENABLED 0
 #endif
 // <h> nrf_fstorage - Common settings
 
@@ -6506,7 +7132,7 @@
 // <e> NRF_PWR_MGMT_ENABLED - nrf_pwr_mgmt - Power management module
 //==========================================================
 #ifndef NRF_PWR_MGMT_ENABLED
-#define NRF_PWR_MGMT_ENABLED 1
+#define NRF_PWR_MGMT_ENABLED 0
 #endif
 // <e> NRF_PWR_MGMT_CONFIG_DEBUG_PIN_ENABLED - Enables pin debug in the module.
 
@@ -6549,6 +7175,22 @@
 // <29=> 29 (P0.29) 
 // <30=> 30 (P0.30) 
 // <31=> 31 (P0.31) 
+// <32=> 32 (P1.0) 
+// <33=> 33 (P1.1) 
+// <34=> 34 (P1.2) 
+// <35=> 35 (P1.3) 
+// <36=> 36 (P1.4) 
+// <37=> 37 (P1.5) 
+// <38=> 38 (P1.6) 
+// <39=> 39 (P1.7) 
+// <40=> 40 (P1.8) 
+// <41=> 41 (P1.9) 
+// <42=> 42 (P1.10) 
+// <43=> 43 (P1.11) 
+// <44=> 44 (P1.12) 
+// <45=> 45 (P1.13) 
+// <46=> 46 (P1.14) 
+// <47=> 47 (P1.15) 
 // <4294967295=> Not connected 
 
 #ifndef NRF_PWR_MGMT_SLEEP_DEBUG_PIN
@@ -6656,7 +7298,7 @@
  
 
 #ifndef NRF_TWI_MNGR_ENABLED
-#define NRF_TWI_MNGR_ENABLED 1
+#define NRF_TWI_MNGR_ENABLED 0
 #endif
 
 // <q> SLIP_ENABLED  - slip - SLIP encoding and decoding
@@ -6717,7 +7359,7 @@
  
 
 #ifndef BUTTON_ENABLED
-#define BUTTON_ENABLED 1
+#define BUTTON_ENABLED 0
 #endif
 
 // <q> BUTTON_HIGH_ACCURACY_ENABLED  - Enables GPIOTE high accuracy for buttons
@@ -6887,88 +7529,10 @@
 // <h> nRF_Log 
 
 //==========================================================
-// <e> NRF_LOG_BACKEND_RTT_ENABLED - nrf_log_backend_rtt - Log RTT backend
-//==========================================================
-#ifndef NRF_LOG_BACKEND_RTT_ENABLED
-#define NRF_LOG_BACKEND_RTT_ENABLED 1
-#endif
-// <o> NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
-// <i> Size of the buffer is a trade-off between RAM usage and processing.
-// <i> if buffer is smaller then strings will often be fragmented.
-// <i> It is recommended to use size which will fit typical log and only the
-// <i> longer one will be fragmented.
-
-#ifndef NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE
-#define NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE 64
-#endif
-
-// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS - Period before retrying writing to RTT 
-#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS
-#define NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS 1
-#endif
-
-// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_CNT - Writing to RTT retries. 
-// <i> If RTT fails to accept any new data after retries
-// <i> module assumes that host is not active and on next
-// <i> request it will perform only one write attempt.
-// <i> On successful writing, module assumes that host is active
-// <i> and scheme with retry is applied again.
-
-#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_CNT
-#define NRF_LOG_BACKEND_RTT_TX_RETRY_CNT 3
-#endif
-
-// </e>
-
-// <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
-//==========================================================
-#ifndef NRF_LOG_BACKEND_UART_ENABLED
-#define NRF_LOG_BACKEND_UART_ENABLED 1
-#endif
-// <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
-#ifndef NRF_LOG_BACKEND_UART_TX_PIN
-#define NRF_LOG_BACKEND_UART_TX_PIN 6
-#endif
-
-// <o> NRF_LOG_BACKEND_UART_BAUDRATE  - Default Baudrate
- 
-// <323584=> 1200 baud 
-// <643072=> 2400 baud 
-// <1290240=> 4800 baud 
-// <2576384=> 9600 baud 
-// <3862528=> 14400 baud 
-// <5152768=> 19200 baud 
-// <7716864=> 28800 baud 
-// <10289152=> 38400 baud 
-// <15400960=> 57600 baud 
-// <20615168=> 76800 baud 
-// <30801920=> 115200 baud 
-// <61865984=> 230400 baud 
-// <67108864=> 250000 baud 
-// <121634816=> 460800 baud 
-// <251658240=> 921600 baud 
-// <268435456=> 1000000 baud 
-
-#ifndef NRF_LOG_BACKEND_UART_BAUDRATE
-#define NRF_LOG_BACKEND_UART_BAUDRATE 30801920
-#endif
-
-// <o> NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
-// <i> Size of the buffer is a trade-off between RAM usage and processing.
-// <i> if buffer is smaller then strings will often be fragmented.
-// <i> It is recommended to use size which will fit typical log and only the
-// <i> longer one will be fragmented.
-
-#ifndef NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE
-#define NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE 64
-#endif
-
-// </e>
-
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 1
+#define NRF_LOG_ENABLED 0
 #endif
 // <h> Log message pool - Configuration of log message pool
 
@@ -7040,7 +7604,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 4
+#define NRF_LOG_DEFAULT_LEVEL 3
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.
@@ -9925,52 +10489,642 @@
 // </h> 
 //==========================================================
 
-// <h> nRF_Segger_RTT 
+// <h> nRF_NFC 
 
 //==========================================================
-// <h> segger_rtt - SEGGER RTT
-
-//==========================================================
-// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_UP - Size of upstream buffer. 
-// <i> Note that either @ref NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
-// <i> or this value is actually used. It depends on which one is bigger.
-
-#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
-#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 512
-#endif
-
-// <o> SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS - Maximum number of upstream buffers. 
-#ifndef SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS
-#define SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS 2
-#endif
-
-// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN - Size of downstream buffer. 
-#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN
-#define SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN 16
-#endif
-
-// <o> SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS - Maximum number of downstream buffers. 
-#ifndef SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS
-#define SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS 2
-#endif
-
-// <o> SEGGER_RTT_CONFIG_DEFAULT_MODE  - RTT behavior if the buffer is full.
+// <q> NFC_AC_REC_ENABLED  - nfc_ac_rec - NFC NDEF Alternative Carrier record encoder
  
 
-// <i> The following modes are supported:
-// <i> - SKIP  - Do not block, output nothing.
-// <i> - TRIM  - Do not block, output as much as fits.
-// <i> - BLOCK - Wait until there is space in the buffer.
-// <0=> SKIP 
-// <1=> TRIM 
-// <2=> BLOCK_IF_FIFO_FULL 
+#ifndef NFC_AC_REC_ENABLED
+#define NFC_AC_REC_ENABLED 0
+#endif
 
-#ifndef SEGGER_RTT_CONFIG_DEFAULT_MODE
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+// <q> NFC_AC_REC_PARSER_ENABLED  - nfc_ac_rec_parser - Alternative Carrier record parser
+ 
+
+#ifndef NFC_AC_REC_PARSER_ENABLED
+#define NFC_AC_REC_PARSER_ENABLED 0
+#endif
+
+// <e> NFC_BLE_OOB_ADVDATA_ENABLED - nfc_ble_oob_advdata - AD data for OOB pairing encoder
+//==========================================================
+#ifndef NFC_BLE_OOB_ADVDATA_ENABLED
+#define NFC_BLE_OOB_ADVDATA_ENABLED 0
+#endif
+// <o> ADVANCED_ADVDATA_SUPPORT  - Non-mandatory AD types for BLE OOB pairing are encoded inside the NDEF message (e.g. service UUIDs)
+ 
+// <1=> Enabled 
+// <0=> Disabled 
+
+#ifndef ADVANCED_ADVDATA_SUPPORT
+#define ADVANCED_ADVDATA_SUPPORT 0
+#endif
+
+// </e>
+
+// <q> NFC_BLE_OOB_ADVDATA_PARSER_ENABLED  - nfc_ble_oob_advdata_parser - BLE OOB pairing AD data parser
+ 
+
+#ifndef NFC_BLE_OOB_ADVDATA_PARSER_ENABLED
+#define NFC_BLE_OOB_ADVDATA_PARSER_ENABLED 0
+#endif
+
+// <e> NFC_BLE_PAIR_LIB_ENABLED - nfc_ble_pair_lib - Library parameters
+//==========================================================
+#ifndef NFC_BLE_PAIR_LIB_ENABLED
+#define NFC_BLE_PAIR_LIB_ENABLED 0
+#endif
+// <e> NFC_BLE_PAIR_LIB_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_BLE_PAIR_LIB_LOG_ENABLED
+#define NFC_BLE_PAIR_LIB_LOG_ENABLED 0
+#endif
+// <o> NFC_BLE_PAIR_LIB_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_BLE_PAIR_LIB_LOG_LEVEL
+#define NFC_BLE_PAIR_LIB_LOG_LEVEL 3
+#endif
+
+// <o> NFC_BLE_PAIR_LIB_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_BLE_PAIR_LIB_INFO_COLOR
+#define NFC_BLE_PAIR_LIB_INFO_COLOR 0
+#endif
+
+// <o> NFC_BLE_PAIR_LIB_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_BLE_PAIR_LIB_DEBUG_COLOR
+#define NFC_BLE_PAIR_LIB_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <h> NFC_BLE_PAIR_LIB_SECURITY_PARAMETERS - Common Peer Manager security parameters.
+
+//==========================================================
+// <e> BLE_NFC_SEC_PARAM_BOND - Enables device bonding.
+
+// <i> If bonding is enabled at least one of the BLE_NFC_SEC_PARAM_KDIST options must be enabled.
+//==========================================================
+#ifndef BLE_NFC_SEC_PARAM_BOND
+#define BLE_NFC_SEC_PARAM_BOND 1
+#endif
+// <q> BLE_NFC_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_NFC_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_NFC_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_NFC_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_NFC_SEC_PARAM_KDIST_OWN_ID
+#define BLE_NFC_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_NFC_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_NFC_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_NFC_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_NFC_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_NFC_SEC_PARAM_KDIST_PEER_ID
+#define BLE_NFC_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// </e>
+
+// <o> BLE_NFC_SEC_PARAM_MIN_KEY_SIZE  - Minimal size of a security key.
+ 
+// <7=> 7 
+// <8=> 8 
+// <9=> 9 
+// <10=> 10 
+// <11=> 11 
+// <12=> 12 
+// <13=> 13 
+// <14=> 14 
+// <15=> 15 
+// <16=> 16 
+
+#ifndef BLE_NFC_SEC_PARAM_MIN_KEY_SIZE
+#define BLE_NFC_SEC_PARAM_MIN_KEY_SIZE 7
+#endif
+
+// <o> BLE_NFC_SEC_PARAM_MAX_KEY_SIZE  - Maximal size of a security key.
+ 
+// <7=> 7 
+// <8=> 8 
+// <9=> 9 
+// <10=> 10 
+// <11=> 11 
+// <12=> 12 
+// <13=> 13 
+// <14=> 14 
+// <15=> 15 
+// <16=> 16 
+
+#ifndef BLE_NFC_SEC_PARAM_MAX_KEY_SIZE
+#define BLE_NFC_SEC_PARAM_MAX_KEY_SIZE 16
 #endif
 
 // </h> 
 //==========================================================
+
+// </e>
+
+// <q> NFC_BLE_PAIR_MSG_ENABLED  - nfc_ble_pair_msg - NDEF message for OOB pairing encoder
+ 
+
+#ifndef NFC_BLE_PAIR_MSG_ENABLED
+#define NFC_BLE_PAIR_MSG_ENABLED 0
+#endif
+
+// <q> NFC_CH_COMMON_ENABLED  - nfc_ble_pair_common - OOB pairing common data
+ 
+
+#ifndef NFC_CH_COMMON_ENABLED
+#define NFC_CH_COMMON_ENABLED 0
+#endif
+
+// <q> NFC_EP_OOB_REC_ENABLED  - nfc_ep_oob_rec - EP record for BLE pairing encoder
+ 
+
+#ifndef NFC_EP_OOB_REC_ENABLED
+#define NFC_EP_OOB_REC_ENABLED 0
+#endif
+
+// <q> NFC_HS_REC_ENABLED  - nfc_hs_rec - Handover Select NDEF record encoder
+ 
+
+#ifndef NFC_HS_REC_ENABLED
+#define NFC_HS_REC_ENABLED 0
+#endif
+
+// <q> NFC_LE_OOB_REC_ENABLED  - nfc_le_oob_rec - LE record for BLE pairing encoder
+ 
+
+#ifndef NFC_LE_OOB_REC_ENABLED
+#define NFC_LE_OOB_REC_ENABLED 0
+#endif
+
+// <q> NFC_LE_OOB_REC_PARSER_ENABLED  - nfc_le_oob_rec_parser - LE record parser
+ 
+
+#ifndef NFC_LE_OOB_REC_PARSER_ENABLED
+#define NFC_LE_OOB_REC_PARSER_ENABLED 0
+#endif
+
+// <q> NFC_NDEF_LAUNCHAPP_MSG_ENABLED  - nfc_launchapp_msg - Encoding data for NDEF Application Launching message for NFC Tag
+ 
+
+#ifndef NFC_NDEF_LAUNCHAPP_MSG_ENABLED
+#define NFC_NDEF_LAUNCHAPP_MSG_ENABLED 0
+#endif
+
+// <q> NFC_NDEF_LAUNCHAPP_REC_ENABLED  - nfc_launchapp_rec - Encoding data for NDEF Application Launching record for NFC Tag
+ 
+
+#ifndef NFC_NDEF_LAUNCHAPP_REC_ENABLED
+#define NFC_NDEF_LAUNCHAPP_REC_ENABLED 0
+#endif
+
+// <e> NFC_NDEF_MSG_ENABLED - nfc_ndef_msg - NFC NDEF Message generator module
+//==========================================================
+#ifndef NFC_NDEF_MSG_ENABLED
+#define NFC_NDEF_MSG_ENABLED 0
+#endif
+// <o> NFC_NDEF_MSG_TAG_TYPE  - NFC Tag Type
+ 
+// <2=> Type 2 Tag 
+// <4=> Type 4 Tag 
+
+#ifndef NFC_NDEF_MSG_TAG_TYPE
+#define NFC_NDEF_MSG_TAG_TYPE 2
+#endif
+
+// </e>
+
+// <e> NFC_NDEF_MSG_PARSER_ENABLED - nfc_ndef_msg_parser - NFC NDEF message parser module
+//==========================================================
+#ifndef NFC_NDEF_MSG_PARSER_ENABLED
+#define NFC_NDEF_MSG_PARSER_ENABLED 0
+#endif
+// <e> NFC_NDEF_MSG_PARSER_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_NDEF_MSG_PARSER_LOG_ENABLED
+#define NFC_NDEF_MSG_PARSER_LOG_ENABLED 0
+#endif
+// <o> NFC_NDEF_MSG_PARSER_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_NDEF_MSG_PARSER_LOG_LEVEL
+#define NFC_NDEF_MSG_PARSER_LOG_LEVEL 3
+#endif
+
+// <o> NFC_NDEF_MSG_PARSER_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_NDEF_MSG_PARSER_INFO_COLOR
+#define NFC_NDEF_MSG_PARSER_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <q> NFC_NDEF_RECORD_ENABLED  - nfc_ndef_record - NFC NDEF Record generator module
+ 
+
+#ifndef NFC_NDEF_RECORD_ENABLED
+#define NFC_NDEF_RECORD_ENABLED 0
+#endif
+
+// <e> NFC_NDEF_RECORD_PARSER_ENABLED - nfc_ndef_record_parser - NFC NDEF Record parser module
+//==========================================================
+#ifndef NFC_NDEF_RECORD_PARSER_ENABLED
+#define NFC_NDEF_RECORD_PARSER_ENABLED 0
+#endif
+// <e> NFC_NDEF_RECORD_PARSER_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_NDEF_RECORD_PARSER_LOG_ENABLED
+#define NFC_NDEF_RECORD_PARSER_LOG_ENABLED 0
+#endif
+// <o> NFC_NDEF_RECORD_PARSER_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_NDEF_RECORD_PARSER_LOG_LEVEL
+#define NFC_NDEF_RECORD_PARSER_LOG_LEVEL 3
+#endif
+
+// <o> NFC_NDEF_RECORD_PARSER_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_NDEF_RECORD_PARSER_INFO_COLOR
+#define NFC_NDEF_RECORD_PARSER_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <q> NFC_NDEF_TEXT_RECORD_ENABLED  - nfc_text_rec - Encoding data for a text record for NFC Tag
+ 
+
+#ifndef NFC_NDEF_TEXT_RECORD_ENABLED
+#define NFC_NDEF_TEXT_RECORD_ENABLED 0
+#endif
+
+// <q> NFC_NDEF_URI_MSG_ENABLED  - nfc_uri_msg - Encoding data for NDEF message with URI record for NFC Tag
+ 
+
+#ifndef NFC_NDEF_URI_MSG_ENABLED
+#define NFC_NDEF_URI_MSG_ENABLED 0
+#endif
+
+// <q> NFC_NDEF_URI_REC_ENABLED  - nfc_uri_rec - Encoding data for a URI record for NFC Tag
+ 
+
+#ifndef NFC_NDEF_URI_REC_ENABLED
+#define NFC_NDEF_URI_REC_ENABLED 0
+#endif
+
+// <e> NFC_PLATFORM_ENABLED - nfc_platform - NFC platform module for Clock control.
+//==========================================================
+#ifndef NFC_PLATFORM_ENABLED
+#define NFC_PLATFORM_ENABLED 0
+#endif
+// <e> NFC_PLATFORM_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_PLATFORM_LOG_ENABLED
+#define NFC_PLATFORM_LOG_ENABLED 0
+#endif
+// <o> NFC_PLATFORM_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_PLATFORM_LOG_LEVEL
+#define NFC_PLATFORM_LOG_LEVEL 3
+#endif
+
+// <o> NFC_PLATFORM_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_PLATFORM_INFO_COLOR
+#define NFC_PLATFORM_INFO_COLOR 0
+#endif
+
+// <o> NFC_PLATFORM_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_PLATFORM_DEBUG_COLOR
+#define NFC_PLATFORM_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NFC_T2T_PARSER_ENABLED - nfc_type_2_tag_parser - Parser for decoding Type 2 Tag data
+//==========================================================
+#ifndef NFC_T2T_PARSER_ENABLED
+#define NFC_T2T_PARSER_ENABLED 0
+#endif
+// <e> NFC_T2T_PARSER_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_T2T_PARSER_LOG_ENABLED
+#define NFC_T2T_PARSER_LOG_ENABLED 0
+#endif
+// <o> NFC_T2T_PARSER_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_T2T_PARSER_LOG_LEVEL
+#define NFC_T2T_PARSER_LOG_LEVEL 3
+#endif
+
+// <o> NFC_T2T_PARSER_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_T2T_PARSER_INFO_COLOR
+#define NFC_T2T_PARSER_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NFC_T4T_APDU_ENABLED - nfc_t4t_apdu - APDU encoder/decoder for Type 4 Tag
+//==========================================================
+#ifndef NFC_T4T_APDU_ENABLED
+#define NFC_T4T_APDU_ENABLED 0
+#endif
+// <e> NFC_T4T_APDU_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_T4T_APDU_LOG_ENABLED
+#define NFC_T4T_APDU_LOG_ENABLED 0
+#endif
+// <o> NFC_T4T_APDU_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_T4T_APDU_LOG_LEVEL
+#define NFC_T4T_APDU_LOG_LEVEL 3
+#endif
+
+// <o> NFC_T4T_APDU_LOG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_T4T_APDU_LOG_COLOR
+#define NFC_T4T_APDU_LOG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NFC_T4T_CC_FILE_PARSER_ENABLED - nfc_t4t_cc_file - Capability Container file for Type 4 Tag
+//==========================================================
+#ifndef NFC_T4T_CC_FILE_PARSER_ENABLED
+#define NFC_T4T_CC_FILE_PARSER_ENABLED 0
+#endif
+// <e> NFC_T4T_CC_FILE_PARSER_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_T4T_CC_FILE_PARSER_LOG_ENABLED
+#define NFC_T4T_CC_FILE_PARSER_LOG_ENABLED 0
+#endif
+// <o> NFC_T4T_CC_FILE_PARSER_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_T4T_CC_FILE_PARSER_LOG_LEVEL
+#define NFC_T4T_CC_FILE_PARSER_LOG_LEVEL 3
+#endif
+
+// <o> NFC_T4T_CC_FILE_PARSER_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_T4T_CC_FILE_PARSER_INFO_COLOR
+#define NFC_T4T_CC_FILE_PARSER_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NFC_T4T_HL_DETECTION_PROCEDURES_ENABLED - nfc_t4t_hl_detection_procedures - NDEF Detection Procedure for Type 4 Tag
+//==========================================================
+#ifndef NFC_T4T_HL_DETECTION_PROCEDURES_ENABLED
+#define NFC_T4T_HL_DETECTION_PROCEDURES_ENABLED 0
+#endif
+// <e> NFC_T4T_HL_DETECTION_PROCEDURES_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_T4T_HL_DETECTION_PROCEDURES_LOG_ENABLED
+#define NFC_T4T_HL_DETECTION_PROCEDURES_LOG_ENABLED 0
+#endif
+// <o> NFC_T4T_HL_DETECTION_PROCEDURES_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_T4T_HL_DETECTION_PROCEDURES_LOG_LEVEL
+#define NFC_T4T_HL_DETECTION_PROCEDURES_LOG_LEVEL 3
+#endif
+
+// <o> NFC_T4T_HL_DETECTION_PROCEDURES_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_T4T_HL_DETECTION_PROCEDURES_INFO_COLOR
+#define NFC_T4T_HL_DETECTION_PROCEDURES_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <o> APDU_BUFF_SIZE - Size (in bytes) of the buffer for APDU storage 
+#ifndef APDU_BUFF_SIZE
+#define APDU_BUFF_SIZE 250
+#endif
+
+// <o> CC_STORAGE_BUFF_SIZE - Size (in bytes) of the buffer for CC file storage 
+#ifndef CC_STORAGE_BUFF_SIZE
+#define CC_STORAGE_BUFF_SIZE 64
+#endif
+
+// </e>
+
+// <e> NFC_T4T_TLV_BLOCK_PARSER_ENABLED - nfc_t4t_tlv_block - TLV block for Type 4 Tag
+//==========================================================
+#ifndef NFC_T4T_TLV_BLOCK_PARSER_ENABLED
+#define NFC_T4T_TLV_BLOCK_PARSER_ENABLED 0
+#endif
+// <e> NFC_T4T_TLV_BLOCK_PARSER_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NFC_T4T_TLV_BLOCK_PARSER_LOG_ENABLED
+#define NFC_T4T_TLV_BLOCK_PARSER_LOG_ENABLED 0
+#endif
+// <o> NFC_T4T_TLV_BLOCK_PARSER_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NFC_T4T_TLV_BLOCK_PARSER_LOG_LEVEL
+#define NFC_T4T_TLV_BLOCK_PARSER_LOG_LEVEL 3
+#endif
+
+// <o> NFC_T4T_TLV_BLOCK_PARSER_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NFC_T4T_TLV_BLOCK_PARSER_INFO_COLOR
+#define NFC_T4T_TLV_BLOCK_PARSER_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
 
 // </h> 
 //==========================================================
@@ -9981,7 +11135,7 @@
 // <e> NRF_SDH_BLE_ENABLED - nrf_sdh_ble - SoftDevice BLE event handler
 //==========================================================
 #ifndef NRF_SDH_BLE_ENABLED
-#define NRF_SDH_BLE_ENABLED 1
+#define NRF_SDH_BLE_ENABLED 0
 #endif
 // <h> BLE Stack configuration - Stack configuration parameters
 
@@ -9999,7 +11153,7 @@
 
 // <o> NRF_SDH_BLE_PERIPHERAL_LINK_COUNT - Maximum number of peripheral links. 
 #ifndef NRF_SDH_BLE_PERIPHERAL_LINK_COUNT
-#define NRF_SDH_BLE_PERIPHERAL_LINK_COUNT 1
+#define NRF_SDH_BLE_PERIPHERAL_LINK_COUNT 0
 #endif
 
 // <o> NRF_SDH_BLE_CENTRAL_LINK_COUNT - Maximum number of central links. 
@@ -10033,14 +11187,14 @@
 
 // <o> NRF_SDH_BLE_VS_UUID_COUNT - The number of vendor-specific UUIDs. 
 #ifndef NRF_SDH_BLE_VS_UUID_COUNT
-#define NRF_SDH_BLE_VS_UUID_COUNT 1
+#define NRF_SDH_BLE_VS_UUID_COUNT 0
 #endif
 
 // <q> NRF_SDH_BLE_SERVICE_CHANGED  - Include the Service Changed characteristic in the Attribute Table.
  
 
 #ifndef NRF_SDH_BLE_SERVICE_CHANGED
-#define NRF_SDH_BLE_SERVICE_CHANGED 1
+#define NRF_SDH_BLE_SERVICE_CHANGED 0
 #endif
 
 // </h> 
@@ -10305,90 +11459,6 @@
 #define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
 #endif
 
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
 // <o> NRF_BLE_BMS_BLE_OBSERVER_PRIO  
 // <i> Priority with which BLE events are dispatched to the Bond Management Service.
 
@@ -10462,7 +11532,7 @@
 // <e> NRF_SDH_ENABLED - nrf_sdh - SoftDevice handler
 //==========================================================
 #ifndef NRF_SDH_ENABLED
-#define NRF_SDH_ENABLED 1
+#define NRF_SDH_ENABLED 0
 #endif
 // <h> Dispatch model 
 
@@ -10630,7 +11700,7 @@
 // <e> NRF_SDH_SOC_ENABLED - nrf_sdh_soc - SoftDevice SoC event handler
 //==========================================================
 #ifndef NRF_SDH_SOC_ENABLED
-#define NRF_SDH_SOC_ENABLED 1
+#define NRF_SDH_SOC_ENABLED 0
 #endif
 // <h> SoC Observers - Observers and priority levels
 
