@@ -1,8 +1,8 @@
 /*
  * Header file for service which handles calibration messaging
  */
-#ifndef IMU_SERVICE_H
-#define IMU_SERVICE_H
+#ifndef CALIB_SERVICE_H
+#define CALIB_SERVICE_H
 
 #include <stdint.h>
 #include "ble.h"
