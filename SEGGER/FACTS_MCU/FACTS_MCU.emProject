@@ -96,13 +96,10 @@
       <file file_name="../nRF5_sdk/components/libraries/bsp/bsp_btn_ble.c" />
     </folder>
     <folder Name="BLE_Test">
-      <file file_name="./Test/main.c" />
-      <file file_name="./Config/sdk_config.h">
-        <configuration Name="Release" build_exclude_from_build="No" />
-      </file>
-      <file file_name="./Test/debug_service.c" />
-      <file file_name="./Test/debug_service.h" />
       <configuration Name="Release" build_exclude_from_build="No" />
+      <file file_name="Source/Lib/BLE_test/debug_service.c" />
+      <file file_name="Source/Lib/BLE_test/debug_service.h" />
+      <file file_name="Source/Lib/BLE_test/main.c" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_sdk/external/segger_rtt/SEGGER_RTT.c" />
@@ -138,13 +135,14 @@
       <file file_name="../nRF5_sdk/components/softdevice/common/nrf_sdh_ble.c" />
       <file file_name="../nRF5_sdk/components/softdevice/common/nrf_sdh_soc.c" />
     </folder>
-    <folder Name="Source">
+    <folder Name="Lib">
       <file file_name="Source/Lib/angle_calculation.c" />
       <file file_name="Source/Lib/angle_calculation.h" />
       <file file_name="Source/Lib/bluetooth.c" />
       <file file_name="Source/Lib/bluetooth.h" />
       <file file_name="Source/Lib/sensor_fusion.c" />
       <file file_name="Source/Lib/sensor_fusion.h" />
+      <configuration Name="Release" build_exclude_from_build="Yes" />
     </folder>
     <folder Name="Drivers">
       <file file_name="Source/Drivers/bno055.c" />
@@ -153,7 +151,16 @@
       <file file_name="Source/Drivers/drv2605l.h" />
       <file file_name="Source/Drivers/tca9548a.c" />
       <file file_name="Source/Drivers/tca9548a.h" />
+      <configuration Name="Release" build_exclude_from_build="Yes" />
     </folder>
+    <folder Name="Config">
+      <file file_name="Config/sdk_config.h">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+    </folder>
+    <file file_name="Source/main.c">
+      <configuration Name="Release" build_exclude_from_build="Yes" />
+    </file>
   </project>
   <configuration
     Name="Release"
