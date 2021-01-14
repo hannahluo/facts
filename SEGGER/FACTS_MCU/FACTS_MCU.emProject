@@ -161,6 +161,10 @@
     <file file_name="Source/main.c">
       <configuration Name="Release" build_exclude_from_build="Yes" />
     </file>
+    <folder Name="BLE_services">
+      <file file_name="Source/Lib/BLE_services/imu_service.h" />
+      <file file_name="Source/Lib/BLE_services/calibration_service.h" />
+    </folder>
   </project>
   <configuration
     Name="Release"

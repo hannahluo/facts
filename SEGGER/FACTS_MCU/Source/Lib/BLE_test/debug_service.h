@@ -43,16 +43,16 @@ typedef struct
     ble_debug_evt_type_t evt_type;
 } ble_debug_evt_t;
 
-// BLE event handler function pointer
+// Function pointer for per-characteristic event handling
 typedef void (*ble_debug_evt_handler_t) (ble_debug_service_t* p_debug_service, ble_debug_evt_t* p_evt);
 
-// Main handler for debug service
+// Main debug service handle
 typedef struct ble_debug_service_s
 {
     uint16_t conn_handle;                                   // handle to the connection obj
     uint16_t service_handle;                                // handle to the service
     uint8_t uuid_type;                                      // defines if BT SIG-defined, or custom UUUID
-    ble_debug_evt_handler_t evt_handler;                    // BLE event handler associated with the service
+    ble_debug_evt_handler_t evt_handler;                    // BLE event handler associated with the timer 1 characteristic (is called on every client write to event)
     ble_gatts_char_handles_t timer_1_elapsed_char_handles;  // has handles to the char val, user desc, cccd, and sccd attributes
 } ble_debug_service_t;
 

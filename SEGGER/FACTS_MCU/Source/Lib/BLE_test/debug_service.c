@@ -127,6 +127,8 @@ uint32_t ble_debug_service_init(ble_debug_service_t* p_debug_service, ble_debug_
     // Initialize service structure
     p_debug_service->conn_handle = BLE_CONN_HANDLE_INVALID;
     if(app_evt_handler != NULL) {
+        // If callback fn specified, 
+        // This callback is invoked every time client writes to the timer 1 characteristic
         p_debug_service->evt_handler = app_evt_handler;
     }
 
