@@ -13,7 +13,7 @@
 // Register event handler to be invoked on BLE events
 #define BLE_CALIB_SERVICE_DEF(_name)                        \
 static ble_calib_service_t _name                            \
-NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
+NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
                      BLE_CALIB_SERVICE_BLE_OBSERVER_PRIO,   \
                      ble_calib_service_on_ble_evt, &name) 
 
@@ -29,7 +29,7 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
  */
 
 // Base UUID: 87C53994-8E33-4070-9131-8F56AA023E45
- // Stored in little endian
+// Stored in little endian
 #define BLE_UUID_CALIB_SERVICE_BASE_UUID  {0x45, 0x3E, 0x02, 0xAA, 0x56, 0x8F, 0x31, 0x91, 0x70, 0x40, 0x33, 0x8E, 0x00, 0x00, 0xC5, 0x87}
 
 // 12th & 13th octets of service & characteristics
@@ -42,7 +42,7 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
 #define BLE_UUID_THIGH_Y_UUID             (0x399A)
 #define BLE_UUID_THIGH_Z_UUID             (0x399B)
 
-#define NUM_CALIB_CHARS                   (7)
+#define NUM_CALIB_SERVICE_CHARS                   (7)
 
 // To access char_handles member of ble_imu_service_t handler
 typedef enum
@@ -87,8 +87,8 @@ typedef struct ble_calib_service_s
     uint16_t conn_handle;
     uint16_t service_handle;
     uint8_t uuid_type;
-    ble_calib_evt_handler_t evt_handler[NUM_CALIB_CHARS];
-    ble_gatts_char_handles_t char_handles[NUM_CALIB_CHARS];
+    ble_calib_evt_handler_t evt_handler[NUM_CALIB_SERVICE_CHARS];
+    ble_gatts_char_handles_t char_handles[NUM_CALIB_SERVICE_CHARS];
 } ble_calib_service_t;
 
 // Service API

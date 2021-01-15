@@ -164,6 +164,8 @@
     <folder Name="BLE_services">
       <file file_name="Source/Lib/BLE_services/imu_service.h" />
       <file file_name="Source/Lib/BLE_services/calibration_service.h" />
+      <file file_name="calculation_service.h" />
+      <file file_name="Source/Lib/BLE_services/calculation_service.h" />
     </folder>
   </project>
   <configuration
