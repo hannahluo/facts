@@ -56,6 +56,13 @@ typedef struct ble_debug_service_s
     ble_gatts_char_handles_t timer_1_elapsed_char_handles;  // has handles to the char val, user desc, cccd, and sccd attributes
 } ble_debug_service_t;
 
+// Structure to test big packets
+typedef struct {
+    uint32_t data1;
+    uint32_t data2;
+    uint32_t data3;
+} ble_debug_data_t;
+
 // Service API
 // Initialization function for debug service
 uint32_t ble_debug_service_init(ble_debug_service_t* p_debug_service, ble_debug_evt_handler_t app_evt_handler);
@@ -64,6 +71,6 @@ uint32_t ble_debug_service_init(ble_debug_service_t* p_debug_service, ble_debug_
 void ble_debug_service_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 
 // Timer 1 characteristic update function
-void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, uint8_t * timer_action);
+void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, ble_debug_data_t * timer_data);
 
 #endif

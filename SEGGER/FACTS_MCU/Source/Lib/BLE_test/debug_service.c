@@ -60,7 +60,7 @@ static uint32_t timer_1_elapsed_char_add(ble_debug_service_t * p_debug_service)
     ble_gatts_attr_t attr_char_value; // GATT attribute (uuid, attribute metadata, val etc.)
     ble_uuid_t ble_uuid;              // UUID (can be 16-but or 128 bit)
     ble_gatts_attr_md_t attr_md;      // Attribute metadata for characteristic value (e.g. permissions)
-    uint8_t init_value;               // initial value of the characteristic
+    ble_debug_data_t init_value;      // initial value of the characteristic
 
     memset(&char_md, 0, sizeof(char_md));
     memset(&cccd_md, 0, sizeof(cccd_md));
@@ -73,7 +73,7 @@ static uint32_t timer_1_elapsed_char_add(ble_debug_service_t * p_debug_service)
 
     // Set Security Mode 1 Level 2 (enc, no auth) for cccd write permissions
     // Encryption required to write to CCCD attribute
-    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&cccd_md.write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
     // Set characteristic value attribute to have no write permissions
     BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attr_md.write_perm);
@@ -88,7 +88,7 @@ static uint32_t timer_1_elapsed_char_add(ble_debug_service_t * p_debug_service)
     // setting read/notify client access
     char_md.char_props.read = 1;
     char_md.char_props.notify = 1;
-    char_md.p_char_user_desc = Timer1CharName;                   // setting the description of characteristic
+    char_md.p_char_user_desc = Timer1CharName;                  // setting the description of characteristic
     char_md.char_user_desc_size = sizeof(Timer1CharName);
     char_md.char_user_desc_max_size = sizeof(Timer1CharName);
     char_md.p_char_pf = NULL;                                   // setting the characteristic presentation format (set to NULL for N/A)
@@ -107,12 +107,15 @@ static uint32_t timer_1_elapsed_char_add(ble_debug_service_t * p_debug_service)
     attr_md.vlen = 0;                                           // variable length of the value
 
     // Setting the characteristic value settings
+    init_value.data1 = 0x0;
+    init_value.data2 = 0x0;
+    init_value.data3 = 0x0;
     attr_char_value.p_uuid = &ble_uuid;                         // set pointer to attr uuid
     attr_char_value.p_attr_md = &attr_md;                       // set pointer to attr meta
     attr_char_value.init_len = sizeof(init_value);              // set initial length of attribute value
     attr_char_value.init_offs = 0;                              // set the initial offset to use when initializing the attribute
     attr_char_value.max_len = sizeof(init_value);               // set max length of attribute value
-    attr_char_value.p_value = &init_value;                      // set the initial value
+    attr_char_value.p_value = (uint8_t*)&init_value;            // set the initial value
 
     // Add the characteristic (declaration, value, and descriptor(s) to the attribute table)
     return sd_ble_gatts_characteristic_add(p_debug_service->service_handle, &char_md, &attr_char_value, &p_debug_service->timer_1_elapsed_char_handles);
@@ -162,7 +165,7 @@ uint32_t ble_debug_service_init(ble_debug_service_t* p_debug_service, ble_debug_
 void ble_debug_service_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
 {
     ble_debug_service_t * p_debug_service = (ble_debug_service_t *) p_context;
-
+    NRF_LOG_DEBUG("Received %d event", p_ble_evt->header.evt_id);
     switch(p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
             on_connect(p_debug_service, p_ble_evt);
@@ -180,7 +183,7 @@ void ble_debug_service_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
 }
 
 // Timer 1 characteristic update function
-void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, uint8_t * timer_action)
+void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, ble_debug_data_t * timer_data)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -189,9 +192,9 @@ void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, uint8_
     memset(&gatts_value,0, sizeof(gatts_value));
 
     if(p_debug_service->conn_handle != BLE_CONN_HANDLE_INVALID) {
-        gatts_value.len = sizeof(uint8_t);
+        gatts_value.len = sizeof(ble_debug_data_t);
         gatts_value.offset = 0;
-        gatts_value.p_value = timer_action;
+        gatts_value.p_value = (uint8_t*)timer_data;
 
         // Update characteristic value
         err_code = sd_ble_gatts_value_set(p_debug_service->conn_handle, p_debug_service->timer_1_elapsed_char_handles.value_handle, &gatts_value);
@@ -207,7 +210,7 @@ void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, uint8_
             hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
             hvx_params.offset = 0;
             hvx_params.p_len = &len;
-            hvx_params.p_data = (uint8_t*)timer_action;
+            hvx_params.p_data = (uint8_t*)timer_data;
 
             err_code = sd_ble_gatts_hvx(p_debug_service->conn_handle, &hvx_params);
             APP_ERROR_CHECK(err_code);
