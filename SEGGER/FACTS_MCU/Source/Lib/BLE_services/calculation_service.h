@@ -20,10 +20,10 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 /* 
  *  FACTS Calibration Service: 87C539B0-8E33-4070-9131-8F56AA023E45
  *      Characteristic 1: Flexion Angle     87C539B1-8E33-4070-9131-8F56AA023E45
- *      Characteristic 2: Min Threshold     87C539B2-8E33-4070-9131-8F56AA023E45
- *      Characteristic 3: Max Threshold     87C539B3-8E33-4070-9131-8F56AA023E45
- *      Characteristic 4: Change Frequency  87C539B4-8E33-4070-9131-8F56AA023E45
- *      Characteristic 5: Error             87C539B5-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 2: Min Limit         87C539B2-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 3: Max Limit         87C539B3-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 4: Change Freq       87C539B4-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 5: Calc Error        87C539B5-8E33-4070-9131-8F56AA023E45
  */
 
 // Base UUID: 87C53994-8E33-4070-9131-8F56AA023E45
@@ -32,13 +32,23 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 
 // 12th & 13th octets of service & characteristics
 #define BLE_UUID_CALC_SERVICE_UUID      (0x39B1)
-#define BLE_UUID_FLEX_ANG_UUID          (0x39B2)
-#define BLE_UUID_MIN_LIM_UUID           (0x39B3)
-#define BLE_UUID_MAX_LIM_UUID           (0x39B4)
+#define BLE_UUID_FLEXION_ANGLE_UUID     (0x39B2)
+#define BLE_UUID_MIN_LIMIT_UUID         (0x39B3)
+#define BLE_UUID_MAX_LIMIT_UUID         (0x39B4)
 #define BLE_UUID_CHANGE_FREQ_UUID       (0x39B5)
 #define BLE_UUID_CALC_ERR_UUID          (0x39B6)
 
 #define NUM_CALC_SERVICE_CHARS          (5)
+
+// For access of char_handles & evt_handler members of ble_calc_service_t
+typedef enum
+{
+    BLE_FLEXION_ANGLE_HANDLE_IDX,
+    BLE_MIN_LIMIT_HANDLE_IDX,
+    BLE_MAX_LIMIT_HANDLE_IDX,
+    BLE_CHANGE_FREQ_HANDLE_IDX,
+    BLE_CALC_ERR_IDX,
+} ble_calib_char_handle_idx_t;
 
 // Calculation service structures
 typedef struct ble_calc_service_s ble_calc_service_t;

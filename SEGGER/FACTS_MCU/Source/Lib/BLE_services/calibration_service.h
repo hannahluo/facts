@@ -20,12 +20,8 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 /* 
  *  FACTS Calibration Service: 87C53994-8E33-4070-9131-8F56AA023E45
  *      Characteristic 1: Initiate Calibration  87C53995-8E33-4070-9131-8F56AA023E45
- *      Characteristic 2: Calf Joint Axis X     87C53996-8E33-4070-9131-8F56AA023E45
- *      Characteristic 3: Calf Joint Axis Y     87C53997-8E33-4070-9131-8F56AA023E45
- *      Characteristic 4: Calf Joint Axis Z     87C53998-8E33-4070-9131-8F56AA023E45
- *      Characteristic 5: Thigh Joint Axis X    87C53999-8E33-4070-9131-8F56AA023E45
- *      Characteristic 6: Thigh Joint Axis Y    87C5399A-8E33-4070-9131-8F56AA023E45
- *      Characteristic 7: Thigh Joint Axis Z    87C5399B-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 2: Calf Joint Axis       87C53996-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 3: Thigh Joint Axis      87C53997-8E33-4070-9131-8F56AA023E45
  */
 
 // Base UUID: 87C53994-8E33-4070-9131-8F56AA023E45
@@ -35,25 +31,17 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 // 12th & 13th octets of service & characteristics
 #define BLE_UUID_CALIB_SERVICE_UUID       (0x3994)
 #define BLE_UUID_INIT_CALIB_UUID          (0x3995)
-#define BLE_UUID_CALF_X_UUID              (0x3996)
-#define BLE_UUID_CALF_Y_UUID              (0x3997)
-#define BLE_UUID_CALF_Z_UUID              (0x3998)
-#define BLE_UUID_THIGH_X_UUID             (0x3999)
-#define BLE_UUID_THIGH_Y_UUID             (0x399A)
-#define BLE_UUID_THIGH_Z_UUID             (0x399B)
+#define BLE_UUID_CALF_JOINT_AXIS_UUID     (0x3996)
+#define BLE_UUID_THIGH_JOINT_AXIS_UUID    (0x3997)
 
-#define NUM_CALIB_SERVICE_CHARS                   (7)
+#define NUM_CALIB_SERVICE_CHARS                   (3)
 
-// To access char_handles member of ble_imu_service_t handler
+// For access of char_handles & evt_handler members of ble_calib_service_t
 typedef enum
 {
-    BLE_INIT_CALIB_HANDLES_IDX,
-    BLE_CALF_X_HANDLES_IDX,
-    BLE_CALF_Y_HANDLES_IDX,
-    BLE_CALF_Z_HANDLES_IDX,
-    BLE_THIGH_X_HANDLES_IDX,
-    BLE_THIGH_Y_HANDLES_IDX,
-    BLE_THIGH_Z_HANDLES_IDX,
+    BLE_INIT_CALIB_HANDLE_IDX,
+    BLE_CALF_JOINT_AXIS_HANDLE_IDX,
+    BLE_THIGH_JOINT_AXIS_HANDLE_IDX,
 } ble_calib_char_handle_idx_t;
 
 // Calibration service structures
@@ -64,12 +52,8 @@ typedef enum
     BLE_INIT_CALIB_WRITE,
     BLE_INIT_CALIB_EVT_NOTIFY_ENABLED,
     BLE_INIT_CALIB_EVT_NOTIFY_DISABLED,
-    BLE_CALF_X_WRITE,
-    BLE_CALF_Y_WRITE,
-    BLE_CALF_Z_WRITE,
-    BLE_THIGH_X_WRITE,
-    BLE_THIGH_Y_WRITE,
-    BLE_THIGH_Z_WRITE,
+    BLE_CALF_JOINT_AXIS_WRITE,
+    BLE_THIGH_JOINT_AXIS_WRITE,
     NUM_BLE_CALIB_EVT,
 } ble_calib_evt_type_t;
 
