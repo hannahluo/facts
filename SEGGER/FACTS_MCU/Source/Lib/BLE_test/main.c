@@ -264,7 +264,7 @@ static void gatt_init(void)
     APP_ERROR_CHECK(err_code);
 
     // Set the data length for the connection
-    err_code = nrf_ble_gatt_data_length_set(&m_gatt, BLE_CONN_HANDLE_INVALID, 48);
+    err_code = nrf_ble_gatt_data_length_set(&m_gatt, m_conn_handle, 48);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -341,14 +341,14 @@ static void conn_params_init(void)
 
     memset(&cp_init, 0, sizeof(cp_init));
 
-    cp_init.p_conn_params                  = NULL;
-    cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;
-    cp_init.start_on_notify_cccd_handle    = BLE_GATT_HANDLE_INVALID;
-    cp_init.disconnect_on_fail             = false;
-    cp_init.evt_handler                    = on_conn_params_evt;
-    cp_init.error_handler                  = conn_params_error_handler;
+    cp_init.p_conn_params                  = NULL;                            // connection parameters pointer (NULL means use Host settings)
+    cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;  // delay between connect and first parameter update
+    cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;   // subsequent time between parameter updates
+    cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;    // # attempts before negotiation give up
+    cp_init.start_on_notify_cccd_handle    = BLE_GATT_HANDLE_INVALID;         // disable parameter negotation on notification beginning
+    cp_init.disconnect_on_fail             = false;                           // failed connection param update does not result in disconn
+    cp_init.evt_handler                    = on_conn_params_evt;              // assign evt handler for connection events
+    cp_init.error_handler                  = conn_params_error_handler;       // assign err handler for connection
 
     err_code = ble_conn_params_init(&cp_init);
     APP_ERROR_CHECK(err_code);

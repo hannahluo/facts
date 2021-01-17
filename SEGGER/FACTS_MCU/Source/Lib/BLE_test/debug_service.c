@@ -44,6 +44,7 @@ static void on_write(ble_debug_service_t * p_debug_service, ble_evt_t const * p_
         } else {
             NRF_LOG_INFO("Notifications DISABLED for timer 1 elapsed");
             evt.evt_type = BLE_TIMER_1_ELAPSED_EVT_NOTIFY_DISABLED;
+            timer_notifications_enabled = false;
         }
         // Pass to service event handler (in this case is NULL)
         if(p_debug_service->evt_handler != NULL) {
@@ -71,8 +72,7 @@ static uint32_t timer_1_elapsed_char_add(ble_debug_service_t * p_debug_service)
     // e.g. anybody can read the CCCD attribute
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
 
-    // Set Security Mode 1 Level 2 (enc, no auth) for cccd write permissions
-    // Encryption required to write to CCCD attribute
+    // Set open write permissions on the CCCD
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
 
     // Set characteristic value attribute to have no write permissions
