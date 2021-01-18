@@ -1,14 +1,15 @@
+#ifndef IMU_SERVICE_H
+#define IMU_SERVICE_H
+
 /*
  * Header file for service which handles passing of raw IMU data to phone app
  */
-#ifndef IMU_SERVICE_H
-#define IMU_SERVICE_H
 
 #include <stdint.h>
 #include "ble.h"
 #include "ble_srv_common.h"
 
-//#define RAW_ACCEL_NEEDED
+#define RAW_ACCEL_NEEDED
 
 #define BLE_IMU_SERVICE_BLE_OBSERVER_PRIO   3
 
@@ -33,23 +34,18 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
 #define BLE_UUID_IMU_SERVICE_UUID                 (0x39A0)
 #define BLE_UUID_RAW_GYRO_UUID                    (0x39A1)
 #ifdef RAW_ACCEL_NEEDED
- #define BLE_UUID_RAW_ACCEL_UUID                   (0x39A2)
+ #define BLE_UUID_RAW_ACCEL_UUID                  (0x39A2)
 #endif
 
-#ifdef RAW_ACCEL_NEEDED
-  #define NUM_IMU_CHARS                           (2)
-#else
-  #define NUM_IMU_CHARS                           (1)
-#endif
-
-// For access of char_handles & evt_handler members of ble_imu_service_t
+// For access of charHandles, evtHandle, & notifyEnabledr members of ble_imu_service_t
 typedef enum
 {
-    BLE_RAW_GYRO_HANDLE_IDX,
+    BLE_RAW_GYRO_IDX,
 #ifdef RAW_ACCEL_NEEDED
-    BLE_RAW_ACCEL_HANDLE_IDX,
+    BLE_RAW_ACCEL_IDX,
 #endif
-} ble_imu_char_handle_idx_t;
+    BLE_IMU_NUM_CHAR_IDX,
+} ble_imu_char_idx_t;
 
 // IMU Service structures
 typedef struct ble_imu_service_s ble_imu_service_t;
@@ -63,53 +59,57 @@ typedef enum
     BLE_RAW_ACCEL_EVT_NOTIFY_DISABLED,
 #endif
     NUM_BLE_IMU_EVT_TYPES,
-} ble_imu_evt_type_t;
-
-typedef struct
-{
-    ble_imu_evt_type_t evt_type;
 } ble_imu_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* p_imu_service, ble_imu_evt_t* p_evt);
+typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* pImuService, ble_imu_evt_t evt);
+
+// 
+typedef struct ble_imu_char_s
+{
+    ble_imu_evt_handler_t evtHandler;
+    ble_gatts_char_handles_t charHandles;
+    bool notifyEnabled;
+    char* name;
+} ble_imu_char_t;
 
 // Main IMU service handle
 typedef struct ble_imu_service_s
 {
-    uint16_t conn_handle;
-    uint16_t service_handle;
-    uint8_t uuid_type;
-    ble_imu_evt_handler_t evt_handler[NUM_IMU_CHARS];
-    ble_gatts_char_handles_t char_handles[NUM_IMU_CHARS];
+    uint16_t connHandle;
+    uint16_t serviceHandle;
+    uint8_t uuidType;
+    ble_imu_char_t rawGyro;
+    ble_imu_char_t rawAccel;
 } ble_imu_service_t;
 
 // Gyro data
 typedef struct {
-    double gyro_x,
-    double gyro_y,
-    double gyro_z,
+    double gyroX;
+    double gyroY;
+    double gyroZ;
 } raw_gyro_t;
 
 // Accel data 
 typedef struct {
-    double accel_x;
-    double accel_y;
-    double accel_z;
+    double accelX;
+    double accelY;
+    double accelZ;
 } raw_accel_t;
 
 // Service API
 // Initialization function
-uint32_t ble_imu_service_init(ble_imu_service_t* p_imu_service, ble_imu_evt_handler_t* app_evt_handler);
+uint32_t ble_imu_service_init(ble_imu_service_t* pImuService, ble_imu_evt_handler_t gyroEvtHandler, ble_imu_evt_handler_t accelEvtHandler);
 
 // BLE event handler
-void ble_imu_service_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
+void ble_imu_service_on_ble_evt(ble_evt_t const * pBleEvt, void * pContext);
 
 // Gyro X update function
-void raw_gyro_characteristic_update(ble_imu_service_t* p_imu_service, raw_gyro_t* gyro_val);
+void raw_gyro_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* gyroVal);
 
 #ifdef RAW_ACCEL_NEEDED
   // Accel X update function
-  void raw_accel_characteristic_update(ble_imu_service_t* p_imu_service, raw_accel_t* accel_val);
+  void raw_accel_characteristic_update(ble_imu_service_t* pImuService, raw_accel_t* accelVal);
 #endif
 
 #endif
