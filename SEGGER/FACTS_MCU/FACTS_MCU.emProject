@@ -96,7 +96,7 @@
       <file file_name="../nRF5_sdk/components/libraries/bsp/bsp_btn_ble.c" />
     </folder>
     <folder Name="BLE_Test">
-      <configuration Name="Release" build_exclude_from_build="No" />
+      <configuration Name="Release" build_exclude_from_build="Yes" />
       <file file_name="Source/Lib/BLE_test/debug_service.c" />
       <file file_name="Source/Lib/BLE_test/debug_service.h" />
       <file file_name="Source/Lib/BLE_test/main.c" />
@@ -169,6 +169,9 @@
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
       <file file_name="Source/Lib/BLE_services/imu_service.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Lib/BLE_services/ble_serv_main.c">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
     </folder>
