@@ -15,7 +15,7 @@
 static ble_calib_service_t _name                            \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
                      BLE_CALIB_SERVICE_BLE_OBSERVER_PRIO,   \
-                     ble_calib_service_on_ble_evt, &name) 
+                     ble_calib_service_on_ble_evt, &_name) 
 
 /* 
  *  FACTS Calibration Service: 87C53994-8E33-4070-9131-8F56AA023E45
@@ -36,52 +36,61 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 
 #define NUM_CALIB_SERVICE_CHARS                   (3)
 
-// For access of char_handles & evt_handler members of ble_calib_service_t
-typedef enum
-{
-    BLE_INIT_CALIB_HANDLE_IDX,
-    BLE_CALF_JOINT_AXIS_HANDLE_IDX,
-    BLE_THIGH_JOINT_AXIS_HANDLE_IDX,
-} ble_calib_char_handle_idx_t;
-
 // Calibration service structures
 typedef struct ble_calib_service_s ble_calib_service_t;
 
 typedef enum
 {
-    BLE_INIT_CALIB_WRITE,
+    BLE_INIT_CALIB_ON,
+    BLE_INIT_CALIB_OFF,
     BLE_INIT_CALIB_EVT_NOTIFY_ENABLED,
     BLE_INIT_CALIB_EVT_NOTIFY_DISABLED,
     BLE_CALF_JOINT_AXIS_WRITE,
     BLE_THIGH_JOINT_AXIS_WRITE,
     NUM_BLE_CALIB_EVT,
-} ble_calib_evt_type_t;
-
-typedef struct 
-{
-    ble_calib_evt_type_t evt_type;
 } ble_calib_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t* p_evt);
+typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, uint8_t* data, uint8_t size);
+
+typedef struct ble_calib_char_s
+{
+    ble_imu_evt_handler_t evtHandler;
+    ble_gatts_char_handles_t charHandles;
+    bool notifyEnabled;
+    char* name;
+} ble_calib_char_t;
 
 // Main handler for calibration service
 typedef struct ble_calib_service_s
 {
-    uint16_t conn_handle;
-    uint16_t service_handle;
-    uint8_t uuid_type;
-    ble_calib_evt_handler_t evt_handler[NUM_CALIB_SERVICE_CHARS];
-    ble_gatts_char_handles_t char_handles[NUM_CALIB_SERVICE_CHARS];
+    uint16_t connHandle;
+    uint16_t serviceHandle;
+    uint8_t uuidType;
+    ble_calib_char_t initCalib;
+    ble_calib_char_t calfJointAxis;
+    ble_calib_char_t thighJointAxis;
 } ble_calib_service_t;
+
+// Joint axis data
+typedef struct {
+    double x;
+    double y;
+    double z;
+} joint_axis_t;
+
+// Init calib data
+typedef bool init_calib_t;
 
 // Service API
 // Initialization function for calibration service
-uint32_t ble_calib_service_init(ble_calib_service_t* p_calib_service, ble_calib_evt_handler_t* app_evt_handler);
+uint32_t ble_calib_service_init(ble_calib_service_t* pCalibService, ble_calib_evt_handler_t initCalHandler, 
+                                ble_calib_evt_handler_t calfJointAxisHandler, ble_calib_evt_handler_t thighJointAxisHandler);
 
 // BLE event handler
-void ble_calib_service_on_ble_evt(ble_evt_t const * p_ble_evt, void* p_context);
+void ble_calib_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext);
 
 // Init Calib update function
-void init_calib_characteristic_update(ble_calib_service_t* p_calib_service, uint8_t* init_calib_val);
+void init_calib_characteristic_update(ble_calib_service_t* pCalibService, init_calib_t* initCalibValue);
 
+#endif
