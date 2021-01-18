@@ -192,7 +192,7 @@ void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, ble_de
     memset(&gatts_value,0, sizeof(gatts_value));
 
     if(p_debug_service->conn_handle != BLE_CONN_HANDLE_INVALID) {
-        gatts_value.len = sizeof(ble_debug_data_t);
+        gatts_value.len = sizeof(*timer_data);
         gatts_value.offset = 0;
         gatts_value.p_value = (uint8_t*)timer_data;
 
@@ -202,7 +202,7 @@ void timer_1_characteristic_update(ble_debug_service_t * p_debug_service, ble_de
 
         if(timer_notifications_enabled) {
             NRF_LOG_INFO("Sending notification for timer 1 press/release");
-            uint16_t len = sizeof(uint8_t);
+            uint16_t len = sizeof(*timer_data);
             ble_gatts_hvx_params_t hvx_params;    // structure for notifications/indications
             memset(&hvx_params, 0, sizeof(hvx_params));
             
