@@ -130,8 +130,6 @@ BLE_ADVERTISING_DEF(m_advertising);                                             
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
-// 
-
 /* YOUR_JOB: Declare all services structure your application is using
  *  BLE_XYZ_DEF(m_xyz);
  */
@@ -185,12 +183,13 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 
 // Jack Zhu
 // Timer timeout event handler
-void* timer_evt_handler(void* p_context)
+void timer_evt_handler(void* p_context)
 {
     // To-do
-    static uint8_t cnt = 0;
-    cnt++;
-    timer_1_characteristic_update(&m_debug_service, &cnt);
+    static uint32_t cnt = 0;
+    ++cnt;
+    ble_debug_data_t data = {.data1=cnt, .data2=cnt+1, .data3=cnt+3};
+    timer_1_characteristic_update(&m_debug_service, &data);
 }
 
 /**@brief Function for the Timer initialization.
@@ -258,6 +257,14 @@ static void gap_params_init(void)
 static void gatt_init(void)
 {
     ret_code_t err_code = nrf_ble_gatt_init(&m_gatt, NULL);
+    APP_ERROR_CHECK(err_code);
+
+    // Set the ATT MTU for the connection
+    err_code = nrf_ble_gatt_att_mtu_periph_set(&m_gatt, 48);
+    APP_ERROR_CHECK(err_code);
+
+    // Set the data length for the connection
+    err_code = nrf_ble_gatt_data_length_set(&m_gatt, m_conn_handle, 48);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -334,14 +341,14 @@ static void conn_params_init(void)
 
     memset(&cp_init, 0, sizeof(cp_init));
 
-    cp_init.p_conn_params                  = NULL;
-    cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;
-    cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;
-    cp_init.start_on_notify_cccd_handle    = BLE_GATT_HANDLE_INVALID;
-    cp_init.disconnect_on_fail             = false;
-    cp_init.evt_handler                    = on_conn_params_evt;
-    cp_init.error_handler                  = conn_params_error_handler;
+    cp_init.p_conn_params                  = NULL;                            // connection parameters pointer (NULL means use Host settings)
+    cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;  // delay between connect and first parameter update
+    cp_init.next_conn_params_update_delay  = NEXT_CONN_PARAMS_UPDATE_DELAY;   // subsequent time between parameter updates
+    cp_init.max_conn_params_update_count   = MAX_CONN_PARAMS_UPDATE_COUNT;    // # attempts before negotiation give up
+    cp_init.start_on_notify_cccd_handle    = BLE_GATT_HANDLE_INVALID;         // disable parameter negotation on notification beginning
+    cp_init.disconnect_on_fail             = false;                           // failed connection param update does not result in disconn
+    cp_init.evt_handler                    = on_conn_params_evt;              // assign evt handler for connection events
+    cp_init.error_handler                  = conn_params_error_handler;       // assign err handler for connection
 
     err_code = ble_conn_params_init(&cp_init);
     APP_ERROR_CHECK(err_code);
@@ -436,6 +443,17 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
+            
+            // Check conn length
+            uint8_t data_length = 0;
+            err_code = nrf_ble_gatt_data_length_get(&m_gatt, m_conn_handle, &data_length);
+            APP_ERROR_CHECK(err_code);
+            NRF_LOG_INFO("Conn Data length is %d\n", data_length);
+            
+            // Check att mtu
+            uint16_t att_mtu_length = 0;
+            att_mtu_length = nrf_ble_gatt_eff_mtu_get(&m_gatt, m_conn_handle);
+            NRF_LOG_INFO("ATT MTU length is %d\n", att_mtu_length);
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -689,7 +707,7 @@ static void advertising_start(bool erase_bonds)
  */
 int main(void)
 {
-    bool erase_bonds;
+    bool erase_bonds=false;
 
     // Initialize.
     log_init();
