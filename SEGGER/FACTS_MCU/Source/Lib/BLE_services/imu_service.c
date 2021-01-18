@@ -60,7 +60,7 @@ static void on_write(ble_imu_service_t* pImuService, ble_imu_char_t* pChar, ble_
 void ble_imu_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext)
 {
     ble_imu_service_t* pImuService = (ble_imu_service_t *) pContext;
-    uint16_t uuid = 0;
+    uint16_t handle = 0;
     // check event header for event type
     switch(pBleEvt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
@@ -70,19 +70,19 @@ void ble_imu_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext)
             on_disconnect(pImuService, pBleEvt);
             break;
         case BLE_GATTS_EVT_WRITE:
-            uuid = pBleEvt->evt.gatts_evt.params.write.uuid.uuid;
-            // Determine which characteristic
-            if(uuid == BLE_UUID_RAW_GYRO_UUID) {
+            handle = pBleEvt->evt.gatts_evt.params.write.handle;
+            // Determine which characteristic was written to
+            if(handle == pImuService->rawGyro.charHandles.cccd_handle) {
                 on_write(pImuService, &pImuService->rawGyro, pBleEvt);
-            } else if (uuid == BLE_UUID_RAW_ACCEL_UUID) {
+            } else if (handle == pImuService->rawAccel.charHandles.cccd_handle) {
                 on_write(pImuService, &pImuService->rawAccel, pBleEvt);
             } else {
-                NRF_LOG_DEBUG("Write to unknown characteristic 0x%x", uuid);
+                NRF_LOG_DEBUG("Write to unknown handle 0x%x", handle);
                 return;
             }
             break;
         default:
-            NRF_LOG_DEBUG("Received 0x%x event", pBleEvt->header.evt_id);
+            //NRF_LOG_DEBUG("Received 0x%x event", pBleEvt->header.evt_id);
             break;            
     }
 }
@@ -192,7 +192,7 @@ static uint32_t raw_accel_char_add(ble_imu_service_t* pImuService)
     attrCharValue.p_value = (uint8_t*)&initAccel;
 
     // Add characteristic to SoftDevice
-    return sd_ble_gatts_characteristic_add(pImuService->serviceHandle, &charMd, &attrCharValue, &pImuService->rawGyro.charHandles);
+    return sd_ble_gatts_characteristic_add(pImuService->serviceHandle, &charMd, &attrCharValue, &pImuService->rawAccel.charHandles);
 }
 
 // Function for initializing service

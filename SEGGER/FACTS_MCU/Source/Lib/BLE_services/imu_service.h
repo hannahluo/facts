@@ -15,10 +15,10 @@
 
 // Register IMU event handler to be invoked on BLE events
 #define BLE_IMU_SERVICE_DEF(_name)                        \
-static ble_imu_service_t _name                            \
+static ble_imu_service_t _name;                            \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
                      BLE_IMU_SERVICE_BLE_OBSERVER_PRIO,   \
-                     ble_imu_service_on_ble_evt, &name)
+                     ble_imu_service_on_ble_evt, &_name)
 
 /* 
  *  FACTS IMU Service: 87C539A0-8E33-4070-9131-8F56AA023E45
