@@ -37,16 +37,6 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
  #define BLE_UUID_RAW_ACCEL_UUID                  (0x39A2)
 #endif
 
-// For access of charHandles, evtHandle, & notifyEnabledr members of ble_imu_service_t
-typedef enum
-{
-    BLE_RAW_GYRO_IDX,
-#ifdef RAW_ACCEL_NEEDED
-    BLE_RAW_ACCEL_IDX,
-#endif
-    BLE_IMU_NUM_CHAR_IDX,
-} ble_imu_char_idx_t;
-
 // IMU Service structures
 typedef struct ble_imu_service_s ble_imu_service_t;
 
@@ -64,7 +54,6 @@ typedef enum
 // Function pointer for per-characteristic event handling
 typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* pImuService, ble_imu_evt_t evt);
 
-// 
 typedef struct ble_imu_char_s
 {
     ble_imu_evt_handler_t evtHandler;

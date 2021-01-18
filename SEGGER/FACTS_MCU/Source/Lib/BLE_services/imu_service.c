@@ -34,18 +34,25 @@ static void on_disconnect(ble_imu_service_t* pImuService, ble_evt_t const * pBle
 static void on_write(ble_imu_service_t* pImuService, ble_imu_char_t* pChar, ble_evt_t const * pBleEvt)
 {
     ble_gatts_evt_write_t const * pEvtWrite = &pBleEvt->evt.gatts_evt.params.write;
-
     // Handle write to CCCD
     if((pEvtWrite->handle == pChar->charHandles.cccd_handle) && (pEvtWrite->len == CCCD_WRITE_LEN)) {
         ble_imu_evt_t evt;
         // Read CCCD value
         if(ble_srv_is_notification_enabled(pEvtWrite->data)) {
             NRF_LOG_DEBUG("Notifications ENABLED for %s", pChar->name);
-            evt = BLE_RAW_GYRO_EVT_NOTIFY_ENABLED;
+            if(pChar == &pImuService->rawGyro) {
+                evt = BLE_RAW_GYRO_EVT_NOTIFY_ENABLED;
+            } else {
+                evt = BLE_RAW_ACCEL_EVT_NOTIFY_ENABLED;
+            }
             pChar->notifyEnabled = true;
         } else {
             NRF_LOG_DEBUG("Notifications DISABLED for %s", pChar->name);
-            evt = BLE_RAW_ACCEL_EVT_NOTIFY_ENABLED;
+            if(pChar == &pImuService->rawGyro) {
+                evt = BLE_RAW_GYRO_EVT_NOTIFY_DISABLED;
+            } else {
+                evt = BLE_RAW_ACCEL_EVT_NOTIFY_DISABLED;
+            }
             pChar->notifyEnabled = false;
         }
         // Pass to characteristic event handler if present
