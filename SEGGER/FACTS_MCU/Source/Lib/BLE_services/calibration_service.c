@@ -35,7 +35,7 @@ static void on_init_calib_write(ble_calib_service_t* pCalibService,  ble_evt_t c
 {
     ble_gatts_evt_write_t const * pEvtWrite = &pBleEvt->evt.gatts_evt.params.write;
     ble_calib_char_t* pChar = &pCalibService->initCalib;
-    ble_imu_evt_t evt = NUM_BLE_CALIB_EVT;
+    ble_calib_evt_t evt = NUM_BLE_CALIB_EVT;
 
     if((pEvtWrite->handle == pChar->charHandles.cccd_handle) && (pEvtWrite->len == CCCD_WRITE_LEN)) {
         // Read CCCD value
@@ -48,17 +48,14 @@ static void on_init_calib_write(ble_calib_service_t* pCalibService,  ble_evt_t c
             evt = BLE_INIT_CALIB_EVT_NOTIFY_DISABLED;
             pChar->notifyEnabled = false;
         }
-
-        if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalibService, evt, pEvtWrite->data, pEvtWrite->len);
-        }
     } else if ((pEvtWrite->handle == pChar->charHandles.value_handle) && (pEvtWrite->len == sizeof(init_calib_t))) {
-        if(pEvtWrite->data) {
-            NRF_LOG_DEBUG("Calibration mode on");
+        NRF_LOG_DEBUG("on_init_calib_write: Data=%d", *(uint8_t*)(pEvtWrite->data));
+        if(*(bool*)(pEvtWrite->data)) {
+            NRF_LOG_DEBUG("on_init_calib_write: Calibration mode on");
             evt = BLE_INIT_CALIB_ON;
         } else {
-            NRF_LOG_DEBUG("Calibration mode off");
-            evt = BLE_INIT_CALIB_ON;
+            NRF_LOG_DEBUG("on_init_calib_write: Calibration mode off");
+            evt = BLE_INIT_CALIB_OFF;
         }
 
         if(pChar->evtHandler != NULL) {
@@ -70,7 +67,7 @@ static void on_init_calib_write(ble_calib_service_t* pCalibService,  ble_evt_t c
 static void on_joint_axis_write(ble_calib_service_t* pCalibService, ble_calib_char_t* pChar, ble_evt_t const * pBleEvt)
 {
     ble_gatts_evt_write_t const * pEvtWrite = &pBleEvt->evt.gatts_evt.params.write;
-    ble_imu_evt_t evt = NUM_BLE_CALIB_EVT;
+    ble_calib_evt_t evt = NUM_BLE_CALIB_EVT;
 
     if((pEvtWrite->handle == pChar->charHandles.value_handle) && (pEvtWrite->len == sizeof(joint_axis_t))) {
         if(pChar == &pCalibService->calfJointAxis) {
@@ -85,10 +82,25 @@ static void on_joint_axis_write(ble_calib_service_t* pCalibService, ble_calib_ch
     }
 }
 
+static void on_write(ble_calib_service_t* pCalibService, ble_evt_t const * pBleEvt)
+{
+    uint16_t handle = pBleEvt->evt.gatts_evt.params.write.handle;
+
+    if(handle == pCalibService->initCalib.charHandles.cccd_handle || handle == pCalibService->initCalib.charHandles.value_handle) {
+        on_init_calib_write(pCalibService, pBleEvt);
+    } else if (handle == pCalibService->calfJointAxis.charHandles.value_handle) {
+        on_joint_axis_write(pCalibService, &pCalibService->calfJointAxis, pBleEvt);
+    } else if (handle == pCalibService->thighJointAxis.charHandles.value_handle) {
+        on_joint_axis_write(pCalibService, &pCalibService->thighJointAxis, pBleEvt);
+    } else {
+        NRF_LOG_DEBUG("Write to unknown handle 0x%x", handle);
+    }
+}
+
 // BLE event handler
 void ble_calib_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext)
 {
-    ble_imu_service_t* pCalibService = (ble_calib_service_t *) pContext;
+    ble_calib_service_t* pCalibService = (ble_calib_service_t *)pContext;
     uint16_t handle = 0;
     // check event header for event type
     switch(pBleEvt->header.evt_id) {
@@ -99,18 +111,7 @@ void ble_calib_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext)
             on_disconnect(pCalibService, pBleEvt);
             break;
         case BLE_GATTS_EVT_WRITE:
-            handle = pBleEvt->evt.gatts_evt.params.write.handle;
-            // Determine which characteristic was written to
-            if(handle == pCalibService->initCalib.charHandles.cccd_handle) {
-                on_init_calib_write(pCalibService, &pCalibService->initCalib, pBleEvt);
-            } else if (handle == pCalibService->calfJointAxis.charHandles.value_handle) {
-                on_joint_axis_write(pCalibService, &pCalibService->calfJointAxis, pBleEvt);
-            } else if (handle == pCalibService->thighJointAxis.charHandles.value_handle) {
-                on_joint_axis_write(pCalibService, &pCalibService->thighJointAxis, pBleEvt);
-            } else {
-                NRF_LOG_DEBUG("Write to unknown handle 0x%x", handle);
-                return;
-            }
+            on_write(pCalibService, pBleEvt);
             break;
         default:
             //NRF_LOG_DEBUG("Received 0x%x event", pBleEvt->header.evt_id);
@@ -185,11 +186,6 @@ static uint32_t calf_joint_axis_char_add(ble_calib_service_t* pCalibService)
     memset(&attrMd, 0, sizeof(attrMd));
     memset(&attrCharValue, 0, sizeof(attrCharValue));
 
-    // Settings for CCCD
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&cccdMd.read_perm);     // App can read CCCD
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&cccdMd.write_perm);    // App can write CCCD
-    cccdMd.vloc = BLE_GATTS_VLOC_STACK;                         // set CCCD attribute to live in stack
-
     // Set meta for characteristic value
     charMd.char_props.read = 1;
     charMd.char_props.write = 1;
@@ -198,7 +194,7 @@ static uint32_t calf_joint_axis_char_add(ble_calib_service_t* pCalibService)
     charMd.char_user_desc_max_size = sizeof(g_CalfJointAxisCharName);
     charMd.p_char_pf = NULL;
     charMd.p_user_desc_md = NULL;
-    charMd.p_cccd_md = &cccdMd; 
+    charMd.p_cccd_md = NULL; 
     charMd.p_sccd_md = NULL;
 
     // Defining uuid
@@ -238,11 +234,6 @@ static uint32_t thigh_joint_axis_char_add(ble_calib_service_t* pCalibService)
     memset(&attrMd, 0, sizeof(attrMd));
     memset(&attrCharValue, 0, sizeof(attrCharValue));
 
-    // Settings for CCCD
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&cccdMd.read_perm);     // App can read CCCD
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&cccdMd.write_perm);    // App can write CCCD
-    cccdMd.vloc = BLE_GATTS_VLOC_STACK;                         // set CCCD attribute to live in stack
-
     // Set meta for characteristic value
     charMd.char_props.read = 1;
     charMd.char_props.write = 1;
@@ -251,7 +242,7 @@ static uint32_t thigh_joint_axis_char_add(ble_calib_service_t* pCalibService)
     charMd.char_user_desc_max_size = sizeof(g_ThighJointAxisCharName);
     charMd.p_char_pf = NULL;
     charMd.p_user_desc_md = NULL;
-    charMd.p_cccd_md = &cccdMd; 
+    charMd.p_cccd_md = NULL;
     charMd.p_sccd_md = NULL;
 
     // Defining uuid
@@ -275,7 +266,7 @@ static uint32_t thigh_joint_axis_char_add(ble_calib_service_t* pCalibService)
     attrCharValue.p_value = (uint8_t*)&thigh;
     
     // Add characteristic to SoftDevice
-    return sd_ble_gatts_characteristic_add(pCalibService->serviceHandle, &charMd, &attrCharValue, &pCalibService->calfJointAxis.charHandles);
+    return sd_ble_gatts_characteristic_add(pCalibService->serviceHandle, &charMd, &attrCharValue, &pCalibService->thighJointAxis.charHandles);
 }
 
 uint32_t ble_calib_service_init(ble_calib_service_t* pCalibService, ble_calib_evt_handler_t initCalHandler, 
@@ -292,7 +283,7 @@ uint32_t ble_calib_service_init(ble_calib_service_t* pCalibService, ble_calib_ev
     pCalibService->calfJointAxis.name = g_CalfJointAxisCharName;
     pCalibService->thighJointAxis.name = g_ThighJointAxisCharName;
 
-    ble_uuid128_t baseUuid = {BLE_UUID_IMU_SERVICE_BASE_UUID};
+    ble_uuid128_t baseUuid = {BLE_UUID_CALIB_SERVICE_BASE_UUID};
     errCode = sd_ble_uuid_vs_add(&baseUuid, &pCalibService->uuidType);
     if(errCode != NRF_SUCCESS) {
         NRF_LOG_ERROR("Failed to add vendor-specific UUID for Calibration service with err=0x%x", errCode);
@@ -348,11 +339,11 @@ void init_calib_characteristic_update(ble_calib_service_t* pCalibService, init_c
         errCode = sd_ble_gatts_value_set(pCalibService->connHandle, pCalibService->initCalib.charHandles.value_handle, &gattsVal);
         APP_ERROR_CHECK(errCode);
 
-        if(pImuService->initCalib.notifyEnabled) {
+        if(pCalibService->initCalib.notifyEnabled) {
             NRF_LOG_DEBUG("Updating init cal with %d", (uint8_t)*initCalibValue);
             uint16_t len = sizeof(*initCalibValue);
             ble_gatts_hvx_params_t hvxParams;
-            memset(&hvxParamas, 0, sizeof(hvxParams));
+            memset(&hvxParams, 0, sizeof(hvxParams));
 
             hvxParams.handle = pCalibService->initCalib.charHandles.value_handle;
             hvxParams.type = BLE_GATT_HVX_NOTIFICATION;

@@ -15,7 +15,7 @@
 
 // Register IMU event handler to be invoked on BLE events
 #define BLE_IMU_SERVICE_DEF(_name)                        \
-static ble_imu_service_t _name;                            \
+static ble_imu_service_t _name;                           \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
                      BLE_IMU_SERVICE_BLE_OBSERVER_PRIO,   \
                      ble_imu_service_on_ble_evt, &_name)
@@ -28,7 +28,7 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
 
 // Base UUID: 87C50000-8E33-4070-9131-8F56AA023E45
 // Stored little endian
-#define BLE_UUID_IMU_SERVICE_BASE_UUID   {0x45, 0x3E, 0x02, 0xAA, 0x56, 0x8F, 0x31, 0x91, 0x70, 0x40, 0x33, 0x8E, 0x94, 0x39, 0xC5, 0x87}
+#define BLE_UUID_IMU_SERVICE_BASE_UUID   {0x45, 0x3E, 0x02, 0xAA, 0x56, 0x8F, 0x31, 0x91, 0x70, 0x40, 0x33, 0x8E, 0xA0, 0x39, 0xC5, 0x87}
 
 // 12th & 13th octets of service & characteristics
 #define BLE_UUID_IMU_SERVICE_UUID                 (0x39A0)
@@ -52,7 +52,7 @@ typedef enum
 } ble_imu_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* pImuService, ble_imu_evt_t evt);
+typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* pImuService, ble_imu_evt_t evt, void const * data, uint8_t size);
 
 typedef struct ble_imu_char_s
 {

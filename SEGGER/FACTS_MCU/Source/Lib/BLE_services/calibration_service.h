@@ -12,11 +12,10 @@
 
 // Register event handler to be invoked on BLE events
 #define BLE_CALIB_SERVICE_DEF(_name)                        \
-static ble_calib_service_t _name                            \
+static ble_calib_service_t _name;                           \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
                      BLE_CALIB_SERVICE_BLE_OBSERVER_PRIO,   \
                      ble_calib_service_on_ble_evt, &_name) 
-
 /* 
  *  FACTS Calibration Service: 87C53994-8E33-4070-9131-8F56AA023E45
  *      Characteristic 1: Initiate Calibration  87C53995-8E33-4070-9131-8F56AA023E45
@@ -51,11 +50,11 @@ typedef enum
 } ble_calib_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, uint8_t* data, uint8_t size);
+typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size);
 
 typedef struct ble_calib_char_s
 {
-    ble_imu_evt_handler_t evtHandler;
+    ble_calib_evt_handler_t evtHandler;
     ble_gatts_char_handles_t charHandles;
     bool notifyEnabled;
     char* name;

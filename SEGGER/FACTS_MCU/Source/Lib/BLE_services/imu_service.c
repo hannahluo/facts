@@ -55,10 +55,6 @@ static void on_write(ble_imu_service_t* pImuService, ble_imu_char_t* pChar, ble_
             }
             pChar->notifyEnabled = false;
         }
-        // Pass to characteristic event handler if present
-        if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pImuService, evt);
-        }
     }
 
 }
@@ -127,6 +123,7 @@ static uint32_t raw_gyro_char_add(ble_imu_service_t* pImuService)
     // Defining uuid
     bleUuid.type = pImuService->uuidType;
     bleUuid.uuid = BLE_UUID_RAW_GYRO_UUID;
+    NRF_LOG_INFO("raw_gyro_char_add: Adding 0x%x", bleUuid.uuid);
 
     // Setting char value meta
     attrMd.vloc = BLE_GATTS_VLOC_STACK;                       // Char val lives in stack
@@ -180,7 +177,8 @@ static uint32_t raw_accel_char_add(ble_imu_service_t* pImuService)
 
     // Defining uuid
     bleUuid.type = pImuService->uuidType;
-    bleUuid.uuid = BLE_UUID_RAW_GYRO_UUID;
+    bleUuid.uuid = BLE_UUID_RAW_ACCEL_UUID;
+    NRF_LOG_INFO("raw_accel_char_add: Added 0x%x", bleUuid.uuid);
 
     // Setting char value meta
     attrMd.vloc = BLE_GATTS_VLOC_STACK;                       // Char val lives in stack
