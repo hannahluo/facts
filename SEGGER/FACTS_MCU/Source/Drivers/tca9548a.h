@@ -1,14 +1,4 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
-**********************************************************************
-
--------------------------- END-OF-HEADER -----------------------------
-
-File    : main.c
-Purpose : Generic application start
-
-*/
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>

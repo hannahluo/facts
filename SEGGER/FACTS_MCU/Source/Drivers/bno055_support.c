@@ -40,6 +40,7 @@
 *  Includes
 *---------------------------------------------------------------------------*/
 #include "bno055.h"
+#include "i2c.h"
 
 /*----------------------------------------------------------------------------*
 *  The following APIs are used for reading and writing of
@@ -57,7 +58,7 @@
  *   which is hold in an array
  *  \param cnt : The no of byte of data to be read
  */
-s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
+s8 BNO055_I2C_bus_read(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 
 /*  \Brief: The API is used as SPI bus write
  *  \Return : Status of the SPI write
@@ -68,7 +69,7 @@ s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
  *  will be used for write the value into the register
  *  \param cnt : The no of byte of data to be write
  */
-s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
+s8 BNO055_I2C_bus_write(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 
 /*
  * \Brief: I2C init routine
@@ -565,7 +566,7 @@ s8 I2C_routine(void)
  *      will be used for write the value into the register
  *  \param cnt : The no of byte of data to be write
  */
-s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
+s8 BNO055_I2C_bus_write(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
     s32 BNO055_iERROR = BNO055_INIT_VALUE;
     u8 array[I2C_BUFFER_LEN];
@@ -576,25 +577,26 @@ s8 BNO055_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
     {
         array[stringpos + BNO055_I2C_BUS_WRITE_ARRAY_INDEX] = *(reg_data + stringpos);
     }
-}
 
-/*
- * Please take the below APIs as your reference for
- * write the data using I2C communication
- * "BNO055_iERROR = I2C_WRITE_STRING(DEV_ADDR, ARRAY, CNT+1)"
- * add your I2C write APIs here
- * BNO055_iERROR is an return value of I2C read API
- * Please select your valid return value
- * In the driver BNO055_SUCCESS defined as 0
- * and FAILURE defined as -1
- * Note :
- * This is a full duplex operation,
- * The first read data is discarded, for that extra write operation
- * have to be initiated. For that cnt+1 operation done
- * in the I2C write string function
- * For more information please refer data sheet SPI communication:
- */
-return (s8)BNO055_iERROR;
+    /*
+    * Please take the below APIs as your reference for
+    * write the data using I2C communication
+    * "BNO055_iERROR = I2C_WRITE_STRING(DEV_ADDR, ARRAY, CNT+1)"
+    * add your I2C write APIs here
+    * BNO055_iERROR is an return value of I2C read API
+    * Please select your valid return value
+    * In the driver BNO055_SUCCESS defined as 0
+    * and FAILURE defined as -1
+    * Note :
+    * This is a full duplex operation,
+    * The first read data is discarded, for that extra write operation
+    * have to be initiated. For that cnt+1 operation done
+    * in the I2C write string function
+    * For more information please refer data sheet SPI communication:
+    */
+    BNO055_iERROR = (s8)i2c_write(i2c, dev_addr, reg_addr, &array[BNO055_INIT_VALUE], cnt);
+
+    return (s8)BNO055_iERROR;
 }
 
 /*  \Brief: The API is used as I2C bus read
@@ -606,7 +608,7 @@ return (s8)BNO055_iERROR;
  *   which is hold in an array
  *  \param cnt : The no of byte of data to be read
  */
-s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
+s8 BNO055_I2C_bus_read(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
     s32 BNO055_iERROR = BNO055_INIT_VALUE;
     u8 array[I2C_BUFFER_LEN] = { BNO055_INIT_VALUE };
@@ -624,9 +626,12 @@ s8 BNO055_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
      * In the driver BNO055_SUCCESS defined as 0
      * and FAILURE defined as -1
      */
-    for (stringpos = BNO055_INIT_VALUE; stringpos < cnt; stringpos++)
-    {
-        *(reg_data + stringpos) = array[stringpos];
+    BNO055_iERROR = (s8)i2c_read(i2c, dev_addr, reg_addr, &array[BNO055_INIT_VALUE], cnt);
+    if (BNO055_iERROR == BNO055_SUCCESS) {
+        for (stringpos = BNO055_INIT_VALUE; stringpos < cnt; stringpos++)
+        {
+            *(reg_data + stringpos) = array[stringpos];
+        }
     }
 
     return (s8)BNO055_iERROR;
