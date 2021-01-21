@@ -45,9 +45,16 @@ namespace FactsApp.ViewModels
             Title = "About";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
+            var rand = new Random();
+
             Device.StartTimer(TimeSpan.FromSeconds(1), () =>
                 {
-                    this.FlexionAngleValue += 1;
+                    this.FlexionAngleValue = rand.Next(5, 15);
+
+                    if (this.FlexionAngleValue > 10)
+                    {
+                        this.FlexionAngleColor = Color.Red;
+                    }
                     return true;
                 });
         }
