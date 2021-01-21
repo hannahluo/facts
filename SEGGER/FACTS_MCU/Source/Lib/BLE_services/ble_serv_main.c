@@ -84,6 +84,8 @@
 
 //Jack Zhu
 #include "imu_service.h"
+#include "calibration_service.h"
+#include "calculation_service.h"
 
 // Jack Zhu
 #define DEVICE_NAME                     "FACTS_DEV"                             /**< Name of device. Will be included in the advertising data. */
@@ -117,23 +119,21 @@
 
 // Jack Zhu
 // Timer id
-APP_TIMER_DEF(m_fake_gyro_timer_id);
-APP_TIMER_DEF(m_fake_accel_timer_id);
+APP_TIMER_DEF(m_double_timer_id);
+APP_TIMER_DEF(m_uint_timer_id);
 //Jack Zhu
 // Timer ticks
 #define TIMER_TIMEOUT_TICKS             APP_TIMER_TICKS(1000)                   /**< time between BLE messages*/
 
 // Jack Zhu
 BLE_IMU_SERVICE_DEF(m_imu_service);                                             /**< FACTS IMU Service*/
+BLE_CALIB_SERVICE_DEF(m_calib_service);                                         /**< FACTS Calib Service*/
+BLE_CALC_SERVICE_DEF(m_calc_service);                                           /**< FACTS Calc Service*/
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
-
-/* YOUR_JOB: Declare all services structure your application is using
- *  BLE_XYZ_DEF(m_xyz);
- */
 
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
@@ -184,21 +184,39 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
 
 // Jack Zhu
 // Timer timeout event handler
-void fake_gyro_timer_evt_handler(void* p_context)
+void double_timer_evt_handler(void* p_context)
 {
     // To-do
     static double cnt = 8;
     cnt += 0.01;
     raw_gyro_t gyro_fake_data = {.gyroX=cnt, .gyroY=cnt+1, .gyroZ=cnt+2};
     raw_gyro_characteristic_update(&m_imu_service, &gyro_fake_data);
+
+    raw_accel_t accel_fake_data = {.accelX=cnt+2, .accelY=cnt+1, .accelZ=cnt};
+    raw_accel_characteristic_update(&m_imu_service, &accel_fake_data);
+
+    flexion_angle_t angle = cnt;
+    flexion_angle_characteristic_update(&m_calc_service, &angle);
 }
-void fake_accel_timer_evt_handler(void* p_context)
+void uint_timer_evt_handler(void* p_context)
 {
     // To-do
-    static double cnt = 0;
-    cnt += 0.01;
-    raw_accel_t accel_fake_data = {.accelX=cnt, .accelY=cnt+1, .accelZ=cnt+2};
-    raw_accel_characteristic_update(&m_imu_service, &accel_fake_data);
+    static uint8_t cnt = 0;
+    ++cnt;
+    
+    init_calib_t val;
+    if(cnt%2==0) {
+      val = true;
+    } else {
+      val = false;
+    }
+    init_calib_characteristic_update(&m_calib_service, &val);
+
+    if(cnt > NUM_CALC_SERVICE_ERRORS) {
+        cnt = 0;
+    }
+    calc_err_t err = cnt;
+    calc_error_characteristic_update(&m_calc_service, &err);
 }
 
 /**@brief Function for the Timer initialization.
@@ -213,20 +231,14 @@ static void timers_init(void)
 
     // Create timers.
 
-    /* YOUR_JOB: Create any timers to be used by the application.
-                 Below is an example of how to create a timer.
-                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
-                 one.
-       ret_code_t err_code;
-       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-       APP_ERROR_CHECK(err_code); */
+    // Jack Zhu
+    err_code = app_timer_create(&m_double_timer_id, APP_TIMER_MODE_REPEATED, &double_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
 
-       // Jack Zhu
-       err_code = app_timer_create(&m_fake_gyro_timer_id, APP_TIMER_MODE_REPEATED, &fake_gyro_timer_evt_handler);
-       APP_ERROR_CHECK(err_code);
+    err_code = app_timer_create(&m_uint_timer_id, APP_TIMER_MODE_REPEATED, &uint_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
 
-       err_code = app_timer_create(&m_fake_accel_timer_id, APP_TIMER_MODE_REPEATED, &fake_accel_timer_evt_handler);
-       APP_ERROR_CHECK(err_code);
+    APP_ERROR_CHECK(err_code);
 }
 
 
@@ -293,6 +305,73 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
+void calf_joint_axis_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+{
+    // Check evt
+    if(evt != BLE_CALF_JOINT_AXIS_WRITE) {
+        NRF_LOG_INFO("calf_joint_axis_handler: received unrecognized event %d", evt);
+        return;
+    }
+    if(size != sizeof(joint_axis_t)) {
+        NRF_LOG_INFO("calf_joint_axis_handler: received unrecognized data size %d", size);
+        return;
+    }
+
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    NRF_LOG_DEBUG("calf_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
+}
+
+void thigh_joint_axis_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+{
+    // Check evt
+    if(evt != BLE_THIGH_JOINT_AXIS_WRITE) {
+        NRF_LOG_INFO("thigh_joint_axis_handler: received unrecognized event %d", evt);
+        return;
+    }
+
+    if(size != sizeof(joint_axis_t)) {
+        NRF_LOG_INFO("thigh_joint_axis_handler: received unrecognized data size %d", size);
+        return;
+    }
+
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    NRF_LOG_DEBUG("thigh_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
+}
+
+void init_cal_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+{
+    // Check evt
+    switch(evt)
+    {
+        case BLE_INIT_CALIB_ON:
+            NRF_LOG_DEBUG("init_cal_handler: init calibration on");
+            break;
+        case BLE_INIT_CALIB_OFF:
+            NRF_LOG_DEBUG("init_cal_handler: init calibration off");
+            break;
+        default:
+            NRF_LOG_DEBUG("init_cal_handler: received unrecognized event %d", evt);
+            break;
+    }
+}
+
+void limits_handler(ble_calc_service_t* p_calc_service, ble_calc_evt_t evt, void const* data, uint8_t size)
+{
+    // Check evt
+    if(evt != BLE_LIMITS_WRITE) {
+        NRF_LOG_INFO("limits_handler: received unrecognized event %d", evt);
+        return;
+    }
+    if(size != sizeof(joint_axis_t)) {
+        NRF_LOG_INFO("limits_handler: received unrecognized data size %d", size);
+        return;
+    }
+    limits_t* limits = (limits_t*)data;
+    NRF_LOG_DEBUG("limits_handler: {min=%f,max=%f}", limits->minLimit, limits->maxLimit);
+}
+
 /**@brief Function for initializing services that will be used by the application.
  */
 static void services_init(void)
@@ -306,9 +385,14 @@ static void services_init(void)
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
 
-     // Jack Zhu
-     err_code = ble_imu_service_init(&m_imu_service, NULL, NULL);
-     APP_ERROR_CHECK(err_code);
+    // Jack Zhu
+    
+    err_code = ble_imu_service_init(&m_imu_service, NULL, NULL);
+    APP_ERROR_CHECK(err_code);
+    err_code = ble_calib_service_init(&m_calib_service, init_cal_handler, calf_joint_axis_handler, thigh_joint_axis_handler);
+    APP_ERROR_CHECK(err_code);
+    err_code = ble_calc_service_init(&m_calc_service, NULL, limits_handler, NULL);
+    APP_ERROR_CHECK(err_code);
 }
 
 
@@ -377,11 +461,10 @@ static void application_timers_start(void)
        APP_ERROR_CHECK(err_code); */
     // Jack Zhu
     ret_code_t err_code;
-    err_code = app_timer_start(m_fake_gyro_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    err_code = app_timer_start(m_double_timer_id, TIMER_TIMEOUT_TICKS, NULL);
     APP_ERROR_CHECK(err_code);
-    err_code = app_timer_start(m_fake_accel_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    err_code = app_timer_start(m_uint_timer_id, TIMER_TIMEOUT_TICKS, NULL);
     APP_ERROR_CHECK(err_code);
-
 }
 
 
@@ -715,7 +798,7 @@ static void advertising_start(bool erase_bonds)
  */
 int main(void)
 {
-    bool erase_bonds=true;
+    bool erase_bonds=false;
 
     // Initialize.
     log_init();
