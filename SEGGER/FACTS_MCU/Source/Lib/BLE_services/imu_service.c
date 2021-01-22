@@ -13,6 +13,52 @@
 static char g_RawGyroCharName[] = "Raw Gyro";
 static char g_RawAccelCharName[] = "Raw Accel";
 
+#define PRECISION_MULTIPLIER      (4)
+
+// Helper function to format float/double as string
+static void float_to_string(char* buff, double val)
+{
+    int integer = (int)(val);
+    int decimal = (int)((val - integer)*PRECISION_MULTIPLIER);
+    if(val < 0) {
+        integer *= -1;
+        decimal *= -1;
+        sprintf(buff, "-%d.%d", integer,decimal);
+    }
+    else
+        sprintf(buff, "%d.%d", integer,decimal);
+}
+
+// Helper function to print raw gyro 
+void print_raw_gyro_vals(char* func_name, raw_gyro_t* gyro)
+{
+    char x[20];
+    char y[20];
+    char z[20];
+
+    float_to_string(x, gyro->x);
+    float_to_string(y, gyro->y);
+    float_to_string(z, gyro->z);
+
+    NRF_LOG_DEBUG("%s: Gyro(%s,%s,%s)", func_name, x, y, z);
+}
+
+// Helper function to print raw gyro 
+void print_raw_accel_vals(char* func_name, raw_accel_t* accel)
+{
+    char x[20];
+    char y[20];
+    char z[20];
+
+    float_to_string(x, accel->x);
+    float_to_string(y, accel->y);
+    float_to_string(z, accel->z);
+
+    NRF_LOG_DEBUG("%s: Accel(%s,%s,%s)", func_name, x, y, z);
+}
+
+// Helper function to print raw accel
+
 // Handle GAP connection event
 static void on_connect(ble_imu_service_t* pImuService, ble_evt_t const * pBleEvt)
 {
@@ -133,7 +179,7 @@ static uint32_t raw_gyro_char_add(ble_imu_service_t* pImuService)
     BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attrMd.write_perm);  // App cannot write char val
 
     // Setting characteristic value settings
-    raw_gyro_t initGyro = {.gyroX=0.0,.gyroY=0.0,.gyroZ=0.0};
+    raw_gyro_t initGyro = {.x=0.0,.y=0.0,.z=0.0};
     attrCharValue.p_uuid = &bleUuid;
     attrCharValue.p_attr_md = &attrMd;
     attrCharValue.init_len = sizeof(initGyro);
@@ -188,7 +234,7 @@ static uint32_t raw_accel_char_add(ble_imu_service_t* pImuService)
     BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&attrMd.write_perm);  // App cannot write char val
 
     // Setting characteristic value settings
-    raw_accel_t initAccel = {.accelX=0.0,.accelY=0.0,.accelZ=0.0};
+    raw_accel_t initAccel = {.x=0.0,.y=0.0,.z=0.0};
     attrCharValue.p_uuid = &bleUuid;
     attrCharValue.p_attr_md = &attrMd;
     attrCharValue.init_len = sizeof(initAccel);
@@ -263,19 +309,19 @@ void raw_gyro_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* 
         APP_ERROR_CHECK(errCode);
 
         if(pImuService->rawGyro.notifyEnabled) {
-           NRF_LOG_DEBUG("Sending raw gyro updated (%f,%f,%f)", gyroVal->gyroX, gyroVal->gyroY, gyroVal->gyroZ);
-           uint16_t len = sizeof(*gyroVal);
-           ble_gatts_hvx_params_t hvxParams;
-           memset(&hvxParams, 0, sizeof(hvxParams));
+            print_raw_gyro_vals("raw_gyro_characteristic_update", gyroVal);
+            uint16_t len = sizeof(*gyroVal);
+            ble_gatts_hvx_params_t hvxParams;
+            memset(&hvxParams, 0, sizeof(hvxParams));
 
-           hvxParams.handle = pImuService->rawGyro.charHandles.value_handle;
-           hvxParams.type = BLE_GATT_HVX_NOTIFICATION;
-           hvxParams.offset = 0;
-           hvxParams.p_len = &len;
-           hvxParams.p_data = (uint8_t*)gyroVal;
+            hvxParams.handle = pImuService->rawGyro.charHandles.value_handle;
+            hvxParams.type = BLE_GATT_HVX_NOTIFICATION;
+            hvxParams.offset = 0;
+            hvxParams.p_len = &len;
+            hvxParams.p_data = (uint8_t*)gyroVal;
 
-           errCode = sd_ble_gatts_hvx(pImuService->connHandle, &hvxParams);
-           APP_ERROR_CHECK(errCode);
+            errCode = sd_ble_gatts_hvx(pImuService->connHandle, &hvxParams);
+            APP_ERROR_CHECK(errCode);
         }
     }
 }
@@ -297,19 +343,20 @@ void raw_accel_characteristic_update(ble_imu_service_t* pImuService, raw_accel_t
         APP_ERROR_CHECK(errCode);
 
         if(pImuService->rawAccel.notifyEnabled) {
-           NRF_LOG_DEBUG("Sending raw accel updated (%f,%f,%f)", accelVal->accelX, accelVal->accelY, accelVal->accelZ);
-           uint16_t len = sizeof(*accelVal);
-           ble_gatts_hvx_params_t hvxParams;
-           memset(&hvxParams, 0, sizeof(hvxParams));
+            print_raw_accel_vals("raw_accel_characteristic_update", accelVal);
+            
+            uint16_t len = sizeof(*accelVal);
+            ble_gatts_hvx_params_t hvxParams;
+            memset(&hvxParams, 0, sizeof(hvxParams));
 
-           hvxParams.handle = pImuService->rawAccel.charHandles.value_handle;
-           hvxParams.type = BLE_GATT_HVX_NOTIFICATION;
-           hvxParams.offset = 0;
-           hvxParams.p_len = &len;
-           hvxParams.p_data = (uint8_t*)accelVal;
+            hvxParams.handle = pImuService->rawAccel.charHandles.value_handle;
+            hvxParams.type = BLE_GATT_HVX_NOTIFICATION;
+            hvxParams.offset = 0;
+            hvxParams.p_len = &len;
+            hvxParams.p_data = (uint8_t*)accelVal;
 
-           errCode = sd_ble_gatts_hvx(pImuService->connHandle, &hvxParams);
-           APP_ERROR_CHECK(errCode);
+            errCode = sd_ble_gatts_hvx(pImuService->connHandle, &hvxParams);
+            APP_ERROR_CHECK(errCode);
         }
     }
 }

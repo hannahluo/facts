@@ -14,6 +14,35 @@ static char g_InitCalibCharName[] = "Initiate Calibration";
 static char g_CalfJointAxisCharName[] = "Calf Joint Axis";
 static char g_ThighJointAxisCharName[] = "Thigh Joint Axis";
 
+#define PRECISION_MULTIPLIER      (4)
+
+// Helper function to format float/double as string
+static void float_to_string(char* buff, double val)
+{
+    int integer = (int)(val);
+    int decimal = (int)((val - integer)*PRECISION_MULTIPLIER);
+    if(val < 0) {
+        integer *= -1;
+        decimal *= -1;
+        sprintf(buff, "-%d.%d", integer,decimal);
+    }
+    else
+        sprintf(buff, "%d.%d", integer,decimal);
+}
+
+void print_joint_axis(char* func_name, joint_axis_t* axis)
+{
+    char x[20];
+    char y[20];
+    char z[20];
+
+    float_to_string(x, axis->x);
+    float_to_string(y, axis->y);
+    float_to_string(z, axis->z);
+
+    NRF_LOG_DEBUG("%s: Joint Axis(%s,%s,%s)", func_name, x, y, z);
+}
+
 static void on_connect(ble_calib_service_t* pCalibService, ble_evt_t const * pBleEvt)
 {
     pCalibService->connHandle = pBleEvt->evt.gap_evt.conn_handle;
@@ -59,7 +88,7 @@ static void on_init_calib_write(ble_calib_service_t* pCalibService,  ble_evt_t c
         }
 
         if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalibService, evt, pEvtWrite->data, pEvtWrite->len);
+            pChar->evtHandler(pEvtWrite->data, pEvtWrite->len);
         }
     }
 }
@@ -77,7 +106,7 @@ static void on_joint_axis_write(ble_calib_service_t* pCalibService, ble_calib_ch
         }
 
         if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalibService, evt, pEvtWrite->data, pEvtWrite->len);
+            pChar->evtHandler(pEvtWrite->data, pEvtWrite->len);
         }
     }
 }

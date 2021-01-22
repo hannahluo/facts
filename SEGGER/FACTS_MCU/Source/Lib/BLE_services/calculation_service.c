@@ -14,6 +14,32 @@ static char g_FlexionAngleCharName[] = "Flexion Angle";
 static char g_LimitsCharName[] = "Limits";
 static char g_CalcErrCharName[] = "Calculation Error";
 
+#define PRECISION_MULTIPLIER      (4)
+
+// Helper function to format float/double as string
+static void float_to_string(char* buff, double val)
+{
+    int integer = (int)(val);
+    int decimal = (int)((val - integer)*PRECISION_MULTIPLIER);
+    if(val < 0) {
+        integer *= -1;
+        decimal *= -1;
+        sprintf(buff, "-%d.%d", integer,decimal);
+    }
+    else
+        sprintf(buff, "%d.%d", integer,decimal);
+}
+
+void print_limits(char* func_name, limits_t* limits)
+{
+    char minLimit[20];
+    char maxLimit[20];
+    float_to_string(minLimit, limits->minLimit);
+    float_to_string(maxLimit, limits->maxLimit);
+
+    NRF_LOG_DEBUG("%s: min_limit=%s max_limit=%s", func_name, minLimit, maxLimit);
+}
+
 static void on_connect(ble_calc_service_t* pCalcService, ble_evt_t const * pBleEvt)
 {
     pCalcService->connHandle = pBleEvt->evt.gap_evt.conn_handle;
@@ -48,10 +74,6 @@ static void on_flexion_angle_write(ble_calc_service_t* pCalcService, ble_evt_t c
             evt = BLE_FLEXION_ANGLE_EVT_NOTIFY_DISABLED;
             pChar->notifyEnabled = false;
         }
-
-        if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalcService, evt, pEvtWrite->data, pEvtWrite->len);
-        }
     }
 }
 
@@ -72,10 +94,6 @@ static void on_calc_err_write(ble_calc_service_t* pCalcService, ble_evt_t const 
             evt = BLE_CALC_ERR_NOTIFY_DISABLED;
             pChar->notifyEnabled = false;
         }
-
-        if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalcService, evt, pEvtWrite->data, pEvtWrite->len);
-        }
     }
 }
 
@@ -89,7 +107,7 @@ static void on_limits_write(ble_calc_service_t* pCalcService, ble_evt_t const * 
         evt = BLE_LIMITS_WRITE;
 
         if(pChar->evtHandler != NULL) {
-            pChar->evtHandler(pCalcService, evt, pEvtWrite->data, pEvtWrite->len);
+            pChar->evtHandler(pEvtWrite->data, pEvtWrite->len);
         }
     }
 }
@@ -294,6 +312,9 @@ uint32_t ble_calc_service_init(ble_calc_service_t* pCalcService, ble_calc_evt_ha
     pCalcService->flexionAngle.evtHandler = flexionAngleHandler;
     pCalcService->limits.evtHandler = limitsHandler;
     pCalcService->calcErr.evtHandler = calcErrHandler;
+    pCalcService->flexionAngle.name = g_FlexionAngleCharName;
+    pCalcService->limits.name = g_LimitsCharName;
+    pCalcService->calcErr.name = g_CalcErrCharName;
 
     ble_uuid128_t baseUuid = {BLE_UUID_CALC_SERVICE_BASE_UUID};
     errCode = sd_ble_uuid_vs_add(&baseUuid, &pCalcService->uuidType);
@@ -350,7 +371,7 @@ void flexion_angle_characteristic_update(ble_calc_service_t* pCalcService, flexi
         APP_ERROR_CHECK(errCode);
 
         if(pCalcService->flexionAngle.notifyEnabled) {
-            NRF_LOG_DEBUG("Updating flexion angle with %f", *angle);
+            NRF_LOG_DEBUG("Updating flexion angle with " NRF_LOG_FLOAT_MARKER "\r\n", NRF_LOG_FLOAT(*angle));
             uint16_t len = sizeof(*angle);
             ble_gatts_hvx_params_t hvxParams;
             memset(&hvxParams, 0, sizeof(hvxParams));
@@ -384,7 +405,7 @@ void calc_error_characteristic_update(ble_calc_service_t* pCalcService, calc_err
         APP_ERROR_CHECK(errCode);
 
         if(pCalcService->calcErr.notifyEnabled) {
-            NRF_LOG_DEBUG("Updating calc error with %u", error);
+            NRF_LOG_DEBUG("Updating calc error with %u", *error);
             uint16_t len = sizeof(*error);
             ble_gatts_hvx_params_t hvxParams;
             memset(&hvxParams, 0, sizeof(hvxParams));

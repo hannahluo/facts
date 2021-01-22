@@ -52,7 +52,7 @@ typedef enum
 } ble_imu_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void (*ble_imu_evt_handler_t) (ble_imu_service_t* pImuService, ble_imu_evt_t evt, void const * data, uint8_t size);
+typedef void (*ble_imu_evt_handler_t) (void const * data, uint8_t size);
 
 typedef struct ble_imu_char_s
 {
@@ -74,16 +74,16 @@ typedef struct ble_imu_service_s
 
 // Gyro data
 typedef struct {
-    double gyroX;
-    double gyroY;
-    double gyroZ;
+    double x;
+    double y;
+    double z;
 } raw_gyro_t;
 
 // Accel data 
 typedef struct {
-    double accelX;
-    double accelY;
-    double accelZ;
+    double x;
+    double y;
+    double z;
 } raw_accel_t;
 
 // Service API
@@ -100,5 +100,10 @@ void raw_gyro_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* 
   // Accel X update function
   void raw_accel_characteristic_update(ble_imu_service_t* pImuService, raw_accel_t* accelVal);
 #endif
+
+// Printing functions (prints to log with debug-level)
+void print_raw_gyro_vals(char* func_name, raw_gyro_t* gyro);
+void print_raw_accel_vals(char* func_name, raw_accel_t* accel);
+
 
 #endif

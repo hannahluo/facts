@@ -7,7 +7,7 @@
       arm_core_type="Cortex-M4"
       arm_endian="Little"
       arm_fp_abi="Soft"
-      arm_fpu_type="Soft"
+      arm_fpu_type="None"
       arm_linker_heap_size="2048"
       arm_linker_process_stack_size="0"
       arm_linker_stack_size="2048"
@@ -138,11 +138,18 @@
     <folder Name="Lib">
       <file file_name="Source/Lib/angle_calculation.c" />
       <file file_name="Source/Lib/angle_calculation.h" />
-      <file file_name="Source/Lib/bluetooth.c" />
-      <file file_name="Source/Lib/bluetooth.h" />
+      <file file_name="Source/Lib/bluetooth.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Lib/bluetooth.h">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
       <file file_name="Source/Lib/sensor_fusion.c" />
       <file file_name="Source/Lib/sensor_fusion.h" />
       <configuration Name="Release" build_exclude_from_build="Yes" />
+      <file file_name="Source/Lib/BLE_test/bluetooth_main.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
     </folder>
     <folder Name="Drivers">
       <file file_name="Source/Drivers/bno055.c" />
@@ -176,7 +183,7 @@
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
       <file file_name="Source/Lib/BLE_services/ble_serv_main.c">
-        <configuration Name="Release" build_exclude_from_build="No" />
+        <configuration Name="Release" build_exclude_from_build="Yes" />
       </file>
       <file file_name="Source/Lib/BLE_services/calibration_service.c">
         <configuration Name="Release" build_exclude_from_build="No" />

@@ -189,10 +189,10 @@ void double_timer_evt_handler(void* p_context)
     // To-do
     static double cnt = 8;
     cnt += 0.01;
-    raw_gyro_t gyro_fake_data = {.gyroX=cnt, .gyroY=cnt+1, .gyroZ=cnt+2};
+    raw_gyro_t gyro_fake_data = {.x=cnt, .y=cnt+1, .z=cnt+2};
     raw_gyro_characteristic_update(&m_imu_service, &gyro_fake_data);
 
-    raw_accel_t accel_fake_data = {.accelX=cnt+2, .accelY=cnt+1, .accelZ=cnt};
+    raw_accel_t accel_fake_data = {.x=cnt+2, .y=cnt+1, .z=cnt};
     raw_accel_characteristic_update(&m_imu_service, &accel_fake_data);
 
     flexion_angle_t angle = cnt;
@@ -305,71 +305,36 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
-void calf_joint_axis_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+void calf_joint_axis_handler(void const * data, uint8_t size)
 {
-    // Check evt
-    if(evt != BLE_CALF_JOINT_AXIS_WRITE) {
-        NRF_LOG_INFO("calf_joint_axis_handler: received unrecognized event %d", evt);
-        return;
-    }
-    if(size != sizeof(joint_axis_t)) {
-        NRF_LOG_INFO("calf_joint_axis_handler: received unrecognized data size %d", size);
-        return;
-    }
-
     // print out data
     joint_axis_t* jointAxis = (joint_axis_t*)(data);
     NRF_LOG_DEBUG("calf_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
 }
 
-void thigh_joint_axis_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+void thigh_joint_axis_handler(void const * data, uint8_t size)
 {
-    // Check evt
-    if(evt != BLE_THIGH_JOINT_AXIS_WRITE) {
-        NRF_LOG_INFO("thigh_joint_axis_handler: received unrecognized event %d", evt);
-        return;
-    }
-
-    if(size != sizeof(joint_axis_t)) {
-        NRF_LOG_INFO("thigh_joint_axis_handler: received unrecognized data size %d", size);
-        return;
-    }
-
     // print out data
     joint_axis_t* jointAxis = (joint_axis_t*)(data);
     NRF_LOG_DEBUG("thigh_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
 }
 
-void init_cal_handler(ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size)
+void init_cal_handler(void const * data, uint8_t size)
 {
     // Check evt
-    switch(evt)
-    {
-        case BLE_INIT_CALIB_ON:
-            NRF_LOG_DEBUG("init_cal_handler: init calibration on");
-            break;
-        case BLE_INIT_CALIB_OFF:
-            NRF_LOG_DEBUG("init_cal_handler: init calibration off");
-            break;
-        default:
-            NRF_LOG_DEBUG("init_cal_handler: received unrecognized event %d", evt);
-            break;
+    bool isCal = *(bool*)(data);
+    if(isCal) {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration on");
+    } else {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration off");
     }
 }
 
-void limits_handler(ble_calc_service_t* p_calc_service, ble_calc_evt_t evt, void const* data, uint8_t size)
+void limits_handler(void const* data, uint8_t size)
 {
-    // Check evt
-    if(evt != BLE_LIMITS_WRITE) {
-        NRF_LOG_INFO("limits_handler: received unrecognized event %d", evt);
-        return;
-    }
-    if(size != sizeof(joint_axis_t)) {
-        NRF_LOG_INFO("limits_handler: received unrecognized data size %d", size);
-        return;
-    }
-    limits_t* limits = (limits_t*)data;
-    NRF_LOG_DEBUG("limits_handler: {min=%f,max=%f}", limits->minLimit, limits->maxLimit);
+    limits_t const* limits = (limits_t const*)data;
+    //NRF_LOG_DEBUG("limits_handler: {min=%f,max=%f}", limits->minLimit, limits->maxLimit);
+    double val = limits->minLimit;
 }
 
 /**@brief Function for initializing services that will be used by the application.

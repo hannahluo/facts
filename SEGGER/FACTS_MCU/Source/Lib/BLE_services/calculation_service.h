@@ -49,7 +49,7 @@ typedef enum
 } ble_calc_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void (*ble_calc_evt_handler_t) (ble_calc_service_t* p_calc_service, ble_calc_evt_t evt, void const * data, uint8_t size);
+typedef void (*ble_calc_evt_handler_t) (void const * data, uint8_t size);
 
 typedef struct ble_calc_char_s
 {
@@ -96,5 +96,8 @@ void flexion_angle_characteristic_update(ble_calc_service_t* pCalcService, flexi
 
 // Calculation error update function
 void calc_error_characteristic_update(ble_calc_service_t* pCalcService, calc_err_t* error);
+
+// Printing limits to log (debug level)
+void print_limits(char* func_name, limits_t* limits);
 
 #endif

@@ -33,8 +33,6 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 #define BLE_UUID_CALF_JOINT_AXIS_UUID     (0x3996)
 #define BLE_UUID_THIGH_JOINT_AXIS_UUID    (0x3997)
 
-#define NUM_CALIB_SERVICE_CHARS                   (3)
-
 // Calibration service structures
 typedef struct ble_calib_service_s ble_calib_service_t;
 
@@ -50,7 +48,7 @@ typedef enum
 } ble_calib_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t evt, void const * data, uint8_t size);
+typedef void(*ble_calib_evt_handler_t) (void const * data, uint8_t size);
 
 typedef struct ble_calib_char_s
 {
@@ -92,4 +90,6 @@ void ble_calib_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext);
 // Init Calib update function
 void init_calib_characteristic_update(ble_calib_service_t* pCalibService, init_calib_t* initCalibValue);
 
+// Print joint axis to console (debug-level)
+void print_joint_axis(char* func_name, joint_axis_t* axis);
 #endif
