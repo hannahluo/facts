@@ -35,5 +35,5 @@ bool i2c_write(const nrf_twi_sensor_t* i2c, const uint8_t dev_addr, const uint8_
 };
 
 bool i2c_deinit(const nrf_twi_sensor_t* i2c) {
-    continue; // possibly not needed
+    return true; // possibly not needed
 };
