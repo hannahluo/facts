@@ -4,7 +4,7 @@
              x:Class="FactsApp.Views.AboutPage"
              xmlns:vm="clr-namespace:FactsApp.ViewModels"
              Title="{Binding Title}">
-    <StackLayout Margin="20,35,20,25">
+    <StackLayout Margin="20">
         <Label TextColor="{Binding FlexionAngleColor}"
                FontSize="30"
                HorizontalOptions="Center">
@@ -15,5 +15,11 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
+        <Polyline Points="{Binding DataPoints}"
+                  Stroke="Black" 
+                  StrokeThickness="10"
+                  StrokeLineJoin="Round"/>
     </StackLayout>
+
+    
 </ContentPage>

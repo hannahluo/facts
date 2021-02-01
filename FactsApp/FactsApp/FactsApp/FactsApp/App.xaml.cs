@@ -11,6 +11,8 @@ namespace FactsApp
 
         public App()
         {
+            Device.SetFlags(new string[] { "Shapes_Experimental" });
+
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
