@@ -1,34 +1,18 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
-**********************************************************************
+#ifndef ANGLE_CALC_H
+#define ANGLE_CALC_H
 
--------------------------- END-OF-HEADER -----------------------------
+#define NUM_ROT_MATRIX_ROWS   (3)
+#define NUM_ROT_MATRIX_COLS   (3)
 
-File    : main.c
-Purpose : Generic application start
+typedef struct vector_s {
+    double x;
+    double y;
+    double z;
+} vector_t;
 
-*/
+void update_joint_axes(vector_t* calf, vector_t* thigh);
 
-#include <stdio.h>
-#include <stdlib.h>
+double calculate_angle(double calfRotMatrix[NUM_ROT_MATRIX_ROWS][NUM_ROT_MATRIX_COLS], double thighRotMatrix[NUM_ROT_MATRIX_ROWS][NUM_ROT_MATRIX_COLS]);
 
-/*********************************************************************
-*
-*       main()
-*
-*  Function description
-*   Application entry point.
-*/
-int main(void) {
-  int i;
 
-  for (i = 0; i < 100; i++) {
-    printf("Hello World %d!\n", i);
-  }
-  do {
-    i++;
-  } while (1);
-}
-
-/*************************** End of file ****************************/
+#endif
