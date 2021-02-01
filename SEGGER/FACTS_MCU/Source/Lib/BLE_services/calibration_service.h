@@ -12,20 +12,15 @@
 
 // Register event handler to be invoked on BLE events
 #define BLE_CALIB_SERVICE_DEF(_name)                        \
-static ble_calib_service_t _name                            \
+static ble_calib_service_t _name;                           \
 NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
                      BLE_CALIB_SERVICE_BLE_OBSERVER_PRIO,   \
-                     ble_calib_service_on_ble_evt, &name) 
-
+                     ble_calib_service_on_ble_evt, &_name) 
 /* 
  *  FACTS Calibration Service: 87C53994-8E33-4070-9131-8F56AA023E45
  *      Characteristic 1: Initiate Calibration  87C53995-8E33-4070-9131-8F56AA023E45
- *      Characteristic 2: Calf Joint Axis X     87C53996-8E33-4070-9131-8F56AA023E45
- *      Characteristic 3: Calf Joint Axis Y     87C53997-8E33-4070-9131-8F56AA023E45
- *      Characteristic 4: Calf Joint Axis Z     87C53998-8E33-4070-9131-8F56AA023E45
- *      Characteristic 5: Thigh Joint Axis X    87C53999-8E33-4070-9131-8F56AA023E45
- *      Characteristic 6: Thigh Joint Axis Y    87C5399A-8E33-4070-9131-8F56AA023E45
- *      Characteristic 7: Thigh Joint Axis Z    87C5399B-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 2: Calf Joint Axis       87C53996-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 3: Thigh Joint Axis      87C53997-8E33-4070-9131-8F56AA023E45
  */
 
 // Base UUID: 87C53994-8E33-4070-9131-8F56AA023E45
@@ -35,69 +30,66 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                         \
 // 12th & 13th octets of service & characteristics
 #define BLE_UUID_CALIB_SERVICE_UUID       (0x3994)
 #define BLE_UUID_INIT_CALIB_UUID          (0x3995)
-#define BLE_UUID_CALF_X_UUID              (0x3996)
-#define BLE_UUID_CALF_Y_UUID              (0x3997)
-#define BLE_UUID_CALF_Z_UUID              (0x3998)
-#define BLE_UUID_THIGH_X_UUID             (0x3999)
-#define BLE_UUID_THIGH_Y_UUID             (0x399A)
-#define BLE_UUID_THIGH_Z_UUID             (0x399B)
-
-#define NUM_CALIB_SERVICE_CHARS                   (7)
-
-// To access char_handles member of ble_imu_service_t handler
-typedef enum
-{
-    BLE_INIT_CALIB_HANDLES_IDX,
-    BLE_CALF_X_HANDLES_IDX,
-    BLE_CALF_Y_HANDLES_IDX,
-    BLE_CALF_Z_HANDLES_IDX,
-    BLE_THIGH_X_HANDLES_IDX,
-    BLE_THIGH_Y_HANDLES_IDX,
-    BLE_THIGH_Z_HANDLES_IDX,
-} ble_calib_char_handle_idx_t;
+#define BLE_UUID_CALF_JOINT_AXIS_UUID     (0x3996)
+#define BLE_UUID_THIGH_JOINT_AXIS_UUID    (0x3997)
 
 // Calibration service structures
 typedef struct ble_calib_service_s ble_calib_service_t;
 
 typedef enum
 {
-    BLE_INIT_CALIB_WRITE,
+    BLE_INIT_CALIB_ON,
+    BLE_INIT_CALIB_OFF,
     BLE_INIT_CALIB_EVT_NOTIFY_ENABLED,
     BLE_INIT_CALIB_EVT_NOTIFY_DISABLED,
-    BLE_CALF_X_WRITE,
-    BLE_CALF_Y_WRITE,
-    BLE_CALF_Z_WRITE,
-    BLE_THIGH_X_WRITE,
-    BLE_THIGH_Y_WRITE,
-    BLE_THIGH_Z_WRITE,
+    BLE_CALF_JOINT_AXIS_WRITE,
+    BLE_THIGH_JOINT_AXIS_WRITE,
     NUM_BLE_CALIB_EVT,
-} ble_calib_evt_type_t;
-
-typedef struct 
-{
-    ble_calib_evt_type_t evt_type;
 } ble_calib_evt_t;
 
 // Function pointer for per-characteristic event handling
-typedef void(*ble_calib_evt_handler_t) (ble_calib_service_t* p_calib_service, ble_calib_evt_t* p_evt);
+typedef void(*ble_calib_evt_handler_t) (void const * data, uint8_t size);
+
+typedef struct ble_calib_char_s
+{
+    ble_calib_evt_handler_t evtHandler;
+    ble_gatts_char_handles_t charHandles;
+    bool notifyEnabled;
+    char* name;
+} ble_calib_char_t;
 
 // Main handler for calibration service
 typedef struct ble_calib_service_s
 {
-    uint16_t conn_handle;
-    uint16_t service_handle;
-    uint8_t uuid_type;
-    ble_calib_evt_handler_t evt_handler[NUM_CALIB_SERVICE_CHARS];
-    ble_gatts_char_handles_t char_handles[NUM_CALIB_SERVICE_CHARS];
+    uint16_t connHandle;
+    uint16_t serviceHandle;
+    uint8_t uuidType;
+    ble_calib_char_t initCalib;
+    ble_calib_char_t calfJointAxis;
+    ble_calib_char_t thighJointAxis;
 } ble_calib_service_t;
+
+// Joint axis data
+typedef struct {
+    double x;
+    double y;
+    double z;
+} joint_axis_t;
+
+// Init calib data
+typedef bool init_calib_t;
 
 // Service API
 // Initialization function for calibration service
-uint32_t ble_calib_service_init(ble_calib_service_t* p_calib_service, ble_calib_evt_handler_t* app_evt_handler);
+uint32_t ble_calib_service_init(ble_calib_service_t* pCalibService, ble_calib_evt_handler_t initCalHandler, 
+                                ble_calib_evt_handler_t calfJointAxisHandler, ble_calib_evt_handler_t thighJointAxisHandler);
 
 // BLE event handler
-void ble_calib_service_on_ble_evt(ble_evt_t const * p_ble_evt, void* p_context);
+void ble_calib_service_on_ble_evt(ble_evt_t const * pBleEvt, void* pContext);
 
 // Init Calib update function
-void init_calib_characteristic_update(ble_calib_service_t* p_calib_service, uint8_t* init_calib_val);
+void init_calib_characteristic_update(ble_calib_service_t* pCalibService, init_calib_t* initCalibValue);
 
+// Print joint axis to console (debug-level)
+void print_joint_axis(char* func_name, joint_axis_t* axis);
+#endif

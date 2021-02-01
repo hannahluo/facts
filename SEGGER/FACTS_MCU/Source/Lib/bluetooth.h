@@ -1,34 +1,27 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
-**********************************************************************
+#ifndef BLUETOOTH_H
+#define BLUETOOTH_H
 
--------------------------- END-OF-HEADER -----------------------------
+#include "imu_service.h"
+#include "calibration_service.h"
+#include "calculation_service.h"
 
-File    : main.c
-Purpose : Generic application start
+// Initialization functions
+void bluetooth_init();
 
-*/
+// Start advertising to other devices (called after init)
+void start_advertising();
 
-#include <stdio.h>
-#include <stdlib.h>
+// Register handlers for different events (must be called after init)
+void register_init_cal_handler(ble_calib_evt_handler_t handler);
+void register_calf_joint_axis_handler(ble_calib_evt_handler_t handler);
+void register_thigh_joint_axis_handler(ble_calib_evt_handler_t handler);
+void register_limits_handler(ble_calc_evt_handler_t handler);
 
-/*********************************************************************
-*
-*       main()
-*
-*  Function description
-*   Application entry point.
-*/
-int main(void) {
-  int i;
+// Functions to send messages to app
+void send_raw_gyro(raw_gyro_t* gyroReading);
+void send_raw_accel(raw_accel_t* accelReading);
+void send_flexion_angle(flexion_angle_t* angle); // flexion_angle_t == double
+void send_init_calib(init_calib_t cal);        // init_calib_t == bool
+void send_calc_error(calc_err_t err);          // calc_err_t == enum
 
-  for (i = 0; i < 100; i++) {
-    printf("Hello World %d!\n", i);
-  }
-  do {
-    i++;
-  } while (1);
-}
-
-/*************************** End of file ****************************/
+#endif
