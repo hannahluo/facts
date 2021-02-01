@@ -135,34 +135,52 @@
 //This bit reports the measurement of the LRA resonance period
 #define LRARESPERIOD_REG 0x22
 
-bool init(void);
-void drv2605l_write(uint8_t reg, uint8_t val);
-uint8_t drv2605l_read(uint8_t reg);
+static constexpr uint8_t kInitSuccess = 0xE0;
+static constexpr uint8_t kByteLen = 1u;
+static constexpr uint8_t kByteData = 0u;
+
+// TODO:
+// once this smooth brain figures out what vibrations to send
+// we should make a struct to send over to the big boy :)
+// function for run and stop or run for set time
+// members incl tca 9548a
+typedef struct {
+    // channels is a bit field of active channels where a set bit = active channel
+    uint8_t channel_number; /**< which channels to write to */
+    uint8_t dev_addr = I2C_ADDR; /**< i2c device address of drv2605l */
+
+    tca9548_t* i2c_mux; /**< bus write function pointer */
+} tca9548_t;
+
+bool drv2605l_init(const drv2605l_t* motor);
+bool drv2605l_write(drv2605l_t* motor, uint8_t reg_addr, uint8_t data);
+bool drv2605l_read(drv2605l_t* motor, uint8_t reg_addr, uint8_t* data);
+bool drv2605l_deinit(const drv2605l_t* motor);
 
 // figure out which ones we need
-void drv2605l_mode(uint8_t mode);
-void drv2605l_motor_select(uint8_t val);
-void drv2605l_rtp(uint8_t val);
-void drv2605l_library(uint8_t val);
-void drv2605l_waveform(uint8_t seq, uint8_t wav);
-void drv2605l_go(void);
-void drv2605l_stop(void);
-void drv2605l_overdrive(uint8_t drive);
-void drv2605l_sus_pos(uint8_t pos);
-void drv2605l_sus_neg(uint8_t neg);
-void drv2605l_breaktime(uint8_t brk);
-void drv2605l_audio2vibe(uint8_t a2v);
-void drv2605l_aud_min(uint8_t min);
-void drv2605l_aud_max(uint8_t max);
-void drv2605l_aud_min_drive(uint8_t mnd);
-void drv2605l_aud_max_drive(uint8_t mxd);
-void drv2605l_ratevolt(uint8_t rat);
-void drv2605l_clamp(uint8_t clp);
-void drv2605l_cntrl1(uint8_t c1);
-void drv2605l_cntrl2(uint8_t c2);
-void drv2605l_cntrl3(uint8_t c3);
-void drv2605l_cntrl4(uint8_t c4);
-void drv2605l_cntrl5(uint8_t c5);
-void drv2605l_olp(uint8_t olp);
-void drv2605l_vbatt(void);
-void drv2605l_lra_period(void);
+void drv2605l_mode(drv2605l_t* motor, uint8_t mode);
+void drv2605l_motor_select(drv2605l_t* motor, uint8_t val);
+void drv2605l_rtp(drv2605l_t* motor, uint8_t val);
+void drv2605l_library(drv2605l_t* motor, uint8_t val);
+void drv2605l_waveform(drv2605l_t* motor, uint8_t seq, uint8_t wav);
+void drv2605l_go(drv2605l_t* motor);
+void drv2605l_stop(drv2605l_t* motor);
+void drv2605l_overdrive(drv2605l_t* motor, uint8_t drive);
+void drv2605l_sus_pos(drv2605l_t* motor, uint8_t pos);
+void drv2605l_sus_neg(drv2605l_t* motor, uint8_t neg);
+void drv2605l_breaktime(drv2605l_t* motor, uint8_t brk);
+void drv2605l_audio2vibe(drv2605l_t* motor, uint8_t a2v);
+void drv2605l_aud_min(drv2605l_t* motor, uint8_t min);
+void drv2605l_aud_max(drv2605l_t* motor, uint8_t max);
+void drv2605l_aud_min_drive(drv2605l_t* motor, uint8_t mnd);
+void drv2605l_aud_max_drive(drv2605l_t* motor, uint8_t mxd);
+void drv2605l_ratevolt(drv2605l_t* motor, uint8_t rat);
+void drv2605l_clamp(drv2605l_t* motor, uint8_t clp);
+void drv2605l_cntrl1(drv2605l_t* motor, uint8_t c1);
+void drv2605l_cntrl2(drv2605l_t* motor, uint8_t c2);
+void drv2605l_cntrl3(drv2605l_t* motor, uint8_t c3);
+void drv2605l_cntrl4(drv2605l_t* motor, uint8_t c4);
+void drv2605l_cntrl5(drv2605l_t* motor, uint8_t c5);
+void drv2605l_olp(drv2605l_t* motor, uint8_t olp);
+void drv2605l_vbatt(drv2605l_t* motor);
+void drv2605l_lra_period(drv2605l_t* motor);
