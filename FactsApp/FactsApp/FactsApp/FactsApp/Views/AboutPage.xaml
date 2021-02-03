@@ -16,11 +16,35 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <AbsoluteLayout>
-            <Polyline Points="{Binding DataPoints}"
+        <AbsoluteLayout HeightRequest="{Binding ModelHeight}"
+                        WidthRequest="{Binding ModelWidth}">
+            <Polyline Points="{Binding AngleLinePoints}"
+                      Stroke="{Binding AngleLineColor}"
+                      StrokeThickness="3"
+                      StrokeDashArray="0.75,0.75"
+                      StrokeDashOffset="1"
+                      WidthRequest="500"
+                      HeightRequest="500"/>
+            <Path Stroke="{Binding AngleLineColor}"
+                  StrokeThickness="3"
+                  Data="{Binding AngleArc}"
+                  StrokeDashArray="0.75,0.75"
+                  StrokeDashOffset="1"
+                  WidthRequest="500"
+                  HeightRequest="500"/>
+            <Polyline Points="{Binding BodyModelPoints}"
                       Stroke="Black" 
                       StrokeThickness="10"
-                      StrokeLineJoin="Round"/>
+                      StrokeLineJoin="Round"
+                      WidthRequest="500"
+                      HeightRequest="500"/>
+            <Path Stroke="Black"
+                  Fill="White"
+                  StrokeThickness="10"
+                  Data="{Binding HeadGeometry}"
+                  WidthRequest="500"
+                  HeightRequest="500"/>
+
         </AbsoluteLayout>
         <forms:ChartView Chart="{Binding RecentAngleChart}" 
                          HeightRequest="200"/>
