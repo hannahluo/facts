@@ -135,22 +135,29 @@
 //This bit reports the measurement of the LRA resonance period
 #define LRARESPERIOD_REG 0x22
 
+typedef bool (*vibrate)(nrf_twi_sensor_t*, uint8_t, uint8_t, uint8_t*, uint8_t, uint8_t);
+
 static constexpr uint8_t kInitSuccess = 0xE0;
 static constexpr uint8_t kByteLen = 1u;
 static constexpr uint8_t kByteData = 0u;
 
-// TODO:
-// once this smooth brain figures out what vibrations to send
-// we should make a struct to send over to the big boy :)
-// function for run and stop or run for set time
-// members incl tca 9548a
 typedef struct {
     // channels is a bit field of active channels where a set bit = active channel
     uint8_t channel_number; /**< which channels to write to */
     uint8_t dev_addr = I2C_ADDR; /**< i2c device address of drv2605l */
 
     tca9548_t* i2c_mux; /**< bus write function pointer */
-} tca9548_t;
+} drv2605l_t;
+
+// TODO: might need a setup motors function
+typedef struct {
+    drv2605l_t* motors;
+    uint8_t num_motors;
+    vibrate haptic_motors_vibrate;
+} haptic_motors_t;
+
+bool haptic_motors_init(const haptic_motors_t* motors);
+bool haptic_motors_vibrate_impl(drv2605l_t* motors, uint8_t num_motors);
 
 bool drv2605l_init(const drv2605l_t* motor);
 bool drv2605l_write(drv2605l_t* motor, uint8_t reg_addr, uint8_t data);
