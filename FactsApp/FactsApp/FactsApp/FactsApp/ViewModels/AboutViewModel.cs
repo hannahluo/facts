@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
+using Microcharts;
+using SkiaSharp;
 
 namespace FactsApp.ViewModels
 {
@@ -12,7 +15,10 @@ namespace FactsApp.ViewModels
         private double kneeModelBodyLength = 100.0f;
         private double kneeModelFootLength = 20.0f;
 
-        private double flexionAngleValue = 0.0;
+        private int maxRecentAngles = 20;
+        private List<ChartEntry> recentAngleValues = new List<ChartEntry>();
+
+        private double flexionAngleValue = 90.0;
         public double FlexionAngleValue
         {
             set
@@ -63,6 +69,23 @@ namespace FactsApp.ViewModels
             }
         }
 
+        private Chart recentAngleChart;
+        public Chart RecentAngleChart
+        {
+            set
+            {
+                if (value != recentAngleChart)
+                {
+                    recentAngleChart = value;
+                    OnPropertyChanged(nameof(RecentAngleChart));
+                }
+            }
+            get
+            {
+                return recentAngleChart;
+            }
+        }
+
         public AboutViewModel()
         {
             Title = "About";
@@ -77,7 +100,8 @@ namespace FactsApp.ViewModels
                     int currWidth = (int)(Application.Current.MainPage.Width);
                     int currHeight = (int)(Application.Current.MainPage.Height);
 
-                    FlexionAngleValue += 5;//= rand.Next(5, 15);
+                    FlexionAngleValue += rand.Next(-15, 15);
+
                     FlexionAngleValue = FlexionAngleValue % 185;
 
                     if (FlexionAngleValue > 10)
@@ -113,6 +137,23 @@ namespace FactsApp.ViewModels
 
                     // Have to set this to notify an update in the UI
                     DataPoints = newPoints;
+
+                    // Store most recent set of angles
+                    recentAngleValues.Insert(0, new ChartEntry((float)flexionAngleValue));
+
+                    if (recentAngleValues.Count > maxRecentAngles)
+                    {
+                        recentAngleValues.RemoveAt(maxRecentAngles);
+                    }
+
+                    RecentAngleChart = new LineChart()
+                    {
+                        Entries = recentAngleValues,
+                        IsAnimated = false,
+                        AnimationDuration = new TimeSpan(0), // Add this to prevent the chart from redrawing the intro animation every single time
+                        MaxValue = 180,
+                        MinValue = 0,
+                    };
 
                     return true;
                 });
