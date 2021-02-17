@@ -2,16 +2,45 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FactsApp.Views.ConnectionPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="ConnectionItemTemplate">
+                <ViewCell>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackLayout Orientation ="Vertical" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize ="Large" />
+                            <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
+                        </StackLayout>
+                        <Label Grid.Column="1"
+                               Margin="10"
+                               Text="{Binding Rssi}"
+                               VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout Margin="20,35,20,25" Orientation="Vertical">
             <Button Text="{Binding ButtonText}" 
                     Clicked="OnButtonClicked"
+                    IsEnabled="{Binding ButtonEnabled}"
                     BackgroundColor="{Binding ButtonColour}"
                     WidthRequest="10"
                     HeightRequest="50" />
             <Label Text="{Binding StateText}"
                 VerticalOptions="Center" 
                 HorizontalOptions="Center" />
+            <ListView Grid.Row="1" ItemsSource="{Binding Devices}"
+                 IsPullToRefreshEnabled="False"
+                 RowHeight="80"
+                 ItemTemplate="{StaticResource ConnectionItemTemplate}">
+            </ListView>
         </StackLayout>
+        
     </ContentPage.Content>
 </ContentPage>

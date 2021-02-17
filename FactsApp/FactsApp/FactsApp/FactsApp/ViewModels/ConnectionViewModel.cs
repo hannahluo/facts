@@ -37,6 +37,7 @@ namespace FactsApp.ViewModels
         public bool IsStateOn => m_ble.IsOn;
         public string StateText => GetStateText();
         private string _buttonText = "Scan";
+        public bool IsScanning => m_adapter.IsScanning;
         public string ButtonText
         {
             get => _buttonText;
@@ -49,13 +50,37 @@ namespace FactsApp.ViewModels
                 }
             }
         }
+        public bool _buttonEnabled = true;
+        public bool ButtonEnabled
+        {
+            get => _buttonEnabled;
+            set
+            {
+                if (value != _buttonEnabled)
+                {
+                    _buttonEnabled = value;
+                    OnPropertyChanged(nameof(ButtonEnabled));
+                }
+            }
+        }
+        public ObservableCollection<ConnectionItemViewModel> Devices { get; set; } = new ObservableCollection<ConnectionItemViewModel>();
 
 
-        
         public ConnectionViewModel() : base()
         {
-            m_ble.StateChanged += OnStateChanged;
+            
             m_permissions = CrossPermissions.Current;
+            // Register event handlers for various events
+            m_ble.StateChanged += OnStateChanged;
+            m_adapter.DeviceDiscovered += (s, a) => Devices.Add(new ConnectionItemViewModel(a.Device));
+            m_adapter.ScanTimeoutElapsed += FinishedScanning;
+        }
+
+        private void FinishedScanning(object sender, EventArgs e)
+        {
+            ButtonText = "Scan";
+            ButtonColour = Color.Aqua;
+            ButtonEnabled = true;
         }
 
         private void OnStateChanged(object sender, BluetoothStateChangedArgs e)
@@ -74,12 +99,13 @@ namespace FactsApp.ViewModels
         public void OnButtonClicked(object sender, EventArgs e)
         {
             ButtonText = "Scanning";
+            ButtonColour = Color.LightGray;
 
             // Initiate BLE scanning procedure
             if (!m_ble.IsOn)
             {
                 OnPropertyChanged(nameof(StateText));
-                // Insert dialog box / pop up
+                OnPropertyChanged(nameof(IsStateOn));
             }
 
             // Get permissions on Android
@@ -88,6 +114,8 @@ namespace FactsApp.ViewModels
                 CheckPermissions();
             }
 
+            // Scan for available devices
+            Scan();
         }
 
         private async void CheckPermissions()
@@ -106,6 +134,17 @@ namespace FactsApp.ViewModels
                 }
             }
             return;
+        }
+
+        private async void Scan()
+        {
+            if(IsStateOn && !IsScanning)
+            {
+                Devices.Clear();
+                m_adapter.ScanMode = ScanMode.LowPower;
+                ButtonEnabled = false;
+                await m_adapter.StartScanningForDevicesAsync();
+            }
         }
 
         private string GetStateText()
