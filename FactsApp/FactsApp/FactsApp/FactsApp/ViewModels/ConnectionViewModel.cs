@@ -88,9 +88,11 @@ namespace FactsApp.ViewModels
             if(!IsStateOn)
             {
                 ButtonColour = Color.Aqua;
+                ButtonEnabled = true;
             } else
             {
                 ButtonColour = Color.Red;
+                ButtonEnabled = false;
             }
             OnPropertyChanged(nameof(IsStateOn));
             OnPropertyChanged(nameof(StateText));

@@ -12,7 +12,7 @@ namespace FactsApp.ViewModels
         public Guid Id => Device.Id;
         public bool IsConnected => Device.State == DeviceState.Connected;
         public int Rssi => Device.Rssi;
-        public string Name => Device.Name;
+        public string Name => DisplayName();
         
         public ConnectionItemViewModel(IDevice device)
         {
@@ -27,6 +27,17 @@ namespace FactsApp.ViewModels
             }
             OnPropertyChanged(nameof(IsConnected));
             OnPropertyChanged(nameof(Rssi));
+        }
+
+        public string DisplayName()
+        {
+            if(Device.Name == null)
+            {
+                return "N/A";
+            } else
+            {
+                return Device.Name;
+            }
         }
     }
 }

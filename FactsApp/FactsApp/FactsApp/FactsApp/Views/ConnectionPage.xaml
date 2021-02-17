@@ -12,7 +12,7 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <StackLayout Orientation ="Vertical" VerticalOptions="Center">
-                            <Label Text="{Binding Name}" FontSize ="Large" />
+                            <Label Text="{Binding Name}" FontSize ="Large" TextColor="Black"/>
                             <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
                         </StackLayout>
                         <Label Grid.Column="1"
@@ -25,20 +25,25 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout Margin="20,35,20,25" Orientation="Vertical">
+        <StackLayout Margin="10,10,10,25" Orientation="Vertical" Spacing="20">
             <Button Text="{Binding ButtonText}" 
                     Clicked="OnButtonClicked"
                     IsEnabled="{Binding ButtonEnabled}"
                     BackgroundColor="{Binding ButtonColour}"
                     WidthRequest="10"
                     HeightRequest="50" />
-            <Label Text="{Binding StateText}"
-                VerticalOptions="Center" 
-                HorizontalOptions="Center" />
-            <ListView Grid.Row="1" ItemsSource="{Binding Devices}"
-                 IsPullToRefreshEnabled="False"
-                 RowHeight="80"
-                 ItemTemplate="{StaticResource ConnectionItemTemplate}">
+            <ListView x:Name="Connections" 
+                      Grid.Row="1" ItemsSource="{Binding Devices}"
+                      IsPullToRefreshEnabled="False"
+                      RowHeight="80"
+                      ItemTemplate="{StaticResource ConnectionItemTemplate}">
+                <ListView.Header>
+                    <StackLayout Orientation="Vertical">
+                        <Label Text="Available Connections" TextColor="Black" 
+                               FontSize="Large" HorizontalTextAlignment="Center"
+                               BackgroundColor="PaleTurquoise"/>
+                    </StackLayout>
+                </ListView.Header>
             </ListView>
         </StackLayout>
         
