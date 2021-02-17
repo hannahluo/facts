@@ -286,13 +286,13 @@ typedef unsigned long int u64; /**< used for unsigned 64bit */
 /**\name    BUS READ AND WRITE FUNCTIONS           */
 /***************************************************************/
 #define BNO055_WR_FUNC_PTR       s8 (*bus_write) \
-        (nrf_twi_sensor_t *, u8, u8, u8 *, u8)
+        (nrf_drv_twi_t *, u8, u8, u8 *, u8)
 
 #define BNO055_BUS_WRITE_FUNC(i2c, dev_addr, reg_addr, reg_data, wr_len) \
     bus_write(i2c, dev_addr, reg_addr, reg_data, wr_len)
 
 #define BNO055_RD_FUNC_PTR       s8 \
-    (*bus_read)(nrf_twi_sensor_t *, u8, u8, u8 *, u8)
+    (*bus_read)(nrf_drv_twi_t *, u8, u8, u8 *, u8)
 
 #define BNO055_BUS_READ_FUNC(i2c, dev_addr, reg_addr, reg_data, r_len) \
     bus_read(i2c, dev_addr, reg_addr, reg_data, r_len)
@@ -524,7 +524,7 @@ struct bno055_t
     BNO055_RD_FUNC_PTR; /**<bus read function pointer */
     void (*delay_msec)(BNO055_MDELAY_DATA_TYPE); /**< delay function pointer */
 
-    nrf_twi_sensor_t* i2c;
+    nrf_drv_twi_t* i2c;
 };
 
 /*!

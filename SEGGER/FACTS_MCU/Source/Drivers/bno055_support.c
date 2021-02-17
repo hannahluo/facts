@@ -57,7 +57,7 @@
  *   which is hold in an array
  *  \param cnt : The no of byte of data to be read
  */
-s8 BNO055_I2C_bus_read(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
+s8 BNO055_I2C_bus_read(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 
 /*  \Brief: The API is used as SPI bus write
  *  \Return : Status of the SPI write
@@ -68,7 +68,7 @@ s8 BNO055_I2C_bus_read(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_
  *  will be used for write the value into the register
  *  \param cnt : The no of byte of data to be write
  */
-s8 BNO055_I2C_bus_write(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
+s8 BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 
 /*
  * \Brief: I2C init routine
@@ -565,7 +565,7 @@ s8 I2C_routine(void)
  *      will be used for write the value into the register
  *  \param cnt : The no of byte of data to be write
  */
-s8 BNO055_I2C_bus_write(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
+s8 BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
     s32 BNO055_iERROR = BNO055_INIT_VALUE;
     u8 array[I2C_BUFFER_LEN];
@@ -607,7 +607,7 @@ s8 BNO055_I2C_bus_write(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg
  *   which is hold in an array
  *  \param cnt : The no of byte of data to be read
  */
-s8 BNO055_I2C_bus_read(nrf_twi_sensor_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
+s8 BNO055_I2C_bus_read(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
     s32 BNO055_iERROR = BNO055_INIT_VALUE;
     u8 array[I2C_BUFFER_LEN] = { BNO055_INIT_VALUE };

@@ -135,7 +135,7 @@
 //This bit reports the measurement of the LRA resonance period
 #define LRARESPERIOD_REG 0x22
 
-typedef bool (*vibrate)(nrf_twi_sensor_t*, uint8_t, uint8_t, uint8_t*, uint8_t, uint8_t);
+typedef bool (*vibrate)(nrf_drv_twi_t*, uint8_t, uint8_t, uint8_t*, uint8_t, uint8_t);
 
 static constexpr uint8_t kInitSuccess = 0xE0;
 static constexpr uint8_t kByteLen = 1u;

@@ -1,13 +1,15 @@
 #include "haptic_motors.h"
+#include "nrf_log.h"
 
 bool haptic_motors_init(const haptic_motors_t* motor_ctrl) {
+    NRF_LOG_INFO("initializing haptic motors");
     uint8_t i = kHapticMotorDefault;
     bool err = false;
     for (i = kHapticMotorDefault; i < motor_ctrl->num_motors; ++i) {
         err = drv2506l_init(motor_ctrl->motors);
 
         if (err == false) {
-            // log something
+            NRF_LOG_WARNING("haptic motor init error");
             return err;
         }
     }
@@ -24,7 +26,7 @@ bool haptic_motors_vibrate_impl(bool haptic_motors_vibrate_impl(drv2605l_t* moto
         // do something
 
         if (err == false) {
-            // log something
+            NRF_LOG_WARNING("haptic motor vibrate error");
             return err;
         }
     }
@@ -33,6 +35,7 @@ bool haptic_motors_vibrate_impl(bool haptic_motors_vibrate_impl(drv2605l_t* moto
 }
 
 bool drv2605l_deinit(const haptic_motors_t* motor_ctrl) {
+    NRF_LOG_INFO("deinitializing haptic motors");
     uint8_t i = kHapticMotorDefault;
     bool err = false;
     for (i = kHapticMotorDefault; i < motor_ctrl->num_motors; ++i) {
