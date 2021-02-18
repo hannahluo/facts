@@ -18,7 +18,7 @@ namespace FactsApp.ViewModels
         private double kneeModelArcDisplacement = 25.0f;
 
         private int maxRecentAngles = 20;
-        private List<ChartEntry> recentAngleValues = new List<ChartEntry>();
+        private List<ChartEntry> recentAngleValues = new List<ChartEntry>(20);
 
         private double modelHeight = 0.0f;
         public double ModelHeight
@@ -194,127 +194,129 @@ namespace FactsApp.ViewModels
             Title = "About";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
-            var rand = new Random();
-
-            Size kneeModelArcRadii = new Size(kneeModelArcDisplacement, kneeModelArcDisplacement);
-
-            double baseModelHeight = kneeModelBodyLength + 2 * kneeModelThighLength + 20.0f;
-
             Device.StartTimer(TimeSpan.FromSeconds(1), () =>
                 {
-                    PointCollection newBodyPoints = new PointCollection();
-                    PointCollection newAngleLinePoints = new PointCollection();
-
-                    int currWidth = (int)(Application.Current.MainPage.Width);
-
-                    FlexionAngleValue += 5;
-
-                    if (FlexionAngleValue > 150) FlexionAngleValue = 45;
-
-                    if (FlexionAngleValue > 90)
-                    {
-                        FlexionAngleColor = Color.Red;
-                        AngleLineColor = Brush.Red;
-                    }
-                    else
-                    {
-                        FlexionAngleColor = Color.Green;
-                        AngleLineColor = Brush.Green;
-                    }
-
-                    // Scale this based on the flexion angle to approximate
-                    double kneeVerticalAngle = FlexionAngleValue * 45 / 180;
-                    double hipHorizontalAngle = 90 + kneeVerticalAngle - FlexionAngleValue;
-                    double bodyVerticalAngle = kneeVerticalAngle / 2;
-                    
-
-                    double ankleX   = currWidth/2;
-                    double ankleY   = baseModelHeight;
-                    double toeX     = ankleX - kneeModelFootLength;
-                    double toeY     = ankleY;
-                    double kneeY    = ankleY - Math.Cos(kneeVerticalAngle * Math.PI / 180) * kneeModelThighLength;
-                    double kneeX    = ankleX - Math.Sin(kneeVerticalAngle * Math.PI / 180) * kneeModelThighLength;
-                    double hipY     = kneeY - Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelThighLength;
-                    double hipX     = kneeX + Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelThighLength;
-                    double headY    = hipY - Math.Cos(bodyVerticalAngle * Math.PI / 180) * kneeModelBodyLength;
-                    double headX    = hipX - Math.Sin(bodyVerticalAngle * Math.PI / 180) * kneeModelBodyLength;
-
-                    double kneeLineExtendedX = kneeX - Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelAngleLineLength;
-                    double kneeLineExtendedY = kneeY + Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelAngleLineLength;
-
-                    double angleArcStartX   = kneeX - Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelArcDisplacement;
-                    double angleArcStartY   = kneeY + Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelArcDisplacement;
-                    double angleArcEndX     = kneeX + Math.Sin(kneeVerticalAngle * Math.PI / 180) * kneeModelArcDisplacement;
-                    double angleArcEndY     = kneeY + Math.Cos(kneeVerticalAngle * Math.PI / 180) * kneeModelArcDisplacement;
-
-                    newBodyPoints.Add(new Point(toeX, toeY));
-                    newBodyPoints.Add(new Point(ankleX, ankleY));
-                    newBodyPoints.Add(new Point(kneeX, kneeY));
-                    newBodyPoints.Add(new Point(hipX, hipY));
-                    newBodyPoints.Add(new Point(headX, headY));
-
-                    newAngleLinePoints.Add(new Point(kneeX, kneeY));
-                    newAngleLinePoints.Add(new Point(kneeLineExtendedX, kneeLineExtendedY));
-
-                    // Have to set this to notify an update in the UI
-                    BodyModelPoints = newBodyPoints;
-                    AngleLinePoints = newAngleLinePoints;
-
-                    Point angleArcStart = new Point(angleArcStartX, angleArcStartY);
-                    Point angleArcEnd = new Point(angleArcEndX, angleArcEndY);
-
-                    // Create a new path geometry for the arc to dynamically update
-                    PathGeometry newAngleArc = new PathGeometry();
-
-                    ArcSegment newArc = new ArcSegment(angleArcEnd, kneeModelArcRadii, 0, SweepDirection.CounterClockwise, false);
-                    PathSegmentCollection pathSegments = new PathSegmentCollection();
-                    pathSegments.Add(newArc);
-
-                    PathFigure newPathFig = new PathFigure()
-                    {
-                        StartPoint = angleArcStart,
-                        Segments = pathSegments
-                    };
-
-                    newAngleArc.Figures.Add(newPathFig);
-
-                    AngleArc = newAngleArc;
-
-                    // Create a new ellipse geometry for the head to dynamically update
-                    EllipseGeometry newHead = new EllipseGeometry()
-                    {
-                        Center = new Point(headX, headY),
-                        RadiusX = 10,
-                        RadiusY = 10
-                    };
-
-                    HeadGeometry = newHead;
-
-                    // Store most recent set of angles
-                    recentAngleValues.Insert(0, new ChartEntry((float)flexionAngleValue));
-
-                    if (recentAngleValues.Count > maxRecentAngles)
-                    {
-                        recentAngleValues.RemoveAt(maxRecentAngles);
-                    }
-
-                    RecentAngleChart = new LineChart()
-                    {
-                        Entries = recentAngleValues,
-                        IsAnimated = false,
-                        AnimationDuration = new TimeSpan(0), // Add this to prevent the chart from redrawing the intro animation every single time
-                        MaxValue = 180,
-                        MinValue = 0,
-                    };
-
-                    ModelHeight = baseModelHeight;
-                    ModelWidth = currWidth;
-
-
+                    UpdateView();
                     return true;
                 });
         }
 
         public ICommand OpenWebCommand { get; }
+
+        public void UpdateView()
+        {
+            Size kneeModelArcRadii = new Size(kneeModelArcDisplacement, kneeModelArcDisplacement);
+
+            double baseModelHeight = kneeModelBodyLength + 2 * kneeModelThighLength + 20.0f;
+
+            PointCollection newBodyPoints = new PointCollection();
+            PointCollection newAngleLinePoints = new PointCollection();
+
+            int currWidth = (int)(Application.Current.MainPage.Width);
+
+            FlexionAngleValue += 5;
+
+            if (FlexionAngleValue > 150) FlexionAngleValue = 45;
+
+            if (FlexionAngleValue > 90)
+            {
+                FlexionAngleColor = Color.Red;
+                AngleLineColor = Brush.Red;
+            }
+            else
+            {
+                FlexionAngleColor = Color.Green;
+                AngleLineColor = Brush.Green;
+            }
+
+            // Scale this based on the flexion angle to approximate
+            double kneeVerticalAngle = FlexionAngleValue * 45 / 180;
+            double hipHorizontalAngle = 90 + kneeVerticalAngle - FlexionAngleValue;
+            double bodyVerticalAngle = kneeVerticalAngle / 2;
+
+
+            double ankleX = currWidth / 2;
+            double ankleY = baseModelHeight;
+            double toeX = ankleX - kneeModelFootLength;
+            double toeY = ankleY;
+            double kneeY = ankleY - Math.Cos(kneeVerticalAngle * Math.PI / 180) * kneeModelThighLength;
+            double kneeX = ankleX - Math.Sin(kneeVerticalAngle * Math.PI / 180) * kneeModelThighLength;
+            double hipY = kneeY - Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelThighLength;
+            double hipX = kneeX + Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelThighLength;
+            double headY = hipY - Math.Cos(bodyVerticalAngle * Math.PI / 180) * kneeModelBodyLength;
+            double headX = hipX - Math.Sin(bodyVerticalAngle * Math.PI / 180) * kneeModelBodyLength;
+
+            double kneeLineExtendedX = kneeX - Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelAngleLineLength;
+            double kneeLineExtendedY = kneeY + Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelAngleLineLength;
+
+            double angleArcStartX = kneeX - Math.Cos(hipHorizontalAngle * Math.PI / 180) * kneeModelArcDisplacement;
+            double angleArcStartY = kneeY + Math.Sin(hipHorizontalAngle * Math.PI / 180) * kneeModelArcDisplacement;
+            double angleArcEndX = kneeX + Math.Sin(kneeVerticalAngle * Math.PI / 180) * kneeModelArcDisplacement;
+            double angleArcEndY = kneeY + Math.Cos(kneeVerticalAngle * Math.PI / 180) * kneeModelArcDisplacement;
+
+            newBodyPoints.Add(new Point(toeX, toeY));
+            newBodyPoints.Add(new Point(ankleX, ankleY));
+            newBodyPoints.Add(new Point(kneeX, kneeY));
+            newBodyPoints.Add(new Point(hipX, hipY));
+            newBodyPoints.Add(new Point(headX, headY));
+
+            newAngleLinePoints.Add(new Point(kneeX, kneeY));
+            newAngleLinePoints.Add(new Point(kneeLineExtendedX, kneeLineExtendedY));
+
+            // Have to set this to notify an update in the UI
+            BodyModelPoints = newBodyPoints;
+            AngleLinePoints = newAngleLinePoints;
+
+            Point angleArcStart = new Point(angleArcStartX, angleArcStartY);
+            Point angleArcEnd = new Point(angleArcEndX, angleArcEndY);
+
+            // Create a new path geometry for the arc to dynamically update
+            PathGeometry newAngleArc = new PathGeometry();
+
+            ArcSegment newArc = new ArcSegment(angleArcEnd, kneeModelArcRadii, 0, SweepDirection.CounterClockwise, false);
+            PathSegmentCollection pathSegments = new PathSegmentCollection();
+            pathSegments.Add(newArc);
+
+            PathFigure newPathFig = new PathFigure()
+            {
+                StartPoint = angleArcStart,
+                Segments = pathSegments
+            };
+
+            newAngleArc.Figures.Add(newPathFig);
+
+            AngleArc = newAngleArc;
+
+            // Create a new ellipse geometry for the head to dynamically update
+            EllipseGeometry newHead = new EllipseGeometry()
+            {
+                Center = new Point(headX, headY),
+                RadiusX = 10,
+                RadiusY = 10
+            };
+
+            HeadGeometry = newHead;
+
+            // Store most recent set of angles
+            recentAngleValues.Insert(0, new ChartEntry((float)flexionAngleValue));
+
+            if (recentAngleValues.Count > maxRecentAngles)
+            {
+                recentAngleValues.RemoveAt(maxRecentAngles);
+            }
+
+            RecentAngleChart = new LineChart()
+            {
+                Entries = recentAngleValues,
+                IsAnimated = false,
+                AnimationDuration = new TimeSpan(0), // Add this to prevent the chart from redrawing the intro animation every single time
+                MaxValue = 180,
+                MinValue = 0,
+            };
+
+            ModelHeight = baseModelHeight;
+            ModelWidth = currWidth;
+        }
     }
+
 }

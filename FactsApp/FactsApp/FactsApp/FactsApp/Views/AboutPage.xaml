@@ -5,7 +5,7 @@
              x:Class="FactsApp.Views.AboutPage"
              xmlns:vm="clr-namespace:FactsApp.ViewModels"
              Title="{Binding Title}">
-    <StackLayout Margin="20">
+    <StackLayout x:Name="AngleDispStackLayout" Margin="20">
         <Label TextColor="{Binding FlexionAngleColor}"
                FontSize="30"
                HorizontalOptions="Center">
@@ -24,7 +24,8 @@
                       StrokeDashArray="0.75,0.75"
                       StrokeDashOffset="1"
                       WidthRequest="500"
-                      HeightRequest="500"/>
+                      HeightRequest="500"
+                      BackgroundColor="Aqua"/>
             <Path Stroke="{Binding AngleLineColor}"
                   StrokeThickness="3"
                   Data="{Binding AngleArc}"

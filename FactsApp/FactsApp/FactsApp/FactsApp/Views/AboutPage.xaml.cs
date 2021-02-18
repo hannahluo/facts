@@ -9,10 +9,17 @@ namespace FactsApp.Views
 {
     public partial class AboutPage : ContentPage
     {
+        AboutViewModel m_viewModel;
         public AboutPage()
         {
             InitializeComponent();
-            BindingContext = new AboutViewModel();
+            BindingContext = m_viewModel = new AboutViewModel();
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            m_viewModel.UpdateView();
         }
     }
 }
