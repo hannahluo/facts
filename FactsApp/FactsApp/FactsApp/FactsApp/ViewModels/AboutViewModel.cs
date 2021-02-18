@@ -310,6 +310,7 @@ namespace FactsApp.ViewModels
                     ModelHeight = baseModelHeight;
                     ModelWidth = currWidth;
 
+
                     return true;
                 });
         }
