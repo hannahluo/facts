@@ -24,8 +24,7 @@
                       StrokeDashArray="0.75,0.75"
                       StrokeDashOffset="1"
                       WidthRequest="500"
-                      HeightRequest="500"
-                      BackgroundColor="Aqua"/>
+                      HeightRequest="500"/>
             <Path Stroke="{Binding AngleLineColor}"
                   StrokeThickness="3"
                   Data="{Binding AngleArc}"
