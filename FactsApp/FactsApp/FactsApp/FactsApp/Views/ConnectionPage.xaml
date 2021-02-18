@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:FactsApp.Converter"
              x:Class="FactsApp.Views.ConnectionPage">
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -22,18 +23,28 @@
                     </Grid>
                 </ViewCell>
             </DataTemplate>
+            <converters:InvertBoolValueConverter x:Key="InvertBool"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
         <StackLayout Margin="10,10,10,25" Orientation="Vertical" Spacing="20">
-            <Button Text="{Binding ButtonText}" 
-                    Clicked="OnButtonClicked"
-                    IsEnabled="{Binding ButtonEnabled}"
-                    BackgroundColor="{Binding ButtonColour}"
+            <Button Text="{Binding ScanButtonText}" 
+                    Clicked="OnScanButtonClicked"
+                    IsEnabled="{Binding ScanButtonEnabled}"
+                    IsVisible="{Binding ConnectionEstablished, Converter={StaticResource InvertBool}}"
+                    BackgroundColor="Purple"
                     WidthRequest="10"
                     HeightRequest="50" />
-            <ListView x:Name="Connections" 
-                      Grid.Row="1" ItemsSource="{Binding Devices}"
+            <Button Text="{Binding DisconnectButtonText}"
+                    Clicked="OnDisconnectButtonClicked"
+                    IsEnabled="{Binding DisconnectButtonEnabled}"
+                    IsVisible="{Binding ConnectionEstablished}"
+                    BackgroundColor="{Binding DisconnectButtonColour}"
+                    WidthRequest="10" 
+                    HeightRequest="50"/>
+            <ListView x:Name="Connections" SelectionMode="Single"
+                      ItemSelected="OnListSelection"
+                      ItemsSource="{Binding Devices}"
                       IsPullToRefreshEnabled="False"
                       RowHeight="80"
                       ItemTemplate="{StaticResource ConnectionItemTemplate}">
@@ -45,6 +56,7 @@
                     </StackLayout>
                 </ListView.Header>
             </ListView>
+            
         </StackLayout>
         
     </ContentPage.Content>
