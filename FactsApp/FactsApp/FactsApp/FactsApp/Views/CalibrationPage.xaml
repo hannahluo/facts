@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FactsApp.Views.CalibrationPage">
+    <ContentPage.Content>
+        <StackLayout Margin="10,10,10,25" Orientation="Vertical" Spacing="20">
+            <Button Text="{Binding CalibrateButtonText}" 
+                    Clicked="OnCalibrateButtonClicked"
+                    IsEnabled="{Binding CalibrateButtonEnabled}"
+                    BackgroundColor="{Binding CalibrateButtonColour}"
+                    WidthRequest="10"
+                    HeightRequest="50" />
+            <Image Source="walk_icon"
+                   WidthRequest="{OnPlatform iOS=300, Android=250}"
+                   HorizontalOptions="Center"/>
+            <Label Text="{Binding DirectionLabelText}" 
+                   TextColor="Black" 
+                   BackgroundColor="White"
+                   FontSize="Large" 
+                   HorizontalOptions="CenterAndExpand"
+                   HorizontalTextAlignment="Center"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Text="Results" 
+                       HorizontalTextAlignment="Center" FontSize ="Header"
+                       IsVisible="{Binding IsVisible}"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="X" FontSize="Medium" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="1" Grid.Column="2" Text="Y" FontSize="Medium" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="1" Grid.Column="3" Text="Z" FontSize="Medium" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Thigh" FontSize="Medium" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="2" Grid.Column="1" Text="{Binding Path=DeviceJointAxis.ThighX}" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="2" Grid.Column="2" Text="{Binding Path=DeviceJointAxis.ThighY}" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="2" Grid.Column="3" Text="{Binding Path=DeviceJointAxis.ThighZ}" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Calf" FontSize="Medium" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="3" Grid.Column="1" Text="{Binding Path=DeviceJointAxis.CalfX}" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="3" Grid.Column="2" Text="{Binding Path=DeviceJointAxis.CalfY}" IsVisible="{Binding ResultVisible}"/>
+                <Label Grid.Row="3" Grid.Column="3" Text="{Binding Path=DeviceJointAxis.CalfZ}" IsVisible="{Binding ResultVisible}"/>
+            </Grid>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

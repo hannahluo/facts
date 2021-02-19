@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:FactsApp.Converter"
+             x:Class="FactsApp.Views.ConnectionPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="ConnectionItemTemplate">
+                <ViewCell>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackLayout Orientation ="Vertical" VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize ="Large" TextColor="Black"/>
+                            <Label Text="{Binding Id, StringFormat='{0}'}" TextColor="Gray" FontSize="Small"/>
+                        </StackLayout>
+                        <Label Grid.Column="1"
+                               Margin="10"
+                               Text="{Binding Rssi}"
+                               VerticalTextAlignment="Center"></Label>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <converters:InvertBoolValueConverter x:Key="InvertBool"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <StackLayout Margin="10,10,10,25" Orientation="Vertical" Spacing="20">
+            <Button Text="{Binding ScanButtonText}" 
+                    Clicked="OnScanButtonClicked"
+                    IsEnabled="{Binding ScanButtonEnabled}"
+                    IsVisible="{Binding ConnectionEstablished, Converter={StaticResource InvertBool}}"
+                    BackgroundColor="Purple"
+                    WidthRequest="10"
+                    HeightRequest="50" />
+            <Button Text="{Binding DisconnectButtonText}"
+                    Clicked="OnDisconnectButtonClicked"
+                    IsEnabled="{Binding DisconnectButtonEnabled}"
+                    IsVisible="{Binding ConnectionEstablished}"
+                    BackgroundColor="{Binding DisconnectButtonColour}"
+                    WidthRequest="10" 
+                    HeightRequest="50"/>
+            <ListView x:Name="Connections" SelectionMode="Single"
+                      ItemSelected="OnListSelection"
+                      ItemsSource="{Binding Devices}"
+                      IsPullToRefreshEnabled="False"
+                      RowHeight="80"
+                      ItemTemplate="{StaticResource ConnectionItemTemplate}">
+                <ListView.Header>
+                    <StackLayout Orientation="Vertical">
+                        <Label Text="Available Connections" TextColor="Black" 
+                               FontSize="Large" HorizontalTextAlignment="Center"
+                               BackgroundColor="PaleTurquoise"/>
+                    </StackLayout>
+                </ListView.Header>
+            </ListView>
+            
+        </StackLayout>
+        
+    </ContentPage.Content>
+</ContentPage>

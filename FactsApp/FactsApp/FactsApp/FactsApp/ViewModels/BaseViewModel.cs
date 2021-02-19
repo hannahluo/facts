@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
+using Plugin.BLE;
+using Plugin.BLE.Abstractions;
+using Plugin.BLE.Abstractions.Contracts;
 
 namespace FactsApp.ViewModels
 {
@@ -13,6 +16,11 @@ namespace FactsApp.ViewModels
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
 
         bool isBusy = false;
+
+        protected IBluetoothLE m_ble = CrossBluetoothLE.Current;
+        protected IAdapter m_adapter = CrossBluetoothLE.Current.Adapter;
+        static protected IDevice m_connectedDevice = null;
+
         public bool IsBusy
         {
             get { return isBusy; }
