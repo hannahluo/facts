@@ -17,8 +17,11 @@ namespace FactsApp.ViewModels
         private double kneeModelAngleLineLength = 50.0f;
         private double kneeModelArcDisplacement = 25.0f;
 
-        private int maxRecentAngles = 20;
-        private List<ChartEntry> recentAngleValues = new List<ChartEntry>(20);
+        private int maxRecentAngles = 40;
+        private int recentAngleSampleRate = 500; // In per ms - the previous sample will go to 500 ms before
+        public int angleValuesHeadIndex { get; private set; } = 0;
+        public int angleValuesContentSize { get; private set; } = 0;
+        public float[] angleValues { get; private set; } = new float[300000];  // In ms
 
         private double modelHeight = 0.0f;
         public double ModelHeight
@@ -194,9 +197,27 @@ namespace FactsApp.ViewModels
             Title = "About";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
-            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(0.001), () =>
                 {
-                    UpdateView();
+                    angleValues[angleValuesHeadIndex] = angleValuesHeadIndex % 100 + 10;
+
+                    // Only update the UI every so often so we don't overload the work we have to do
+                    if (angleValuesHeadIndex % recentAngleSampleRate == 0)
+                    {
+                        UpdateView();
+                    }
+
+                    angleValuesHeadIndex += 1;
+                    if (angleValuesHeadIndex >= angleValues.Length)
+                    {
+                        angleValuesHeadIndex = 0;
+                    }
+
+                    if (angleValuesContentSize < angleValues.Length)
+                    {
+                        angleValuesContentSize += 1;
+                    }
+
                     return true;
                 });
         }
@@ -214,7 +235,7 @@ namespace FactsApp.ViewModels
 
             int currWidth = (int)(Application.Current.MainPage.Width);
 
-            FlexionAngleValue += 5;
+            FlexionAngleValue = angleValues[angleValuesHeadIndex];
 
             if (FlexionAngleValue > 150) FlexionAngleValue = 45;
 
@@ -297,12 +318,20 @@ namespace FactsApp.ViewModels
 
             HeadGeometry = newHead;
 
-            // Store most recent set of angles
-            recentAngleValues.Insert(0, new ChartEntry((float)flexionAngleValue));
+            List<ChartEntry> recentAngleValues = new List<ChartEntry>();
+            int angleIndex = angleValuesHeadIndex;
 
-            if (recentAngleValues.Count > maxRecentAngles)
+            // Populate a list with a number of recent angles. The resolution of the full list may not be the same resolution of the receny list, so only a couple of values are sampled.
+            while(recentAngleValues.Count < maxRecentAngles)
             {
-                recentAngleValues.RemoveAt(maxRecentAngles);
+                recentAngleValues.Insert(0, new ChartEntry(angleValues[angleIndex]));
+                angleIndex -= recentAngleSampleRate;
+
+                // If we go past the end, loop back around the index
+                if (angleIndex < 0)
+                {
+                    angleIndex += angleValues.Length;
+                }
             }
 
             RecentAngleChart = new LineChart()

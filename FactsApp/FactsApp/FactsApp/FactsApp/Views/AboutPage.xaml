@@ -47,7 +47,11 @@
 
         </AbsoluteLayout>
         <forms:ChartView Chart="{Binding RecentAngleChart}" 
-                         HeightRequest="200"/>
+                         HeightRequest="150"/>
+        <Button Text="Save Data"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Clicked="SaveDataToFile"/>
     </StackLayout>
 
     
