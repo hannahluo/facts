@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "tca9548.h"
+#include "tca9548a.h"
 
 // adapted from https://github.com/sparkfun/SparkFun_Haptic_Motor_Driver_Arduino_Library
 
@@ -135,34 +135,23 @@
 //This bit reports the measurement of the LRA resonance period
 #define LRARESPERIOD_REG 0x22
 
-typedef bool (*vibrate)(nrf_drv_twi_t*, uint8_t, uint8_t, uint8_t*, uint8_t, uint8_t);
+//typedef bool (*vibrate)(nrf_drv_twi_t*, uint8_t, uint8_t, uint8_t*, uint8_t, uint8_t);
 
-static constexpr uint8_t kInitSuccess = 0xE0;
-static constexpr uint8_t kByteLen = 1u;
-static constexpr uint8_t kByteData = 0u;
+static const uint8_t kInitSuccess = 0xE0;
+static const uint8_t kByteLen = 1u;
+static const uint8_t kByteData = 0u;
 
 typedef struct {
     // channels is a bit field of active channels where a set bit = active channel
     uint8_t channel_number; /**< which channels to write to */
-    uint8_t dev_addr = I2C_ADDR; /**< i2c device address of drv2605l */
 
-    tca9548_t* i2c_mux; /**< bus write function pointer */
+    tca9548a_t* i2c_mux; /**< bus write function pointer */
 } drv2605l_t;
 
-// TODO: might need a setup motors function
-typedef struct {
-    drv2605l_t* motors;
-    uint8_t num_motors;
-    vibrate haptic_motors_vibrate;
-} haptic_motors_t;
-
-bool haptic_motors_init(const haptic_motors_t* motors);
-bool haptic_motors_vibrate_impl(drv2605l_t* motors, uint8_t num_motors);
-
-bool drv2605l_init(const drv2605l_t* motor);
+bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mux);
 bool drv2605l_write(drv2605l_t* motor, uint8_t reg_addr, uint8_t data);
 bool drv2605l_read(drv2605l_t* motor, uint8_t reg_addr, uint8_t* data);
-bool drv2605l_deinit(const drv2605l_t* motor);
+bool drv2605l_deinit(drv2605l_t* motor);
 
 // figure out which ones we need
 void drv2605l_mode(drv2605l_t* motor, uint8_t mode);
@@ -170,7 +159,7 @@ void drv2605l_motor_select(drv2605l_t* motor, uint8_t val);
 void drv2605l_rtp(drv2605l_t* motor, uint8_t val);
 void drv2605l_library(drv2605l_t* motor, uint8_t val);
 void drv2605l_waveform(drv2605l_t* motor, uint8_t seq, uint8_t wav);
-void drv2605l_go(drv2605l_t* motor);
+bool drv2605l_go(drv2605l_t* motor);
 void drv2605l_stop(drv2605l_t* motor);
 void drv2605l_overdrive(drv2605l_t* motor, uint8_t drive);
 void drv2605l_sus_pos(drv2605l_t* motor, uint8_t pos);
@@ -189,5 +178,5 @@ void drv2605l_cntrl3(drv2605l_t* motor, uint8_t c3);
 void drv2605l_cntrl4(drv2605l_t* motor, uint8_t c4);
 void drv2605l_cntrl5(drv2605l_t* motor, uint8_t c5);
 void drv2605l_olp(drv2605l_t* motor, uint8_t olp);
-void drv2605l_vbatt(drv2605l_t* motor);
-void drv2605l_lra_period(drv2605l_t* motor);
+uint8_t drv2605l_vbatt(drv2605l_t* motor);
+uint8_t drv2605l_lra_period(drv2605l_t* motor);

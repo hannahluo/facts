@@ -48,133 +48,59 @@
  */
 
 #include <stdio.h>
+
 #include "boards.h"
 #include "app_util_platform.h"
 #include "app_error.h"
 #include "nrf_drv_twi.h"
 #include "nrf_delay.h"
+#include "nrf_gpio.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
 #include "i2c.h"
-#include "tca9548.h"
-#include "drv_2605l.h"
-#include "haptic_motors.h"
+#include "tca9548a.h"
+#include "drv2605l.h"
+//#include "haptic_motors.h"
+#include "bno055.h"
 
+#define MAX_TEST_DATA_BYTES     (15U)                /**< max number of test bytes to be used for tx and rx. */
+#define UART_TX_BUF_SIZE 256                         /**< UART TX buffer size. */
+#define UART_RX_BUF_SIZE 256                         /**< UART RX buffer size. */
+
+#define DBG1_GPIO_PIN 8 
+#define DBG2_GPIO_PIN 9 
+#define STATUS1_PIN 11
+#define STATUS2_PIN 12
+
+#define ELSA_I2C_IMUADDR 0x29
+#define ANNA_I2C_IMUADDR 0x28
 #define ELSA_I2C_MUXADDR 0x71
 #define ANNA_I2C_MUXADDR 0x70
+#define HAPTIC_MOTOR_CH0 0
 #define HAPTIC_MOTOR_CH1 1
 #define HAPTIC_MOTOR_CH2 2
-#define HAPTIC_MOTOR_CH3 3
 
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
 
-/* Common addresses definition for temperature sensor. */
-#define LM75B_ADDR          (0x90U >> 1)
-
-#define LM75B_REG_TEMP      0x00U
-#define LM75B_REG_CONF      0x01U
-#define LM75B_REG_THYST     0x02U
-#define LM75B_REG_TOS       0x03U
-
-/* Mode for LM75B. */
-#define NORMAL_MODE 0U
-
-/* Indicates if operation on TWI has ended. */
-static volatile bool m_xfer_done = false;
-
 /* TWI instance. */
-static const nrf_drv_twi_t i2c = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
-static const tca9548a_t 
+static const nrf_drv_twi_t i2c_drv = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-/* Buffer for samples read from temperature sensor. */
-static uint8_t m_sample;
+static struct bno055_t elsa_imu = { .dev_addr = ELSA_I2C_IMUADDR, .i2c = &i2c_drv };
+static struct bno055_t anna_imu = { .dev_addr = ANNA_I2C_IMUADDR, .i2c = &i2c_drv };
 
-/**
- * @brief Function for setting active mode on MMA7660 accelerometer.
- */
-void LM75B_set_mode(void)
-{
-    ret_code_t err_code;
+static tca9548a_t elsa_mux;  // = { .dev_addr = ELSA_I2C_MUXADDR, .i2c = &i2c_drv };
+static drv2605l_t elsa_m1; // = { .channel_number = HAPTIC_MOTOR_CH1, .i2c_mux = &elsa_mux };
+//static struct drv2605l_t elsa_m2 = { .channel_number = HAPTIC_MOTOR_CH2, .i2c_mux = &elsa_mux };
+//static struct drv2605l_t elsa_m3 = { .channel_number = HAPTIC_MOTOR_CH3, .i2c_mux = &elsa_mux };
 
-    /* Writing to LM75B_REG_CONF "0" set temperature sensor in NORMAL mode. */
-    uint8_t reg[2] = {LM75B_REG_CONF, NORMAL_MODE};
-    err_code = nrf_drv_twi_tx(&m_twi, LM75B_ADDR, reg, sizeof(reg), false);
-    APP_ERROR_CHECK(err_code);
-    while (m_xfer_done == false);
-
-    /* Writing to pointer byte. */
-    reg[0] = LM75B_REG_TEMP;
-    m_xfer_done = false;
-    err_code = nrf_drv_twi_tx(&m_twi, LM75B_ADDR, reg, 1, false);
-    APP_ERROR_CHECK(err_code);
-    while (m_xfer_done == false);
-}
-
-/**
- * @brief Function for handling data from temperature sensor.
- *
- * @param[in] temp          Temperature in Celsius degrees read from sensor.
- */
-__STATIC_INLINE void data_handler(uint8_t temp)
-{
-    NRF_LOG_INFO("Temperature: %d Celsius degrees.", temp);
-}
-
-/**
- * @brief TWI events handler.
- */
-void twi_handler(nrf_drv_twi_evt_t const * p_event, void * p_context)
-{
-    switch (p_event->type)
-    {
-        case NRF_DRV_TWI_EVT_DONE:
-            if (p_event->xfer_desc.type == NRF_DRV_TWI_XFER_RX)
-            {
-                data_handler(m_sample);
-            }
-            m_xfer_done = true;
-            break;
-        default:
-            break;
-    }
-}
-
-/**
- * @brief UART initialization.
- */
-void twi_init (void)
-{
-    ret_code_t err_code;
-
-    const nrf_drv_twi_config_t twi_lm75b_config = {
-       .scl                = ARDUINO_SCL_PIN,
-       .sda                = ARDUINO_SDA_PIN,
-       .frequency          = NRF_DRV_TWI_FREQ_100K,
-       .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
-       .clear_bus_init     = false
-    };
-
-    err_code = nrf_drv_twi_init(&m_twi, &twi_lm75b_config, twi_handler, NULL);
-    APP_ERROR_CHECK(err_code);
-
-    nrf_drv_twi_enable(&m_twi);
-}
-
-/**
- * @brief Function for reading data from temperature sensor.
- */
-static void read_sensor_data()
-{
-    m_xfer_done = false;
-
-    /* Read 1 byte from the specified address - skip 3 bits dedicated for fractional part of temperature. */
-    ret_code_t err_code = nrf_drv_twi_rx(&m_twi, LM75B_ADDR, &m_sample, sizeof(m_sample));
-    APP_ERROR_CHECK(err_code);
-}
+static tca9548a_t anna_mux;  // = { .dev_addr = ANNA_I2C_MUXADDR, .i2c = &i2c_drv };
+static drv2605l_t anna_m1; // = { .channel_number = HAPTIC_MOTOR_CH1, .i2c_mux = &anna_mux };
+//static struct drv2605l_t anna_m2 = { .channel_number = HAPTIC_MOTOR_CH2, .i2c_mux = &anna_mux };
+//static struct drv2605l_t anna_m3 = { .channel_number = HAPTIC_MOTOR_CH3, .i2c_mux = &anna_mux };
 
 /**
  * @brief Function for main application entry.
@@ -184,21 +110,79 @@ int main(void)
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
-    NRF_LOG_INFO("\r\nTWI sensor example started.");
+    // add error handling lol
+    NRF_LOG_INFO("\r\nStart.");
     NRF_LOG_FLUSH();
-    i2c_init(&i2c);
-    //LM75B_set_mode();
 
+    nrf_gpio_cfg_input(STATUS1_PIN, GPIO_PIN_CNF_PULL_Disabled);
+    nrf_gpio_pin_clear(STATUS1_PIN);
+    nrf_gpio_cfg_input(STATUS2_PIN, GPIO_PIN_CNF_PULL_Disabled);
+    nrf_gpio_pin_clear(STATUS2_PIN);
+/*
+    // NRF_LOG_INFO("\r\nGPIO Setup?");
+    // NRF_LOG_FLUSH();
+    nrf_gpio_cfg_output(DBG1_GPIO_PIN);
+    nrf_gpio_pin_clear(DBG1_GPIO_PIN);
+    nrf_gpio_pin_write(DBG1_GPIO_PIN, 0);
+    nrf_gpio_cfg_output(DBG2_GPIO_PIN);
+    nrf_gpio_pin_clear(DBG2_GPIO_PIN);
+    nrf_gpio_pin_write(DBG2_GPIO_PIN, 0);
+*/
+    // NRF_LOG_INFO("\r\nInitializing");
+    // NRF_LOG_FLUSH();
+    i2c_init(&i2c_drv);
+    // bool res1 = bno055_init(&elsa_imu);
+    // bool res2 = bno055_init(&anna_imu);
+
+    const uint8_t test[1];
+    memset(test, 1, sizeof(uint8_t));
+    tca9548a_init(&elsa_mux, ELSA_I2C_MUXADDR, &i2c_drv);
+    tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
+    bool res1 = drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH0, &elsa_mux);
+    bool res2 = drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
+    //i2c_write(&i2c_drv, ELSA_I2C_MUXADDR, &test[0], 1);
+    //i2c_write(&i2c_drv, ANNA_I2C_MUXADDR, &test[0], 1);
+
+    // NRF_LOG_INFO("\r\nMotor Setup");
+    // NRF_LOG_FLUSH();
+    // put into init -> lib 6 for lra
+    //drv2605l_motor_select(&elsa_m1, WAVESEQ7);
+    //drv2605l_library(&elsa_m1, 6); 
+    //drv2605l_waveform(&elsa_m1, 0, WAVESEQ5); 
+    //drv2605l_motor_select(&anna_m1, WAVESEQ7);
+    //drv2605l_library(&anna_m1, 6); 
+    //drv2605l_waveform(&anna_m1, 0, WAVESEQ5); 
+
+    struct bno055_accel_t elsa_data;
+    struct bno055_accel_t anna_data;
+
+    NRF_LOG_INFO("\r\nEntering Loop");
+    NRF_LOG_FLUSH();
     while (true)
     {
-        nrf_delay_ms(500);
+       // nrf_gpio_pin_write(DBG1_GPIO_PIN, 1);
+        //nrf_gpio_pin_write(DBG2_GPIO_PIN, 1);
+  
+        uint32_t status1 = nrf_gpio_pin_read(STATUS1_PIN);
+        NRF_LOG_INFO("stat1: %d", status1);
+        uint32_t status2 = nrf_gpio_pin_read(STATUS2_PIN);
+        NRF_LOG_INFO("stat2: %d", status2);
 
-        do
-        {
-            __WFE();
-        }while (m_xfer_done == false);
+  /*
+        res1 = drv2605l_go(&elsa_m1);
+        res2 = drv2605l_go(&anna_m1);
+        nrf_delay_ms(5000);
+        drv2605l_stop(&elsa_m1);
+        drv2605l_stop(&anna_m1);
 
-        read_sensor_data();
+        //nrf_gpio_pin_write(DBG1_GPIO_PIN, res1);
+        //nrf_gpio_pin_write(DBG2_GPIO_PIN, res2);
+
+        //bool res1 = bno055_read_accel_xyz(&elsa_data);
+        //bool res2 = bno055_read_accel_xyz(&anna_data);
+        //NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
+        */
+        nrf_delay_ms(1000);
         NRF_LOG_FLUSH();
     }
 }

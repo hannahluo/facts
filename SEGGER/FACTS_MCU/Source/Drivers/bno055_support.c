@@ -45,6 +45,8 @@
 *  The following APIs are used for reading and writing of
 *   sensor data using I2C communication
 *----------------------------------------------------------------------------*/
+#define BNO055_API
+
 #ifdef  BNO055_API
 #define BNO055_I2C_BUS_WRITE_ARRAY_INDEX ((u8)1)
 
@@ -593,7 +595,7 @@ s8 BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_da
     * in the I2C write string function
     * For more information please refer data sheet SPI communication:
     */
-    BNO055_iERROR = (s8)i2c_write(i2c, dev_addr, reg_addr, &array[BNO055_INIT_VALUE], cnt);
+    BNO055_iERROR = (s8)i2c_write(i2c, dev_addr, &array[BNO055_INIT_VALUE], cnt);
 
     return (s8)BNO055_iERROR;
 }
@@ -625,7 +627,7 @@ s8 BNO055_I2C_bus_read(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_dat
      * In the driver BNO055_SUCCESS defined as 0
      * and FAILURE defined as -1
      */
-    BNO055_iERROR = (s8)i2c_read(i2c, dev_addr, reg_addr, &array[BNO055_INIT_VALUE], cnt);
+    BNO055_iERROR = (s8)i2c_read(i2c, dev_addr, &array[BNO055_INIT_VALUE], cnt);
     if (BNO055_iERROR == BNO055_SUCCESS) {
         for (stringpos = BNO055_INIT_VALUE; stringpos < cnt; stringpos++)
         {

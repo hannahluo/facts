@@ -21,7 +21,6 @@
 //     }
 // }
 
-
 // FIX
 bool i2c_init(const nrf_drv_twi_t* i2c) {
     NRF_LOG_INFO("initializing i2c");
@@ -35,7 +34,7 @@ bool i2c_init(const nrf_drv_twi_t* i2c) {
        .clear_bus_init     = false
     };
 
-    err_code = nrf_drv_twi_init(i2c, &twi_i2c_config, NULL, NULL);
+    ret_code_t err = nrf_drv_twi_init(i2c, &twi_i2c_config, NULL, NULL);
     if (err != NRF_SUCCESS) {
         NRF_LOG_WARNING("failed to initialize i2c");
         return false;
@@ -46,30 +45,32 @@ bool i2c_init(const nrf_drv_twi_t* i2c) {
     return true;
 };
 
-bool i2c_read(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, const uint8_t reg_addr, uint32_t* data, uint8_t length) {
-    ret_code_t err = nrf_drv_twi_rx(i2c, dev_addr, reg_addr, NULL, data, length);
+bool i2c_read(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t* data, uint8_t length) {
+    //ret_code_t err = nrf_drv_twi_rx(i2c, dev_addr, reg_addr, data, length);
+    ret_code_t err = nrf_drv_twi_rx(i2c, dev_addr, data, length);
 
     if (err != NRF_SUCCESS) {
-        NRF_LOG_WARNING("failed to read i2c");
+        NRF_LOG_WARNING("failed to read i2c: %d, dev addr: %d", err, dev_addr);
         return false;
     }
 
     return true;
 };
 
-bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, const uint8_t reg_addr, uint8_t const* data, uint8_t length) {
+bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t const* data, uint8_t length) {
     // data length actually needs to be buffer length - 1 (1st byte for register addr)
-    ret_code_t err = nrf_drv_twi_tx(i2c, dev_addr, reg_addr, data, length, false);
+    // ret_code_t err = nrf_drv_twi_tx(i2c, dev_addr, reg_addr, data, length);
+    ret_code_t err = nrf_drv_twi_tx(i2c, dev_addr, data, length, true);
 
     if (err != NRF_SUCCESS) {
-        NRF_LOG_WARNING("failed to write i2c");
+        NRF_LOG_WARNING("failed to write i2c: %d, dev addr: %d", err, dev_addr);
         return false;
     }
 
     return true;
 };
 
-bool i2c_deinit(const nrf_drv_twi_t* i2c) {
+bool i2c_deinit(nrf_drv_twi_t* i2c) {
     NRF_LOG_INFO("deinitializing i2c");
     return true; // possibly not needed
 };
