@@ -9,6 +9,7 @@
 #include "ble_srv_common.h"
 
 #define BLE_LOG_SERVICE_BLE_OBSERVER_PRIO   3
+#define LOG_MSG_MAX_LEN                     80
 
 // Register event handler to be invoked on BLE events
 #define BLE_LOG_SERVICE_DEF(_name)                          \
@@ -39,6 +40,7 @@ typedef enum
 {
     BLE_MSG_EVT_NOTIFY_ENABLED,
     BLE_MSG_EVT_NOTIFY_DISABLED,
+    NUM_BLE_LOG_EVT,
 } ble_log_evt_t;
 
 // Function pointer for per-characteristic event handling
@@ -61,7 +63,7 @@ typedef struct ble_log_service_s
     ble_log_char_t logMsg;
 } ble_log_service_t;
 
-typedef enum {
+typedef struct {
     char* msg;
     uint16_t size;
 } log_msg_t;
