@@ -19,12 +19,12 @@ bool tca9548a_init(tca9548a_t* i2c_mux, uint8_t dev_addr, nrf_drv_twi_t* i2c) {
 
 bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel) {
     uint8_t ch[kChannelLength];
-    memset(ch, channel, sizeof(uint8_t));
+    memset(ch, channel, sizeof(uint8_t)); /*
     bool succ = i2c_write(i2c, dev_addr, &ch[kChannelIdx], kChannelLength);
     if (succ == false) {
         NRF_LOG_WARNING("failed to write i2c mux channel");
         return succ;
-    }
+    }*/
 
     uint8_t array[kRegAddrLength + kI2cMaxBufferLength];
     uint8_t pos = kI2cMuxInit;
@@ -33,7 +33,7 @@ bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint
         array[pos + kRegAddrLength] = *(data + pos);
     }
 
-    succ = i2c_write(i2c, dev_addr, &array[kI2cMuxInit], kChannelLength);
+    bool succ = i2c_write(i2c, dev_addr, &array[kI2cMuxInit], kChannelLength);
     if (succ == false) {
         NRF_LOG_WARNING("failed to write i2c mux data");
         return succ;
@@ -44,17 +44,17 @@ bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint
 
 bool tca9548a_read(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel) {
     uint8_t ch[kChannelLength];
-    memset(ch, channel, sizeof(uint8_t));
+    memset(ch, channel, sizeof(uint8_t));  /*
     bool succ = i2c_write(i2c, dev_addr, &ch[kChannelIdx], kChannelLength);
     if (succ == false) {
-        NRF_LOG_WARNING("failed to read i2c mux channel");
+        NRF_LOG_WARNING("failed to write i2c mux channel");
         return succ;
-    }
+    } */
 
     uint8_t array[kI2cMaxBufferLength];
     uint8_t pos = kI2cMuxInit;
     array[kI2cMuxInit] = reg_addr;
-    succ = i2c_read(i2c, dev_addr, &array[kI2cMuxInit], data_length);
+    bool succ = i2c_read(i2c, dev_addr, &array[kI2cMuxInit], data_length);
     if (succ == false) {
         NRF_LOG_WARNING("failed to read i2c mux data");
         return succ;

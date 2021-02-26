@@ -114,11 +114,12 @@ int main(void)
     NRF_LOG_INFO("\r\nStart.");
     NRF_LOG_FLUSH();
 
+/*
     nrf_gpio_cfg_input(STATUS1_PIN, GPIO_PIN_CNF_PULL_Disabled);
     nrf_gpio_pin_clear(STATUS1_PIN);
     nrf_gpio_cfg_input(STATUS2_PIN, GPIO_PIN_CNF_PULL_Disabled);
     nrf_gpio_pin_clear(STATUS2_PIN);
-/*
+
     // NRF_LOG_INFO("\r\nGPIO Setup?");
     // NRF_LOG_FLUSH();
     nrf_gpio_cfg_output(DBG1_GPIO_PIN);
@@ -128,52 +129,46 @@ int main(void)
     nrf_gpio_pin_clear(DBG2_GPIO_PIN);
     nrf_gpio_pin_write(DBG2_GPIO_PIN, 0);
 */
-    // NRF_LOG_INFO("\r\nInitializing");
-    // NRF_LOG_FLUSH();
+    NRF_LOG_INFO("\r\nInitializing");
+    NRF_LOG_FLUSH();
     i2c_init(&i2c_drv);
+    while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     // bool res1 = bno055_init(&elsa_imu);
     // bool res2 = bno055_init(&anna_imu);
 
-    const uint8_t test[1];
-    memset(test, 1, sizeof(uint8_t));
-    tca9548a_init(&elsa_mux, ELSA_I2C_MUXADDR, &i2c_drv);
-    tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
-    bool res1 = drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH0, &elsa_mux);
-    bool res2 = drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
-    //i2c_write(&i2c_drv, ELSA_I2C_MUXADDR, &test[0], 1);
-    //i2c_write(&i2c_drv, ANNA_I2C_MUXADDR, &test[0], 1);
+    tca9548a_init(&elsa_mux, 0x5A, &i2c_drv);
+    // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
+    bool res = drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH0, &elsa_mux);
+    // drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
 
-    // NRF_LOG_INFO("\r\nMotor Setup");
-    // NRF_LOG_FLUSH();
-    // put into init -> lib 6 for lra
-    //drv2605l_motor_select(&elsa_m1, WAVESEQ7);
-    //drv2605l_library(&elsa_m1, 6); 
-    //drv2605l_waveform(&elsa_m1, 0, WAVESEQ5); 
-    //drv2605l_motor_select(&anna_m1, WAVESEQ7);
-    //drv2605l_library(&anna_m1, 6); 
-    //drv2605l_waveform(&anna_m1, 0, WAVESEQ5); 
+    // struct bno055_accel_t elsa_data;
+    // struct bno055_accel_t anna_data;
 
-    struct bno055_accel_t elsa_data;
-    struct bno055_accel_t anna_data;
-
-    NRF_LOG_INFO("\r\nEntering Loop");
+    NRF_LOG_INFO("Entering Loop");
     NRF_LOG_FLUSH();
     while (true)
     {
-       // nrf_gpio_pin_write(DBG1_GPIO_PIN, 1);
-        //nrf_gpio_pin_write(DBG2_GPIO_PIN, 1);
-  
+  /*
+        nrf_gpio_pin_write(DBG1_GPIO_PIN, 1);
+        nrf_gpio_pin_write(DBG2_GPIO_PIN, 1);
+
         uint32_t status1 = nrf_gpio_pin_read(STATUS1_PIN);
         NRF_LOG_INFO("stat1: %d", status1);
         uint32_t status2 = nrf_gpio_pin_read(STATUS2_PIN);
-        NRF_LOG_INFO("stat2: %d", status2);
+        NRF_LOG_INFO("stat2: %d", status2);*/
 
-  /*
-        res1 = drv2605l_go(&elsa_m1);
-        res2 = drv2605l_go(&anna_m1);
-        nrf_delay_ms(5000);
+        NRF_LOG_INFO("\r\nMotor Setup");
+        NRF_LOG_FLUSH();
+        // put into init -> lib 6 for lra
+        drv2605l_library(&elsa_m1, 6); 
+        drv2605l_waveform(&elsa_m1, 0, 47);
+        drv2605l_waveform(&elsa_m1, 1, 0);
+
+        NRF_LOG_INFO("\r\nMotor Run");
+        NRF_LOG_FLUSH();
+        drv2605l_go(&elsa_m1);
+        nrf_delay_ms(2500);
         drv2605l_stop(&elsa_m1);
-        drv2605l_stop(&anna_m1);
 
         //nrf_gpio_pin_write(DBG1_GPIO_PIN, res1);
         //nrf_gpio_pin_write(DBG2_GPIO_PIN, res2);
@@ -181,9 +176,8 @@ int main(void)
         //bool res1 = bno055_read_accel_xyz(&elsa_data);
         //bool res2 = bno055_read_accel_xyz(&anna_data);
         //NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
-        */
-        nrf_delay_ms(1000);
-        NRF_LOG_FLUSH();
+
+        nrf_delay_ms(7500);
     }
 }
 

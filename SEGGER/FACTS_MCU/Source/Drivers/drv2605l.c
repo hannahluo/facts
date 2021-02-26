@@ -1,5 +1,6 @@
 #include "drv2605l.h"
 #include "nrf_log.h"
+#include "nrf_delay.h"
 
 bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mux) {
     NRF_LOG_INFO("initializing haptic motor driver");
@@ -12,20 +13,53 @@ bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mu
     //    return err;
     //}
 
-    // assign any fct ptrs
+    uint8_t exit_standby = kByteData;
+    uint8_t no_rt_playback = kByteData;
+    uint8_t strong_click = 1u;
+    uint8_t end_seq = 0u;
+    uint8_t no_overdrive = 0u;
+    uint8_t sustain_offset = 0u;
+    uint8_t breaktime = 0u;
+    uint8_t max_audio = 0x64;
+    uint8_t set_lra = 7u;
+    uint8_t set_lra_ol = 0u;
 
-    // Want this to Read 0xE0
-    uint8_t data = kByteData;
-    bool err = drv2605l_read(motor, STATUS_REG, &data);
-    if (err == false) {
-        NRF_LOG_WARNING("failed to read haptic motor driver");
-    }
+    bool err = drv2605l_write(motor, MODE_REG, exit_standby);
+    err = drv2605l_write(motor, RTP_REG, no_rt_playback); // no real-time-playback
+    err = drv2605l_write(motor, WAVESEQ1, strong_click); // strong click
+    err = drv2605l_write(motor, WAVESEQ2, end_seq); // end sequence
+    err = drv2605l_write(motor, OVERDRIVE_REG, no_overdrive); // no overdrive
+    err = drv2605l_write(motor, SUSTAINOFFSETPOS_REG, sustain_offset);
+    err = drv2605l_write(motor, SUSTAINOFFSETNEG_REG, sustain_offset);
+    err = drv2605l_write(motor, BREAKTIME_REG, breaktime);
+    err = drv2605l_write(motor, AUDMAXLVL_REG, max_audio);
 
-    if (data != kInitSuccess) {
-        NRF_LOG_WARNING("haptic motor driver status error");
-        err = false;
-    }
-    NRF_LOG_INFO("initialized haptic motor driver: %d", data);
+    // use lra
+    uint8_t feedback_status = kByteData;
+    err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
+    feedback_status |= 1 << set_lra;
+    err = drv2605l_write(motor, FEEDBACK_REG, feedback_status);
+
+    err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
+    NRF_LOG_INFO("feedback: %d", feedback_status);
+
+    // turn on open loop
+    uint8_t ol_status = kByteData;
+    err = drv2605l_read(motor, CONTROL3_REG, &ol_status);
+    ol_status |= 1 << set_lra_ol;
+    err = drv2605l_write(motor, CONTROL3_REG, ol_status);
+
+    // Want this to Read 0xE0 but I2C reads not working D:
+    err = drv2605l_go(motor);
+    nrf_delay_ms(3000); // give us some time
+    /*
+    NRF_LOG_INFO("calibrating motor # %d", channel_number);
+    uint8_t status_data = kByteData;
+    do {
+      err = drv2605l_read(motor, GO_REG, &status_data);
+      NRF_LOG_INFO("motor status: %d", status_data);
+    } while (status_data & 1 != 0);
+    */
 
     return err;
 }
