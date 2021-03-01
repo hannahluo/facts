@@ -30,8 +30,6 @@
 #include "calibration_service.h"
 #include "calculation_service.h"
 
-#include "bsp_btn_ble.h"
-
 #define DEVICE_NAME                     "FACTS_DEV"                             /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "FACTS"                                 /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
@@ -240,9 +238,6 @@ static void sleep_mode_enter(void)
 {
     ret_code_t err_code;
 
-    err_code = bsp_indication_set(BSP_INDICATE_IDLE);
-    APP_ERROR_CHECK(err_code);
-
     // Go to system-off mode (this function will not return)
     err_code = sd_power_system_off();
     APP_ERROR_CHECK(err_code);
@@ -263,8 +258,6 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
             NRF_LOG_INFO("Fast advertising.");
-            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
-            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_ADV_EVT_IDLE:
@@ -295,8 +288,6 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected.");
-            err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
-            APP_ERROR_CHECK(err_code);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
@@ -372,18 +363,6 @@ static void ble_stack_init(void)
     NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
 }
 
-/**@brief Function for initializing buttons and leds.
- *
- * @param[out] p_erase_bonds  Will be true if the clear bonding button was pressed to wake the application up.
- */
-static void buttons_leds_init()
-{
-    ret_code_t err_code;
-
-    err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, NULL);
-    APP_ERROR_CHECK(err_code);
-}
-
 /**@brief Function for initializing the Advertising functionality.
  */
 static void advertising_init(void)
@@ -422,7 +401,6 @@ void start_advertising(bool erase_bonds)
 void bluetooth_init()
 {
     // Initialize bluetooth functionality
-    buttons_leds_init();
     ble_stack_init();
     gap_params_init();
     gatt_init();

@@ -6717,7 +6717,7 @@
  
 
 #ifndef BUTTON_ENABLED
-#define BUTTON_ENABLED 1
+#define BUTTON_ENABLED 0
 #endif
 
 // <q> BUTTON_HIGH_ACCURACY_ENABLED  - Enables GPIOTE high accuracy for buttons
