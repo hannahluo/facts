@@ -380,7 +380,7 @@ ret_code_t nrf_drv_twi_rx(nrf_drv_twi_t const * p_instance,
  *   An example is a TXRX transfer with the options @ref NRF_DRV_TWI_FLAG_RX_POSTINC, @ref NRF_DRV_TWI_FLAG_NO_XFER_EVT_HANDLER, and @ref NRF_DRV_TWI_FLAG_REPEATED_XFER.
  *   After the transfer is set up, a set of transfers can be triggered by PPI that will read, for example, the same register of an
  *   external component and put it into a RAM buffer without any interrupts. @ref nrf_drv_twi_stopped_event_get can be used to get the
- *   address of the STOPPED event, which can be used to count the number of transfers. If @ref NRF_DRV_TWI_FLAG_REPEATED_XFER is used,
+ *   address of the STOPPED event, whch can be used to count the number of transfers. If @ref NRF_DRV_TWI_FLAG_REPEATED_XFER is used,
  *   the driver does not set the driver instance into busy state, so you must ensure that the next transfers are set up
  *   when TWIM is not active. Supported only by TWIM.
  * - @ref NRF_DRV_TWI_FLAG_TX_NO_STOP<span></span>: No stop condition after TX transfer.
@@ -559,16 +559,20 @@ ret_code_t nrf_drv_twi_rx(nrf_drv_twi_t const * p_instance,
                           uint8_t               length)
 {
     ret_code_t result = 0;
+    printf("?");
     if (NRF_DRV_TWI_USE_TWIM)
     {
+    printf("1");
         result = nrfx_twim_rx(&p_instance->u.twim,
                                 address, p_data, length);
     }
     else if (NRF_DRV_TWI_USE_TWI)
     {
+    printf("2");
         result = nrfx_twi_rx(&p_instance->u.twi,
                                address, p_data, length);
     }
+    printf("?");
     return result;
 }
 

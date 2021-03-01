@@ -30,8 +30,8 @@ bool tca9548a_init(tca9548a_t* i2c_mux, uint8_t dev_addr, nrf_drv_twi_t* i2c);
 // write to channels one at a time?
 // data length might need to be const
 // might need a bigger device address
-bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel);
+bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t* reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel);
 
-bool tca9548a_read(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel);
+bool tca9548a_read(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t* reg_addr, uint8_t* data, uint8_t data_length, uint8_t channel);
 
 bool tca9548a_deinit(tca9548a_t* i2c_mux);

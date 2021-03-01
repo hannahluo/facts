@@ -2,30 +2,53 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="28" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../../../AppData/Local/SEGGER/SEGGER Embedded Studio/v3/tools.xml" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="120" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="78" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="28" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.h" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="28" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../../../../../AppData/Local/SEGGER/SEGGER Embedded Studio/v3/tools.xml" useHWbreakpoint="false"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
   <FrameBufferWindow bufferHeight="-1" addressSpace="" addressText="" bufferWidth="-1"/>
  </FrameBufferWindow>
- <Memory1/>
- <Memory2/>
- <Memory3/>
- <Memory4/>
+ <Memory1>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="FACTS_MCU" radix="16" sizeText="" addressText=""/>
+ </Memory1>
+ <Memory2>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="FACTS_MCU" radix="16" sizeText="" addressText=""/>
+ </Memory2>
+ <Memory3>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="FACTS_MCU" radix="16" sizeText="" addressText=""/>
+ </Memory3>
+ <Memory4>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="FACTS_MCU" radix="16" sizeText="" addressText=""/>
+ </Memory4>
  <Project>
   <ProjectSessionItem path="FACTS_MCU"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;BLE_Test"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Board Definition"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Config"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Drivers"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Lib"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_BLE"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_Drivers"/>
-  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_Segger_RTT"/>
-  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Segger Startup Files"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_Libraries"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_Log"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;nRF_SoftDevice"/>
  </Project>
- <Register1/>
- <Register2/>
- <Register3/>
- <Register4/>
+ <Register1>
+  <RegisterWindow visibleNodes="CPU - Current Context/r0;CPU - Current Context/r1;CPU - Current Context/r2;CPU - Current Context/r3;CPU - Current Context/r4;CPU - Current Context/r5;CPU - Current Context/r6;CPU - Current Context/r7;CPU - Current Context/r8;CPU - Current Context/r9;CPU - Current Context/r10;CPU - Current Context/r11;CPU - Current Context/r12;CPU - Current Context/sp(r13);CPU - Current Context/lr(r14);CPU - Current Context/pc(r15);CPU - Current Context/apsr;CPU/r0;CPU/r1;CPU/r2;CPU/r3;CPU/r4;CPU/r5;CPU/r6;CPU/r7;CPU/r8;CPU/r9;CPU/r10;CPU/r11;CPU/r12;CPU/sp(r13);CPU/lr(r14);CPU/pc(r15);CPU/xpsr;CPU/msp;CPU/psp;CPU/cfbp;CPU/internal" binaryNodes="" asciiNodes="" openNodes="CPU - Current Context" name="FACTS_MCU" decimalNodes="" octalNodes="" unsignedNodes=""/>
+ </Register1>
+ <Register2>
+  <RegisterWindow visibleNodes="CPU - Current Context/r0;CPU - Current Context/r1;CPU - Current Context/r2;CPU - Current Context/r3;CPU - Current Context/r4;CPU - Current Context/r5;CPU - Current Context/r6;CPU - Current Context/r7;CPU - Current Context/r8;CPU - Current Context/r9;CPU - Current Context/r10;CPU - Current Context/r11;CPU - Current Context/r12;CPU - Current Context/sp(r13);CPU - Current Context/lr(r14);CPU - Current Context/pc(r15);CPU - Current Context/apsr;CPU/r0;CPU/r1;CPU/r2;CPU/r3;CPU/r4;CPU/r5;CPU/r6;CPU/r7;CPU/r8;CPU/r9;CPU/r10;CPU/r11;CPU/r12;CPU/sp(r13);CPU/lr(r14);CPU/pc(r15);CPU/xpsr;CPU/msp;CPU/psp;CPU/cfbp;CPU/internal" binaryNodes="" asciiNodes="" openNodes="CPU - Current Context" name="FACTS_MCU" decimalNodes="" octalNodes="" unsignedNodes=""/>
+ </Register2>
+ <Register3>
+  <RegisterWindow visibleNodes="CPU - Current Context/r0;CPU - Current Context/r1;CPU - Current Context/r2;CPU - Current Context/r3;CPU - Current Context/r4;CPU - Current Context/r5;CPU - Current Context/r6;CPU - Current Context/r7;CPU - Current Context/r8;CPU - Current Context/r9;CPU - Current Context/r10;CPU - Current Context/r11;CPU - Current Context/r12;CPU - Current Context/sp(r13);CPU - Current Context/lr(r14);CPU - Current Context/pc(r15);CPU - Current Context/apsr;CPU/r0;CPU/r1;CPU/r2;CPU/r3;CPU/r4;CPU/r5;CPU/r6;CPU/r7;CPU/r8;CPU/r9;CPU/r10;CPU/r11;CPU/r12;CPU/sp(r13);CPU/lr(r14);CPU/pc(r15);CPU/xpsr;CPU/msp;CPU/psp;CPU/cfbp;CPU/internal" binaryNodes="" asciiNodes="" openNodes="CPU - Current Context" name="FACTS_MCU" decimalNodes="" octalNodes="" unsignedNodes=""/>
+ </Register3>
+ <Register4>
+  <RegisterWindow visibleNodes="CPU - Current Context/r0;CPU - Current Context/r1;CPU - Current Context/r2;CPU - Current Context/r3;CPU - Current Context/r4;CPU - Current Context/r5;CPU - Current Context/r6;CPU - Current Context/r7;CPU - Current Context/r8;CPU - Current Context/r9;CPU - Current Context/r10;CPU - Current Context/r11;CPU - Current Context/r12;CPU - Current Context/sp(r13);CPU - Current Context/lr(r14);CPU - Current Context/pc(r15);CPU - Current Context/apsr;CPU/r0;CPU/r1;CPU/r2;CPU/r3;CPU/r4;CPU/r5;CPU/r6;CPU/r7;CPU/r8;CPU/r9;CPU/r10;CPU/r11;CPU/r12;CPU/sp(r13);CPU/lr(r14);CPU/pc(r15);CPU/xpsr;CPU/msp;CPU/psp;CPU/cfbp;CPU/internal" binaryNodes="" asciiNodes="" openNodes="CPU - Current Context" name="FACTS_MCU" decimalNodes="" octalNodes="" unsignedNodes=""/>
+ </Register4>
  <Threads>
   <ThreadsWindow showLists=""/>
  </Threads>
@@ -45,12 +68,17 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="20" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/main.c" selected="0" top="3" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="6920" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Config/sdk_config.h" selected="0" top="6939" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="18" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../AppData/Local/SEGGER/SEGGER Embedded Studio/v3/tools.xml" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="8050" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.h" selected="1" top="8043" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="19255" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.c" selected="0" top="19187" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="553" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055_support.c" selected="0" top="540" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="65" y="34" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.h" selected="0" top="37" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="54" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.c" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="9" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.h" selected="0" top="6" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="50" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="1" top="42" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="5138" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Config/sdk_config.h" selected="0" top="5128" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="32" y="147" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Lib/BLE_test/main.c" selected="0" top="137" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="555" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" selected="0" top="625" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="160" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Lib/BLE_test/main.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/components/libraries/util/app_error.h" selected="0" top="160" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="661" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" useBinaryEdit="0" left="0" path="../nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" selected="0" top="608" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="28" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.h" selected="0" top="9" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="41" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.c" selected="0" top="33" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/components/libraries/fifo" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

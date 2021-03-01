@@ -1,6 +1,5 @@
 #include "drv2605l.h"
 #include "nrf_log.h"
-#include "nrf_delay.h"
 
 bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mux) {
     NRF_LOG_INFO("initializing haptic motor driver");
@@ -24,8 +23,8 @@ bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mu
     uint8_t set_lra = 7u;
     uint8_t set_lra_ol = 0u;
 
-    bool err = drv2605l_write(motor, MODE_REG, exit_standby);
-    err = drv2605l_write(motor, RTP_REG, no_rt_playback); // no real-time-playback
+    drv2605l_mode(motor, exit_standby);
+    bool err = drv2605l_write(motor, RTP_REG, no_rt_playback); // no real-time-playback
     err = drv2605l_write(motor, WAVESEQ1, strong_click); // strong click
     err = drv2605l_write(motor, WAVESEQ2, end_seq); // end sequence
     err = drv2605l_write(motor, OVERDRIVE_REG, no_overdrive); // no overdrive
@@ -37,22 +36,20 @@ bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mu
     // use lra
     uint8_t feedback_status = kByteData;
     err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
-    feedback_status |= 1 << set_lra;
+    feedback_status |= (1 << set_lra);
     err = drv2605l_write(motor, FEEDBACK_REG, feedback_status);
-
     err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
-    NRF_LOG_INFO("feedback: %d", feedback_status);
 
     // turn on open loop
     uint8_t ol_status = kByteData;
     err = drv2605l_read(motor, CONTROL3_REG, &ol_status);
-    ol_status |= 1 << set_lra_ol;
+    ol_status |= (1 << set_lra_ol);
     err = drv2605l_write(motor, CONTROL3_REG, ol_status);
+    err = drv2605l_read(motor, CONTROL3_REG, &ol_status);
 
     // Want this to Read 0xE0 but I2C reads not working D:
-    err = drv2605l_go(motor);
-    nrf_delay_ms(3000); // give us some time
     /*
+    err = drv2605l_go(motor);
     NRF_LOG_INFO("calibrating motor # %d", channel_number);
     uint8_t status_data = kByteData;
     do {
@@ -224,7 +221,7 @@ uint8_t drv2605l_lra_period(drv2605l_t* motor) {
 bool drv2605l_read(drv2605l_t* motor, uint8_t reg_addr, uint8_t* data) {
     uint8_t array[kByteLen];
     memset(array, kByteData, sizeof(uint8_t));
-    bool succ = tca9548a_read(motor->i2c_mux->i2c, motor->i2c_mux->dev_addr, reg_addr,
+    bool succ = tca9548a_read(motor->i2c_mux->i2c, motor->i2c_mux->dev_addr, &reg_addr,
         &array[kByteData], kByteLen, motor->channel_number);
 
     if (succ) {
@@ -238,10 +235,10 @@ bool drv2605l_read(drv2605l_t* motor, uint8_t reg_addr, uint8_t* data) {
 
 // Write function
 bool drv2605l_write(drv2605l_t* motor, uint8_t reg_addr, uint8_t data) {
-    uint8_t array[kByteLen];
-    memset(array, data, sizeof(uint8_t));
-    bool succ = tca9548a_write(motor->i2c_mux->i2c, motor->i2c_mux->dev_addr, reg_addr,
-        &array[kByteData], kByteLen, motor->channel_number);
+    // uint8_t array[kByteLen];
+    // memset(array, data, sizeof(uint8_t));
+    bool succ = tca9548a_write(motor->i2c_mux->i2c, motor->i2c_mux->dev_addr, &reg_addr,
+        &data, kByteLen, motor->channel_number);
 
     if (succ == false) {
         NRF_LOG_WARNING("haptic motor driver write error");
