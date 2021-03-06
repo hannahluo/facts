@@ -62,10 +62,10 @@ bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t const* 
     // data length actually needs to be buffer length - 1 (1st byte for register addr)
     // ret_code_t err = nrf_drv_twi_tx(i2c, dev_addr, reg_addr, data, length);
     ret_code_t err = nrf_drv_twi_tx(i2c, dev_addr, data, length, false);
-    NRF_LOG_INFO("writing: %d, on device: %d", *data, dev_addr);
+    // NRF_LOG_INFO("writing: %d, on device: %d", *data, dev_addr);
 
     if (err != NRF_SUCCESS) {
-        NRF_LOG_WARNING("failed to write i2c: %d, dev addr: %d", err, dev_addr);
+        // NRF_LOG_WARNING("failed to write i2c: %d, dev addr: %d", err, dev_addr);
         return false;
     }
 

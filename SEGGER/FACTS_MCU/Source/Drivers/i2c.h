@@ -7,8 +7,8 @@
 #include "nrf_twi_sensor.h"
 #include "nrf_drv_twi.h"
 
-static const uint8_t kSCLPin = 26u;
-static const uint8_t kSDAPin = 27u;
+static const uint8_t kSCLPin = 27u;
+static const uint8_t kSDAPin = 26u;
 
 bool i2c_init(const nrf_drv_twi_t* i2c);
 

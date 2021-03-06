@@ -68,17 +68,17 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="65" y="34" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.h" selected="0" top="37" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="54" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.c" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="34" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.h" selected="0" top="34" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="68" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.c" selected="0" top="54" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="9" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.h" selected="0" top="6" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="50" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="1" top="42" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="50" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="0" top="15" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="5138" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Config/sdk_config.h" selected="0" top="5128" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="32" y="147" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Lib/BLE_test/main.c" selected="0" top="137" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="25" y="555" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" selected="0" top="625" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="94" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Lib/BLE_test/main.c" selected="1" top="74" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="555" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" selected="0" top="541" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="160" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Lib/BLE_test/main.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/components/libraries/util/app_error.h" selected="0" top="160" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="661" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" useBinaryEdit="0" left="0" path="../nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" selected="0" top="608" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="28" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.h" selected="0" top="9" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="28" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.h" selected="0" top="9" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="41" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.c" selected="0" top="33" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/components/libraries/fifo" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/components/libraries/fifo" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

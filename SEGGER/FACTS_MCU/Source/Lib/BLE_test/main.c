@@ -109,18 +109,27 @@ int main(void)
     NRF_LOG_FLUSH();
     i2c_init(&i2c_drv);
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
+    nrf_delay_ms(1000);
     bno055_init(&elsa_imu);
     bno055_init(&anna_imu);
 
-    /* tca9548a_init(&elsa_mux, ELSA_I2C_MUXADDR, &i2c_drv);
-    tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
+    /*tca9548a_init(&elsa_mux, 0x5A, &i2c_drv);
+    // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
 
     NRF_LOG_INFO("\r\nMotor Setup");
     NRF_LOG_FLUSH();
     drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH0, &elsa_mux);
+
+    uint8_t md = kByteData;
+    drv2605l_read(&elsa_m1, MODE_REG, &md);
+    NRF_LOG_INFO("MODE 1: %d", md);
+    drv2605l_write(&elsa_m1, MODE_REG, 0);
+    drv2605l_read(&elsa_m1, MODE_REG, &md);
+    NRF_LOG_INFO("MODE 2: %d", md);
+
     drv2605l_library(&elsa_m1, 6);
-    drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
-    drv2605l_library(&elsa_m1, 6); */
+    // drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
+    // drv2605l_library(&anna_m1, 6); */
 
     struct bno055_accel_t elsa_data;
     struct bno055_accel_t anna_data;
@@ -129,18 +138,19 @@ int main(void)
     NRF_LOG_FLUSH();
     while (true)
     {
-        /* drv2605l_waveform(&elsa_m1, 0, 47);
+        /*drv2605l_waveform(&elsa_m1, 0, 47);
         drv2605l_waveform(&elsa_m1, 1, 0);
 
         NRF_LOG_INFO("Motor Run");
         NRF_LOG_FLUSH();
         drv2605l_go(&elsa_m1);
-        drv2605l_stop(&elsa_m1); */
+        nrf_delay_ms(5000);
+        drv2605l_stop(&elsa_m1);*/
 
         bool res1 = bno055_read_accel_xyz(&elsa_data);
         bool res2 = bno055_read_accel_xyz(&anna_data);
-        // NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
-        // NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);
+        NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
+        NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);
 
         nrf_delay_ms(5000);
     }

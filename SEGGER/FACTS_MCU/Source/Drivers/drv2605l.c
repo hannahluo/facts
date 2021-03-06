@@ -23,7 +23,13 @@ bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mu
     uint8_t set_lra = 7u;
     uint8_t set_lra_ol = 0u;
 
+    uint8_t md = kByteData;
+    drv2605l_read(motor, MODE_REG, &md);
+    NRF_LOG_INFO("MODE 1: %d", md);
     drv2605l_mode(motor, exit_standby);
+    drv2605l_read(motor, MODE_REG, &md);
+    NRF_LOG_INFO("MODE 2: %d", md);
+
     bool err = drv2605l_write(motor, RTP_REG, no_rt_playback); // no real-time-playback
     err = drv2605l_write(motor, WAVESEQ1, strong_click); // strong click
     err = drv2605l_write(motor, WAVESEQ2, end_seq); // end sequence
@@ -36,16 +42,20 @@ bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mu
     // use lra
     uint8_t feedback_status = kByteData;
     err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
+    NRF_LOG_INFO("read: %d", feedback_status);
     feedback_status |= (1 << set_lra);
     err = drv2605l_write(motor, FEEDBACK_REG, feedback_status);
     err = drv2605l_read(motor, FEEDBACK_REG, &feedback_status);
+    NRF_LOG_INFO("read: %d", feedback_status);
 
     // turn on open loop
     uint8_t ol_status = kByteData;
     err = drv2605l_read(motor, CONTROL3_REG, &ol_status);
+    NRF_LOG_INFO("read: %d", ol_status);
     ol_status |= (1 << set_lra_ol);
     err = drv2605l_write(motor, CONTROL3_REG, ol_status);
     err = drv2605l_read(motor, CONTROL3_REG, &ol_status);
+    NRF_LOG_INFO("read: %d", ol_status);
 
     // Want this to Read 0xE0 but I2C reads not working D:
     /*
@@ -78,8 +88,8 @@ bool drv2605l_deinit(drv2605l_t* motor) {
 // Write 0x05 to use real time playback
 // Write 0x06 to perform a diagnostic - result stored in diagnostic bit in register 0x00
 // Write 0x07 to run auto calibration
-void drv2605l_mode(drv2605l_t* motor, uint8_t mod) {
-    drv2605l_write(motor, MODE_REG, mod);
+void drv2605l_mode(drv2605l_t* motor, uint8_t mode) {
+    drv2605l_write(motor, MODE_REG, mode);
 }
 
 // Select ERM or LRA
