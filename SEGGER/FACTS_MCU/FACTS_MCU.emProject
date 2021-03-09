@@ -130,16 +130,28 @@
       <file file_name="../nRF5_sdk/components/softdevice/common/nrf_sdh_soc.c" />
     </folder>
     <folder Name="Lib">
-      <file file_name="Source/Lib/angle_calculation.c" />
-      <file file_name="Source/Lib/angle_calculation.h" />
-      <file file_name="Source/Lib/bluetooth.c">
+      <file file_name="Source/Lib/angle_calculation.c">
         <configuration Name="Release" build_exclude_from_build="No" />
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Lib/angle_calculation.h">
+        <configuration Name="Release" build_exclude_from_build="No" />
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Lib/bluetooth.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
       </file>
       <file file_name="Source/Lib/bluetooth.h">
-        <configuration Name="Release" build_exclude_from_build="No" />
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
       </file>
-      <file file_name="Source/Lib/sensor_fusion.c" />
-      <file file_name="Source/Lib/sensor_fusion.h" />
+      <file file_name="Source/Lib/sensor_fusion.c">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="Source/Lib/sensor_fusion.h">
+        <configuration Name="Debug" build_exclude_from_build="Yes" />
+      </file>
       <configuration Name="Release" build_exclude_from_build="Yes" />
     </folder>
     <folder Name="Drivers">
@@ -150,6 +162,7 @@
       <file file_name="Source/Drivers/tca9548a.c" />
       <file file_name="Source/Drivers/tca9548a.h" />
       <configuration Name="Release" build_exclude_from_build="Yes" />
+      <configuration Name="Debug" build_exclude_from_build="Yes" />
     </folder>
     <folder Name="Config">
       <file file_name="Config/sdk_config.h">
@@ -157,7 +170,7 @@
       </file>
     </folder>
     <file file_name="Source/main.c">
-      <configuration Name="Release" build_exclude_from_build="Yes" />
+      <configuration Name="Release" build_exclude_from_build="No" />
     </file>
     <folder Name="BLE_services">
       <file file_name="Source/Lib/BLE_services/calibration_service.h">
@@ -186,4 +199,5 @@
     c_preprocessor_definitions="NDEBUG"
     gcc_optimization_level="Optimize For Size"
     link_time_optimization="No" />
+  <configuration Name="Debug" />
 </solution>

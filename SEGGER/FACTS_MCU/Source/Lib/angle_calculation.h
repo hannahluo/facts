@@ -10,9 +10,25 @@ typedef struct vector_s {
     double z;
 } vector_t;
 
+/*typedef struct euler_s {
+    double roll;
+    double pitch;
+    double yaw;
+} euler_t;*/
+
+typedef struct quat_s {
+    double w;
+    double x;
+    double y;
+    double z;
+} quat_t;
+
 void update_joint_axes(vector_t* calf, vector_t* thigh);
+double calculate_angle(quat_t* calfQuat, quat_t* thighQuat);
 
-double calculate_angle(double calfRotMatrix[NUM_ROT_MATRIX_ROWS][NUM_ROT_MATRIX_COLS], double thighRotMatrix[NUM_ROT_MATRIX_ROWS][NUM_ROT_MATRIX_COLS]);
-
+#ifndef NDEBUG
+// Testing
+void test_angle_calc();
+#endif
 
 #endif
