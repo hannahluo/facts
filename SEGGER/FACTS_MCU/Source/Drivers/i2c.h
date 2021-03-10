@@ -14,7 +14,6 @@ bool i2c_init(const nrf_drv_twi_t* i2c);
 
 bool i2c_read(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t* data, uint8_t length);
 
-// first byte in data needs to be register address;
 bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t const* data, uint8_t length);
 
 bool i2c_deinit(nrf_drv_twi_t* i2c);

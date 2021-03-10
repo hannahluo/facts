@@ -71,9 +71,6 @@
 #define ANNA_I2C_IMUADDR 0x28
 #define ELSA_I2C_MUXADDR 0x71
 #define ANNA_I2C_MUXADDR 0x70
-#define HAPTIC_MOTOR_CH0 1 << 0
-#define HAPTIC_MOTOR_CH1 1 << 1
-#define HAPTIC_MOTOR_CH2 1 << 2
 
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
@@ -84,15 +81,15 @@ static const nrf_drv_twi_t i2c_drv = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 static struct bno055_t elsa_imu = { .dev_addr = ELSA_I2C_IMUADDR, .i2c = &i2c_drv };
 static struct bno055_t anna_imu = { .dev_addr = ANNA_I2C_IMUADDR, .i2c = &i2c_drv };
 
-static tca9548a_t elsa_mux;  // = { .dev_addr = ELSA_I2C_MUXADDR, .i2c = &i2c_drv };
-static drv2605l_t elsa_m1; // = { .channel_number = HAPTIC_MOTOR_CH1, .i2c_mux = &elsa_mux };
-//static struct drv2605l_t elsa_m2 = { .channel_number = HAPTIC_MOTOR_CH2, .i2c_mux = &elsa_mux };
-//static struct drv2605l_t elsa_m3 = { .channel_number = HAPTIC_MOTOR_CH3, .i2c_mux = &elsa_mux };
+static tca9548a_t elsa_mux; 
+static drv2605l_t elsa_motor;
 
-static tca9548a_t anna_mux;  // = { .dev_addr = ANNA_I2C_MUXADDR, .i2c = &i2c_drv };
-static drv2605l_t anna_m1; // = { .channel_number = HAPTIC_MOTOR_CH1, .i2c_mux = &anna_mux };
-//static struct drv2605l_t anna_m2 = { .channel_number = HAPTIC_MOTOR_CH2, .i2c_mux = &anna_mux };
-//static struct drv2605l_t anna_m3 = { .channel_number = HAPTIC_MOTOR_CH3, .i2c_mux = &anna_mux };
+static tca9548a_t anna_mux;
+static drv2605l_t anna_motor;
+
+static const uint8_t HAPTIC_MOTOR_CH0 = 1 << 0;
+static const uint8_t HAPTIC_MOTOR_CH1 = 1 << 1;
+static const uint8_t HAPTIC_MOTOR_CH2 = 1 << 2;
 
 /**
  * @brief Function for main application entry.
@@ -114,28 +111,16 @@ int main(void)
     // bno055_init(&elsa_imu);
     // bno055_init(&anna_imu);
 
-    tca9548a_init(&elsa_mux, DRV_I2C_ADDR, &i2c_drv);
+    tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
+    tca9548a_select(&elsa_motor, &elsa_mux, HAPTIC_MOTOR_CH1);
     // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
-
-    uint8_t channel = 1 << 1;
-    uint8_t ch = 0;
-    i2c_write(&i2c_drv, 0x70, &channel, 1);
-    i2c_read(&i2c_drv, 0x70, &ch, 1);
-    NRF_LOG_INFO("ch: %d", ch);
 
     NRF_LOG_INFO("\r\nMotor Setup");
     NRF_LOG_FLUSH();
-    drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH1, &elsa_mux);
-
-    uint8_t md = kByteData;
-    drv2605l_read(&elsa_m1, MODE_REG, &md);
-    NRF_LOG_INFO("MODE 1: %d", md);
-    drv2605l_write(&elsa_m1, MODE_REG, 0);
-    drv2605l_read(&elsa_m1, MODE_REG, &md);
-    NRF_LOG_INFO("MODE 2: %d", md);
-
-    drv2605l_library(&elsa_m1, 6);
-    // drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
+    drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
+    drv2605l_mode(&elsa_motor, 0);
+    drv2605l_library(&elsa_motor, 6);
+    // drv2605l_init(&anna_m1, DRV_I2C_ADDR, &anna_mux);
     // drv2605l_library(&anna_m1, 6);
 
     struct bno055_accel_t elsa_data;
@@ -145,10 +130,10 @@ int main(void)
     NRF_LOG_FLUSH();
     while (true)
     {
-        /*drv2605l_waveform(&elsa_m1, 0, 47);
-        drv2605l_waveform(&elsa_m1, 1, 0);
+        drv2605l_waveform(&elsa_motor, 0, 47);
+        drv2605l_waveform(&elsa_motor, 1, 0);
 
-        NRF_LOG_INFO("Motor Run");
+        /*NRF_LOG_INFO("Motor Run");
         NRF_LOG_FLUSH();
         drv2605l_go(&elsa_m1);
         nrf_delay_ms(5000);

@@ -6,11 +6,6 @@
 
 #include "tca9548a.h"
 
-// adapted from https://github.com/sparkfun/SparkFun_Haptic_Motor_Driver_Arduino_Library
-
-//I2C address
-#define I2C_ADDR 0x5A
-
 //The Status Register (0x00): The Device ID is bits 7-5. For DRV2605L it should be 7 or 111.
 //bits 4 and 2 are reserved. Bit 3 is the diagnostic result. You want to see 0.
 //bit 1 is the over temp flag, you want this to be 0
@@ -143,12 +138,11 @@ static const uint8_t kByteData = 0u;
 
 typedef struct {
     // channels is a bit field of active channels where a set bit = active channel
-    uint8_t channel_number; /**< which channels to write to */
-
+    uint8_t motor_addr;
     tca9548a_t* i2c_mux; /**< bus write function pointer */
 } drv2605l_t;
 
-bool drv2605l_init(drv2605l_t* motor, uint8_t channel_number, tca9548a_t* i2c_mux);
+bool drv2605l_init(drv2605l_t* motor, uint8_t motor_addr, tca9548a_t* i2c_mux);
 bool drv2605l_write(drv2605l_t* motor, uint8_t reg_addr, uint8_t data);
 bool drv2605l_read(drv2605l_t* motor, uint8_t reg_addr, uint8_t* data);
 bool drv2605l_deinit(drv2605l_t* motor);
