@@ -66,13 +66,14 @@
 //#include "haptic_motors.h"
 #include "bno055.h"
 
+#define DRV_I2C_ADDR     0x5A
 #define ELSA_I2C_IMUADDR 0x29
 #define ANNA_I2C_IMUADDR 0x28
 #define ELSA_I2C_MUXADDR 0x71
 #define ANNA_I2C_MUXADDR 0x70
-#define HAPTIC_MOTOR_CH0 0
-#define HAPTIC_MOTOR_CH1 1
-#define HAPTIC_MOTOR_CH2 2
+#define HAPTIC_MOTOR_CH0 1 << 0
+#define HAPTIC_MOTOR_CH1 1 << 1
+#define HAPTIC_MOTOR_CH2 1 << 2
 
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
@@ -110,15 +111,21 @@ int main(void)
     i2c_init(&i2c_drv);
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
-    bno055_init(&elsa_imu);
-    bno055_init(&anna_imu);
+    // bno055_init(&elsa_imu);
+    // bno055_init(&anna_imu);
 
-    /*tca9548a_init(&elsa_mux, 0x5A, &i2c_drv);
+    tca9548a_init(&elsa_mux, DRV_I2C_ADDR, &i2c_drv);
     // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
+
+    uint8_t channel = 1 << 1;
+    uint8_t ch = 0;
+    i2c_write(&i2c_drv, 0x70, &channel, 1);
+    i2c_read(&i2c_drv, 0x70, &ch, 1);
+    NRF_LOG_INFO("ch: %d", ch);
 
     NRF_LOG_INFO("\r\nMotor Setup");
     NRF_LOG_FLUSH();
-    drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH0, &elsa_mux);
+    drv2605l_init(&elsa_m1, HAPTIC_MOTOR_CH1, &elsa_mux);
 
     uint8_t md = kByteData;
     drv2605l_read(&elsa_m1, MODE_REG, &md);
@@ -129,7 +136,7 @@ int main(void)
 
     drv2605l_library(&elsa_m1, 6);
     // drv2605l_init(&anna_m1, HAPTIC_MOTOR_CH0, &anna_mux);
-    // drv2605l_library(&anna_m1, 6); */
+    // drv2605l_library(&anna_m1, 6);
 
     struct bno055_accel_t elsa_data;
     struct bno055_accel_t anna_data;
@@ -147,10 +154,10 @@ int main(void)
         nrf_delay_ms(5000);
         drv2605l_stop(&elsa_m1);*/
 
-        bool res1 = bno055_read_accel_xyz(&elsa_data);
+        /*bool res1 = bno055_read_accel_xyz(&elsa_data);
         bool res2 = bno055_read_accel_xyz(&anna_data);
         NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
-        NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);
+        NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);*/
 
         nrf_delay_ms(5000);
     }

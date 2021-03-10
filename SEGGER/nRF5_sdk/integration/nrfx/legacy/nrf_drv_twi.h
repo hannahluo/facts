@@ -559,20 +559,16 @@ ret_code_t nrf_drv_twi_rx(nrf_drv_twi_t const * p_instance,
                           uint8_t               length)
 {
     ret_code_t result = 0;
-    printf("?");
     if (NRF_DRV_TWI_USE_TWIM)
     {
-    printf("1");
         result = nrfx_twim_rx(&p_instance->u.twim,
                                 address, p_data, length);
     }
     else if (NRF_DRV_TWI_USE_TWI)
     {
-    printf("2");
         result = nrfx_twi_rx(&p_instance->u.twi,
                                address, p_data, length);
     }
-    printf("?");
     return result;
 }
 
