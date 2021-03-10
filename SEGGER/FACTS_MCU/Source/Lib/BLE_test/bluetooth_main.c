@@ -159,14 +159,22 @@ static void idle_state_handle(void)
     }
 }
 
-
+#define FICR_ADDR       (0x10000000)
+#define DEVICE_ID_0     (0x060)
+#define DEVICE_ID_1     (0x064)
 
 int main(void)
 {
     bool erase_bonds=false;
+    log_init();
+    uint32_t device_id[2] = {0};
+    uint32_t* device_id_ptr = (uint32_t*)(FICR_ADDR+DEVICE_ID_0);
+    device_id[0] = device_id_ptr[0];
+    device_id[1] = device_id_ptr[1];
+    NRF_LOG_INFO("J");
+    //NRF_LOG_INFO("Starting device id 0x%x%x", device_id[0], device_id[1]);
 
     // Initialize.
-    log_init();
     timers_init();
     power_management_init();
 
