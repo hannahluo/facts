@@ -1,3 +1,56 @@
+/**
+ * Copyright (c) 2014 - 2020, Nordic Semiconductor ASA
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form, except as embedded into a Nordic
+ *    Semiconductor ASA integrated circuit in a product or a software update for
+ *    such product, must reproduce the above copyright notice, this list of
+ *    conditions and the following disclaimer in the documentation and/or other
+ *    materials provided with the distribution.
+ *
+ * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * 4. This software, with or without modification, must only be used with a
+ *    Nordic Semiconductor ASA integrated circuit.
+ *
+ * 5. Any software provided in binary form under this license must not be reverse
+ *    engineered, decompiled, modified and/or disassembled.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+/** @file
+ *
+ * @defgroup ble_sdk_app_template_main main.c
+ * @{
+ * @ingroup ble_sdk_app_template
+ * @brief Template project main file.
+ *
+ * This file contains a template for creating a new application. It has the code necessary to wakeup
+ * from button, advertise, get a connection restart advertising on disconnect and if no new
+ * connection created go back to system-off mode.
+ * It can easily be used as a starting point for creating a new application, the comments identified
+ * with 'YOUR_JOB' indicates where and how you can customize.
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -14,7 +67,12 @@
 #include "nrf_sdh.h"
 #include "nrf_sdh_soc.h"
 #include "nrf_sdh_ble.h"
+#include "app_timer.h"
 #include "fds.h"
+#include "peer_manager.h"
+#include "peer_manager_handler.h"
+#include "bsp_btn_ble.h"
+#include "sensorsim.h"
 #include "ble_conn_state.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
@@ -24,13 +82,14 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include "app_timer.h"
-
+//Jack Zhu
 #include "imu_service.h"
 #include "calibration_service.h"
 #include "calculation_service.h"
 
+// Jack Zhu
 #define DEVICE_NAME                     "FACTS_DEV"                             /**< Name of device. Will be included in the advertising data. */
+// Jack Zhu
 #define MANUFACTURER_NAME               "FACTS"                                 /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
@@ -58,6 +117,15 @@
 
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+// Jack Zhu
+// Timer id
+APP_TIMER_DEF(m_double_timer_id);
+APP_TIMER_DEF(m_uint_timer_id);
+//Jack Zhu
+// Timer ticks
+#define TIMER_TIMEOUT_TICKS             APP_TIMER_TICKS(1000)                   /**< time between BLE messages*/
+
+// Jack Zhu
 BLE_IMU_SERVICE_DEF(m_imu_service);                                             /**< FACTS IMU Service*/
 BLE_CALIB_SERVICE_DEF(m_calib_service);                                         /**< FACTS Calib Service*/
 BLE_CALC_SERVICE_DEF(m_calc_service);                                           /**< FACTS Calc Service*/
@@ -65,12 +133,14 @@ NRF_BLE_GATT_DEF(m_gatt);                                                       
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
-static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;    
+static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
 
+// YOUR_JOB: Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
 {
     {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
 };
+
 
 static void advertising_start(bool erase_bonds);
 
@@ -90,6 +160,87 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
+
+
+/**@brief Function for handling Peer Manager events.
+ *
+ * @param[in] p_evt  Peer Manager event.
+ */
+static void pm_evt_handler(pm_evt_t const * p_evt)
+{
+    pm_handler_on_pm_evt(p_evt);
+    pm_handler_flash_clean(p_evt);
+
+    switch (p_evt->evt_id)
+    {
+        case PM_EVT_PEERS_DELETE_SUCCEEDED:
+            advertising_start(false);
+            break;
+
+        default:
+            break;
+    }
+}
+
+// Jack Zhu
+// Timer timeout event handler
+void double_timer_evt_handler(void* p_context)
+{
+    // To-do
+    static double cnt = 8;
+    cnt += 0.01;
+    raw_gyro_t gyro_fake_data = {.x=cnt, .y=cnt+1, .z=cnt+2};
+    raw_gyro_characteristic_update(&m_imu_service, &gyro_fake_data);
+
+    raw_accel_t accel_fake_data = {.x=cnt+2, .y=cnt+1, .z=cnt};
+    raw_accel_characteristic_update(&m_imu_service, &accel_fake_data);
+
+    flexion_angle_t angle = cnt;
+    flexion_angle_characteristic_update(&m_calc_service, &angle);
+}
+void uint_timer_evt_handler(void* p_context)
+{
+    // To-do
+    static uint8_t cnt = 0;
+    ++cnt;
+    
+    init_calib_t val;
+    if(cnt%2==0) {
+      val = true;
+    } else {
+      val = false;
+    }
+    init_calib_characteristic_update(&m_calib_service, &val);
+
+    if(cnt > NUM_CALC_SERVICE_ERRORS) {
+        cnt = 0;
+    }
+    calc_err_t err = cnt;
+    calc_error_characteristic_update(&m_calc_service, &err);
+}
+
+/**@brief Function for the Timer initialization.
+ *
+ * @details Initializes the timer module. This creates and starts application timers.
+ */
+static void timers_init(void)
+{
+    // Initialize timer module.
+    ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+
+    // Create timers.
+
+    // Jack Zhu
+    err_code = app_timer_create(&m_double_timer_id, APP_TIMER_MODE_REPEATED, &double_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&m_uint_timer_id, APP_TIMER_MODE_REPEATED, &uint_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    APP_ERROR_CHECK(err_code);
+}
+
 
 /**@brief Function for the GAP initialization.
  *
@@ -154,6 +305,38 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
+void calf_joint_axis_handler(void const * data, uint8_t size)
+{
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    NRF_LOG_DEBUG("calf_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
+}
+
+void thigh_joint_axis_handler(void const * data, uint8_t size)
+{
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    NRF_LOG_DEBUG("thigh_joint_axis_handler: {%f, %f, %f}", jointAxis->x, jointAxis->y, jointAxis->z);
+}
+
+void init_cal_handler(void const * data, uint8_t size)
+{
+    // Check evt
+    bool isCal = *(bool*)(data);
+    if(isCal) {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration on");
+    } else {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration off");
+    }
+}
+
+void limits_handler(void const* data, uint8_t size)
+{
+    limits_t const* limits = (limits_t const*)data;
+    //NRF_LOG_DEBUG("limits_handler: {min=%f,max=%f}", limits->minLimit, limits->maxLimit);
+    double val = limits->minLimit;
+}
+
 /**@brief Function for initializing services that will be used by the application.
  */
 static void services_init(void)
@@ -166,12 +349,14 @@ static void services_init(void)
 
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
+
+    // Jack Zhu
     
     err_code = ble_imu_service_init(&m_imu_service, NULL, NULL);
     APP_ERROR_CHECK(err_code);
-    err_code = ble_calib_service_init(&m_calib_service, NULL, NULL, NULL);
+    err_code = ble_calib_service_init(&m_calib_service, init_cal_handler, calf_joint_axis_handler, thigh_joint_axis_handler);
     APP_ERROR_CHECK(err_code);
-    err_code = ble_calc_service_init(&m_calc_service, NULL, NULL, NULL);
+    err_code = ble_calc_service_init(&m_calc_service, NULL, limits_handler, NULL);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -230,6 +415,24 @@ static void conn_params_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+
+/**@brief Function for starting timers.
+ */
+static void application_timers_start(void)
+{
+    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
+       ret_code_t err_code;
+       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
+       APP_ERROR_CHECK(err_code); */
+    // Jack Zhu
+    ret_code_t err_code;
+    err_code = app_timer_start(m_double_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    APP_ERROR_CHECK(err_code);
+    err_code = app_timer_start(m_uint_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+
 /**@brief Function for putting the chip into sleep mode.
  *
  * @note This function will not return.
@@ -238,7 +441,14 @@ static void sleep_mode_enter(void)
 {
     ret_code_t err_code;
 
-    // Go to system-off mode (this function will not return)
+    err_code = bsp_indication_set(BSP_INDICATE_IDLE);
+    APP_ERROR_CHECK(err_code);
+
+    // Prepare wakeup buttons.
+    err_code = bsp_btn_ble_sleep_mode_prepare();
+    APP_ERROR_CHECK(err_code);
+
+    // Go to system-off mode (this function will not return; wakeup will cause a reset).
     err_code = sd_power_system_off();
     APP_ERROR_CHECK(err_code);
 }
@@ -258,6 +468,8 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
             NRF_LOG_INFO("Fast advertising.");
+            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
+            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_ADV_EVT_IDLE:
@@ -288,6 +500,8 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
         case BLE_GAP_EVT_CONNECTED:
             NRF_LOG_INFO("Connected.");
+            err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
+            APP_ERROR_CHECK(err_code);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
@@ -296,12 +510,12 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             uint8_t data_length = 0;
             err_code = nrf_ble_gatt_data_length_get(&m_gatt, m_conn_handle, &data_length);
             APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("Conn Data length is %d", data_length);
+            NRF_LOG_INFO("Conn Data length is %d\n", data_length);
             
             // Check att mtu
             uint16_t att_mtu_length = 0;
             att_mtu_length = nrf_ble_gatt_eff_mtu_get(&m_gatt, m_conn_handle);
-            NRF_LOG_INFO("ATT MTU length is %d", att_mtu_length);
+            NRF_LOG_INFO("ATT MTU length is %d\n", att_mtu_length);
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
@@ -338,6 +552,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
     }
 }
 
+
 /**@brief Function for initializing the BLE stack.
  *
  * @details Initializes the SoftDevice and the BLE event interrupt.
@@ -362,6 +577,94 @@ static void ble_stack_init(void)
     // Register a handler for BLE events.
     NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
 }
+
+
+/**@brief Function for the Peer Manager initialization.
+ */
+static void peer_manager_init(void)
+{
+    ble_gap_sec_params_t sec_param;
+    ret_code_t           err_code;
+
+    err_code = pm_init();
+    APP_ERROR_CHECK(err_code);
+
+    memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+    // Security parameters to be used for all security procedures.
+    sec_param.bond           = SEC_PARAM_BOND;
+    sec_param.mitm           = SEC_PARAM_MITM;
+    sec_param.lesc           = SEC_PARAM_LESC;
+    sec_param.keypress       = SEC_PARAM_KEYPRESS;
+    sec_param.io_caps        = SEC_PARAM_IO_CAPABILITIES;
+    sec_param.oob            = SEC_PARAM_OOB;
+    sec_param.min_key_size   = SEC_PARAM_MIN_KEY_SIZE;
+    sec_param.max_key_size   = SEC_PARAM_MAX_KEY_SIZE;
+    sec_param.kdist_own.enc  = 1;
+    sec_param.kdist_own.id   = 1;
+    sec_param.kdist_peer.enc = 1;
+    sec_param.kdist_peer.id  = 1;
+
+    err_code = pm_sec_params_set(&sec_param);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = pm_register(pm_evt_handler);
+    APP_ERROR_CHECK(err_code);
+}
+
+
+/**@brief Clear bond information from persistent storage.
+ */
+static void delete_bonds(void)
+{
+    ret_code_t err_code;
+
+    NRF_LOG_INFO("Erase bonds!");
+
+    err_code = pm_peers_delete();
+    APP_ERROR_CHECK(err_code);
+}
+
+
+/**@brief Function for handling events from the BSP module.
+ *
+ * @param[in]   event   Event generated when button is pressed.
+ */
+static void bsp_event_handler(bsp_event_t event)
+{
+    ret_code_t err_code;
+
+    switch (event)
+    {
+        case BSP_EVENT_SLEEP:
+            sleep_mode_enter();
+            break; // BSP_EVENT_SLEEP
+
+        case BSP_EVENT_DISCONNECT:
+            err_code = sd_ble_gap_disconnect(m_conn_handle,
+                                             BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+            if (err_code != NRF_ERROR_INVALID_STATE)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+            break; // BSP_EVENT_DISCONNECT
+
+        case BSP_EVENT_WHITELIST_OFF:
+            if (m_conn_handle == BLE_CONN_HANDLE_INVALID)
+            {
+                err_code = ble_advertising_restart_without_whitelist(&m_advertising);
+                if (err_code != NRF_ERROR_INVALID_STATE)
+                {
+                    APP_ERROR_CHECK(err_code);
+                }
+            }
+            break; // BSP_EVENT_KEY_0
+
+        default:
+            break;
+    }
+}
+
 
 /**@brief Function for initializing the Advertising functionality.
  */
@@ -390,66 +693,106 @@ static void advertising_init(void)
     ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
 }
 
-/**@brief Function for starting advertising.
+
+/**@brief Function for initializing buttons and leds.
+ *
+ * @param[out] p_erase_bonds  Will be true if the clear bonding button was pressed to wake the application up.
  */
-void start_advertising(bool erase_bonds)
+static void buttons_leds_init(bool * p_erase_bonds)
 {
-    ret_code_t err_code = ble_advertising_start(&m_advertising, BLE_ADV_MODE_FAST);
+    ret_code_t err_code;
+
+    err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
     APP_ERROR_CHECK(err_code);
 }
 
-void bluetooth_init()
+
+/**@brief Function for initializing the nrf log module.
+ */
+static void log_init(void)
 {
-    // Initialize bluetooth functionality
+    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+}
+
+
+/**@brief Function for initializing power management.
+ */
+static void power_management_init(void)
+{
+    ret_code_t err_code;
+    err_code = nrf_pwr_mgmt_init();
+    APP_ERROR_CHECK(err_code);
+}
+
+
+/**@brief Function for handling the idle state (main loop).
+ *
+ * @details If there is no pending log operation, then sleep until next the next event occurs.
+ */
+static void idle_state_handle(void)
+{
+    if (NRF_LOG_PROCESS() == false)
+    {
+        nrf_pwr_mgmt_run();
+    }
+}
+
+
+/**@brief Function for starting advertising.
+ */
+static void advertising_start(bool erase_bonds)
+{
+    if (erase_bonds == true)
+    {
+        delete_bonds();
+        // Advertising is started by PM_EVT_PEERS_DELETED_SUCEEDED event
+    }
+    else
+    {
+        ret_code_t err_code = ble_advertising_start(&m_advertising, BLE_ADV_MODE_FAST);
+
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+
+/**@brief Function for application main entry.
+ */
+int main(void)
+{
+    bool erase_bonds=false;
+
+    // Initialize.
+    log_init();
+    timers_init();
+    buttons_leds_init(&erase_bonds);
+    power_management_init();
     ble_stack_init();
     gap_params_init();
     gatt_init();
     advertising_init();
     services_init();
     conn_params_init();
+    peer_manager_init();
+
+    // Start execution.
+    // Jack Zhu
+    NRF_LOG_INFO("FACTS started");
+    application_timers_start();
+
+    advertising_start(erase_bonds);
+
+    // Enter main loop.
+    for (;;)
+    {
+        idle_state_handle();
+    }
 }
 
-void register_init_cal_handler(ble_calib_evt_handler_t handler)
-{
-    m_calib_service.initCalib.evtHandler = handler;
-}
 
-void register_calf_joint_axis_handler(ble_calib_evt_handler_t handler)
-{
-    m_calib_service.calfJointAxis.evtHandler = handler;
-}
-
-void register_thigh_joint_axis_handler(ble_calib_evt_handler_t handler)
-{
-    m_calib_service.thighJointAxis.evtHandler = handler;
-}
-
-void register_limits_handler(ble_calc_evt_handler_t handler)
-{
-    m_calc_service.limits.evtHandler = handler;
-}
-
-void send_raw_gyro_calf(raw_gyro_t* gyroReading)
-{
-    raw_gyro_calf_characteristic_update(&m_imu_service, gyroReading);
-}
-
-void send_raw_gyro_thigh(raw_gyro_t* gyroReading)
-{
-    raw_gyro_thigh_characteristic_update(&m_imu_service, gyroReading);
-}
-
-void send_flexion_angle(flexion_angle_t* angle)
-{
-    flexion_angle_characteristic_update(&m_calc_service, angle);
-}
-
-void send_init_calib(init_calib_t cal)
-{
-    init_calib_characteristic_update(&m_calib_service, &cal);
-}
-
-void send_calc_error(calc_err_t err)
-{
-    calc_error_characteristic_update(&m_calc_service, &err);
-}
+/**
+ * @}
+ */

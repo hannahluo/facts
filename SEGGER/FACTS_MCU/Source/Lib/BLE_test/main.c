@@ -1,76 +1,32 @@
-/**
- * Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- *
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- *
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- *
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-/** @file
- * @defgroup tw_sensor_example main.c
- * @{
- * @ingroup nrf_twi_example
- * @brief TWI Sensor Example main file.
- *
- * This file contains the source code for a sample application using TWI.
- *
- */
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 
-#include <stdio.h>
-
-#include "boards.h"
-#include "app_util_platform.h"
+#include "nordic_common.h"
+#include "nrf.h"
 #include "app_error.h"
+#include "app_timer.h"
+#include "fds.h"
+#include "sensorsim.h"
+#include "nrf_pwr_mgmt.h"
 #include "nrf_drv_twi.h"
 #include "nrf_delay.h"
-#include "nrf_gpio.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#include "bluetooth.h"
 #include "i2c.h"
-#include "imu.h"
 #include "tca9548a.h"
 #include "drv2605l.h"
-//#include "haptic_motors.h"
+
+APP_TIMER_DEF(m_double_timer_id);
+APP_TIMER_DEF(m_uint_timer_id);
+
+#define TIMER_TIMEOUT_TICKS             APP_TIMER_TICKS(1000)
 
 #define DRV_I2C_ADDR     0x5A
-#define ELSA_I2C_IMUADDR 0x29
-#define ANNA_I2C_IMUADDR 0x28
-#define ELSA_I2C_MUXADDR 0x71
-#define ANNA_I2C_MUXADDR 0x70
 
 #define TCA_SELECT_REG   0
 #define TCA_SELECT_SIZE  1
@@ -81,43 +37,200 @@
 /* TWI instance. */
 static const nrf_drv_twi_t i2c_drv = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-//static struct bno055_t elsa_imu; //= { .dev_addr = ELSA_I2C_IMUADDR, .i2c = &i2c_drv };
-//static struct bno055_t anna_imu; //= { .dev_addr = ANNA_I2C_IMUADDR, .i2c = &i2c_drv };
-
 static tca9548a_t elsa_mux; 
 static drv2605l_t elsa_motor;
 
-static tca9548a_t anna_mux;
-static drv2605l_t anna_motor;
-
 static const uint8_t HAPTIC_MOTOR_CH0 = 1 << 0;
 static const uint8_t HAPTIC_MOTOR_CH1 = 1 << 1;
-static const uint8_t HAPTIC_MOTOR_CH2 = 1 << 2;
 
-/**
- * @brief Function for main application entry.
+static char string1[] = "String1!";
+static char string2[] = "String2!";
+static char* a_string[] = {string1, string2};
+
+void vibrate() {
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    drv2605l_go(&elsa_motor);
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    drv2605l_go(&elsa_motor);
+
+    nrf_delay_ms(5000);
+
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    drv2605l_stop(&elsa_motor);
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    drv2605l_stop(&elsa_motor);
+}
+
+// Timer timeout event handler
+void double_timer_evt_handler(void* p_context)
+{
+    // To-do
+    static double cnt = 8;
+    cnt += 0.01; // Hannah Luo this is where the angle gets updated
+    raw_gyro_t gyro_calf_fake_data = {.x=cnt, .y=cnt+1, .z=cnt+2};
+    //send_raw_gyro_calf(&gyro_calf_fake_data);
+
+    raw_gyro_t gyro_thigh_fake_data = {.x=cnt+2, .y=cnt+1, .z=cnt};
+    //send_raw_gyro_thigh(&gyro_thigh_fake_data);
+
+    flexion_angle_t angle = cnt;
+    send_flexion_angle(&angle); // Hannah Luo this is where we send it over BT
+
+    if (angle > 90.0) vibrate();
+}
+void uint_timer_evt_handler(void* p_context)
+{
+    // To-do
+    static uint8_t cnt = 0;
+    ++cnt;
+    
+    init_calib_t val;
+    if(cnt%2==0) {
+      val = true;
+    } else {
+      val = false;
+    }
+    send_init_calib(val);
+
+    if(cnt > NUM_CALC_SERVICE_ERRORS) {
+        cnt = 0;
+    }
+    calc_err_t err = cnt;
+    //send_calc_error(err);
+}
+
+static void application_timers_start(void)
+{
+    /* YOUR_JOB: Start your timers. below is an example of how to start a timer.
+       ret_code_t err_code;
+       err_code = app_timer_start(m_app_timer_id, TIMER_INTERVAL, NULL);
+       APP_ERROR_CHECK(err_code); */
+    // Jack Zhu
+    ret_code_t err_code;
+    err_code = app_timer_start(m_double_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    APP_ERROR_CHECK(err_code);
+    err_code = app_timer_start(m_uint_timer_id, TIMER_TIMEOUT_TICKS, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+/**@brief Function for the Timer initialization.
+ *
+ * @details Initializes the timer module. This creates and starts application timers.
  */
+static void timers_init(void)
+{
+    // Initialize timer module.
+    ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+
+    // Create timers.
+
+    // Jack Zhu
+    err_code = app_timer_create(&m_double_timer_id, APP_TIMER_MODE_REPEATED, &double_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&m_uint_timer_id, APP_TIMER_MODE_REPEATED, &uint_timer_evt_handler);
+    APP_ERROR_CHECK(err_code);
+
+    APP_ERROR_CHECK(err_code);
+}
+
+void calf_joint_axis_handler(void const * data, uint8_t size)
+{
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+}
+
+void thigh_joint_axis_handler(void const * data, uint8_t size)
+{
+    // print out data
+    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+}
+
+void init_cal_handler(void const * data, uint8_t size)
+{
+    bool isCal = *(bool*)(data);
+    if(isCal) {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration on");
+    } else {
+        NRF_LOG_DEBUG("init_cal_handler: init calibration off");
+    }
+}
+
+void limits_handler(void const* data, uint8_t size)
+{
+    limits_t* limits = (limits_t*)data;
+}
+
+
+/**@brief Function for initializing the nrf log module.
+ */
+static void log_init(void)
+{
+    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+    
+}
+
+
+/**@brief Function for initializing power management.
+ */
+static void power_management_init(void)
+{
+    ret_code_t err_code;
+    err_code = nrf_pwr_mgmt_init();
+    APP_ERROR_CHECK(err_code);
+}
+
+
+/**@brief Function for handling the idle state (main loop).
+ *
+ * @details If there is no pending log operation, then sleep until next the next event occurs.
+ */
+static void idle_state_handle(void)
+{
+    if (NRF_LOG_PROCESS() == false)
+    {
+        nrf_pwr_mgmt_run();
+    }
+}
+
+#define FICR_ADDR       (0x10000000)
+#define DEVICE_ID_0     (0x060)
+#define DEVICE_ID_1     (0x064)
+
 int main(void)
 {
-    APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
-    NRF_LOG_DEFAULT_BACKENDS_INIT();
+    bool erase_bonds=false;
+    log_init();
 
-    // add error handling lol
-    NRF_LOG_INFO("\r\nStart.");
-    NRF_LOG_FLUSH();
+    uint32_t device_id[2] = {0};
+    uint32_t* device_id_ptr = (uint32_t*)(FICR_ADDR+DEVICE_ID_0);
+    device_id[0] = device_id_ptr[0];
+    device_id[1] = device_id_ptr[1];
+    NRF_LOG_INFO("Starting device id 0x%x%x", device_id[0], device_id[1]);
 
-    NRF_LOG_INFO("\r\nInitializing");
-    NRF_LOG_FLUSH();
+    // Initialize.
+    timers_init();
+    power_management_init();
+
+    // BLE
+    bluetooth_init();
+    register_init_cal_handler(&init_cal_handler);
+    register_calf_joint_axis_handler(&calf_joint_axis_handler);
+    register_thigh_joint_axis_handler(&thigh_joint_axis_handler);
+    register_limits_handler(&limits_handler);
+
+    // I2C
     i2c_init(&i2c_drv);
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
-    // bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR);
 
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
 
-    NRF_LOG_INFO("\r\nMotor Setup");
-    NRF_LOG_FLUSH();
-    /*tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
     drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
     drv2605l_mode(&elsa_motor, 0);
     drv2605l_library(&elsa_motor, 6);
@@ -131,47 +244,14 @@ int main(void)
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0);
 
-    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
-    drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
-    drv2605l_mode(&elsa_motor, 0);
-    drv2605l_library(&elsa_motor, 6);
-    drv2605l_waveform(&elsa_motor, 0, 47);
-    drv2605l_waveform(&elsa_motor, 1, 0); */
+    // Start execution.
+    NRF_LOG_INFO("FACTS started");
+    application_timers_start();
+    start_advertising();
 
-    struct bno055_accel_t a;
-    struct bno055_mag_t m;
-    struct bno055_gyro_t g;
-
-    NRF_LOG_INFO("Entering Loop");
-    NRF_LOG_FLUSH();
-    while (true)
+    // Enter main loop.
+    for (;;)
     {
-        /*NRF_LOG_INFO("Motor Run");
-        NRF_LOG_FLUSH();
-        
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
-        drv2605l_go(&elsa_motor);
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
-        drv2605l_go(&elsa_motor);
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
-        drv2605l_go(&elsa_motor);
-
-        nrf_delay_ms(5000);
-
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
-        drv2605l_stop(&elsa_motor);
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
-        drv2605l_stop(&elsa_motor);
-        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
-        drv2605l_stop(&elsa_motor);*/
-
-        // bool res = bno055_read_raw(&a, &m, &g);
-        // bool res2 = bno055_read_accel_xyz(&anna_data);
-        // NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
-        //NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);
-
-        nrf_delay_ms(5000);
+        idle_state_handle();
     }
 }
-
-/** @} */
