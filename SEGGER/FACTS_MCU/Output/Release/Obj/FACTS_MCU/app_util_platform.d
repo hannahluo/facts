@@ -16,17 +16,17 @@ Output/Release/Obj/FACTS_MCU/app_util_platform.o: \
  ../nRF5_sdk/modules/nrfx/mdk/nrf52_to_nrf52810.h \
  ../nRF5_sdk/modules/nrfx/mdk/nrf52810_name_change.h \
  ../nRF5_sdk/modules/nrfx/mdk/compiler_abstraction.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_soc.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_svc.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_error.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_error_soc.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_nvic.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_soc.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_svc.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_error.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_error_soc.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_nvic.h \
  C:\Users\Hanna\Documents\FYDP\facts\SEGGER\nRF5_sdk\components\libraries\util\nrf_assert.h \
  C:\Users\Hanna\Documents\FYDP\facts\SEGGER\nRF5_sdk\components\libraries\util\app_error.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdio.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/__crossworks.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdbool.h \
  C:\Users\Hanna\Documents\FYDP\facts\SEGGER\nRF5_sdk\components\libraries\util\sdk_errors.h \
- ../nRF5_sdk/components/softdevice/s112/headers/nrf_error.h \
+ ../nRF5_sdk/components/softdevice/s113/headers/nrf_error.h \
  C:\Users\Hanna\Documents\FYDP\facts\SEGGER\nRF5_sdk\components\libraries\util\nordic_common.h \
  C:\Users\Hanna\Documents\FYDP\facts\SEGGER\nRF5_sdk\components\libraries\util\app_error_weak.h

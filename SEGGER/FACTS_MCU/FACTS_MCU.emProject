@@ -175,13 +175,19 @@
       <file file_name="Source/Drivers/tca9548a.c">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
+      <configuration Name="Release" build_exclude_from_build="No" />
+      <file file_name="Source/Drivers/bno055_support.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="Source/Drivers/i2c.c" />
+      <file file_name="Source/Drivers/i2c.h" />
       <file file_name="Source/Drivers/tca9548a.h">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
-      <configuration Name="Release" build_exclude_from_build="No" />
-      <file file_name="Source/Drivers/bno055_support.c" />
-      <file file_name="Source/Drivers/i2c.c" />
-      <file file_name="Source/Drivers/i2c.h" />
+      <file file_name="Source/Drivers/imu.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Drivers/imu.h" />
     </folder>
     <folder Name="Config">
       <file file_name="Config/sdk_config.h">

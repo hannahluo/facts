@@ -84,6 +84,6 @@ Output/Release/Obj/FACTS_MCU/main.o: \
  Source/Drivers/i2c.h \
  ../nRF5_sdk/components/libraries/twi_sensor/nrf_twi_sensor.h \
  ../nRF5_sdk/components/libraries/twi_mngr/nrf_twi_mngr.h \
- ../nRF5_sdk/components/libraries/queue/nrf_queue.h \
- Source/Drivers/tca9548a.h Source/Drivers/drv2605l.h \
- Source/Drivers/bno055.h
+ ../nRF5_sdk/components/libraries/queue/nrf_queue.h Source/Drivers/imu.h \
+ Source/Drivers/bno055.h Source/Drivers/tca9548a.h \
+ Source/Drivers/drv2605l.h

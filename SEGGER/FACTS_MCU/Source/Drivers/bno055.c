@@ -40,6 +40,7 @@
 /*              INCLUDES    */
 /*******************************************************/
 #include "bno055.h"
+#include "nrf_log.h"
 
 #ifdef __KERNEL__
 #include <linux/types.h>
@@ -104,6 +105,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
     p_bno055 = bno055;
 
     /* Write the default page as zero*/
+    NRF_LOG_INFO("bus write 1");
     com_rslt = p_bno055->BNO055_BUS_WRITE_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_PAGE_ID_REG,
                                                &bno055_page_zero_u8,
@@ -111,6 +113,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the chip id of the sensor from page
      * zero 0x00 register*/
+    NRF_LOG_INFO("bus read 1");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_CHIP_ID_REG,
                                                &data_u8,
@@ -119,6 +122,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the accel revision id from page
      * zero 0x01 register*/
+    NRF_LOG_INFO("bus read 2");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_ACCEL_REV_ID_REG,
                                                &data_u8,
@@ -127,6 +131,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the mag revision id from page
      * zero 0x02 register*/
+         NRF_LOG_INFO("bus read 3");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_MAG_REV_ID_REG,
                                                &data_u8,
@@ -135,6 +140,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the gyro revision id from page
      * zero 0x02 register*/
+         NRF_LOG_INFO("bus read 4");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_GYRO_REV_ID_REG,
                                                &data_u8,
@@ -143,6 +149,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the boot loader revision from page
      * zero 0x06 register*/
+         NRF_LOG_INFO("bus read 5");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_BL_REV_ID_REG,
                                                &data_u8,
@@ -151,6 +158,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
 
     /* Read the software revision id from page
      * zero 0x04 and 0x05 register( 2 bytes of data)*/
+         NRF_LOG_INFO("bus read 6");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_SW_REV_ID_LSB_REG,
                                                a_SW_ID_u8,
@@ -160,6 +168,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_init(struct bno055_t *bno055)
         (u16)((((u32)((u8)a_SW_ID_u8[BNO055_SW_ID_MSB])) << BNO055_SHIFT_EIGHT_BITS) | (a_SW_ID_u8[BNO055_SW_ID_LSB]));
 
     /* Read the page id from the register 0x07*/
+        NRF_LOG_INFO("bus read 7");
     com_rslt += p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
                                                BNO055_PAGE_ID_REG,
                                                &data_u8,

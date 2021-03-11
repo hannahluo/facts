@@ -40,6 +40,7 @@
 *  Includes
 *---------------------------------------------------------------------------*/
 #include "bno055.h"
+#include "nrf_log.h"
 
 /*----------------------------------------------------------------------------*
 *  The following APIs are used for reading and writing of
@@ -595,7 +596,9 @@ s8 BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, u8 dev_addr, u8 reg_addr, u8 *reg_da
     * in the I2C write string function
     * For more information please refer data sheet SPI communication:
     */
+    NRF_LOG_INFO("bus write b4");
     BNO055_iERROR = (s8)i2c_write(i2c, dev_addr, &array[BNO055_INIT_VALUE], cnt);
+    NRF_LOG_INFO("bus write b4");
 
     return (s8)BNO055_iERROR;
 }

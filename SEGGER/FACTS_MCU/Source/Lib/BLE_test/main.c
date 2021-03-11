@@ -61,10 +61,10 @@
 #include "nrf_log_default_backends.h"
 
 #include "i2c.h"
+#include "imu.h"
 #include "tca9548a.h"
 #include "drv2605l.h"
 //#include "haptic_motors.h"
-#include "bno055.h"
 
 #define DRV_I2C_ADDR     0x5A
 #define ELSA_I2C_IMUADDR 0x29
@@ -81,8 +81,8 @@
 /* TWI instance. */
 static const nrf_drv_twi_t i2c_drv = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
-static struct bno055_t elsa_imu = { .dev_addr = ELSA_I2C_IMUADDR, .i2c = &i2c_drv };
-static struct bno055_t anna_imu = { .dev_addr = ANNA_I2C_IMUADDR, .i2c = &i2c_drv };
+//static struct bno055_t elsa_imu; //= { .dev_addr = ELSA_I2C_IMUADDR, .i2c = &i2c_drv };
+//static struct bno055_t anna_imu; //= { .dev_addr = ANNA_I2C_IMUADDR, .i2c = &i2c_drv };
 
 static tca9548a_t elsa_mux; 
 static drv2605l_t elsa_motor;
@@ -111,21 +111,20 @@ int main(void)
     i2c_init(&i2c_drv);
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
-    // bno055_init(&elsa_imu);
-    // bno055_init(&anna_imu);
- 
+    // bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR);
+
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
 
     NRF_LOG_INFO("\r\nMotor Setup");
     NRF_LOG_FLUSH();
-    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    /*tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
     drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
     drv2605l_mode(&elsa_motor, 0);
     drv2605l_library(&elsa_motor, 6);
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0);
 
-    /*tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
     drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
     drv2605l_mode(&elsa_motor, 0);
     drv2605l_library(&elsa_motor, 6);
@@ -139,8 +138,9 @@ int main(void)
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0); */
 
-    struct bno055_accel_t elsa_data;
-    struct bno055_accel_t anna_data;
+    struct bno055_accel_t a;
+    struct bno055_mag_t m;
+    struct bno055_gyro_t g;
 
     NRF_LOG_INFO("Entering Loop");
     NRF_LOG_FLUSH();
@@ -165,10 +165,10 @@ int main(void)
         tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
         drv2605l_stop(&elsa_motor);*/
 
-        /*bool res1 = bno055_read_accel_xyz(&elsa_data);
-        bool res2 = bno055_read_accel_xyz(&anna_data);
-        NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
-        NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);*/
+        // bool res = bno055_read_raw(&a, &m, &g);
+        // bool res2 = bno055_read_accel_xyz(&anna_data);
+        // NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", elsa_data.x, elsa_data.y, elsa_data.z);
+        //NRF_LOG_INFO("anna accel x: %d y: %d z: %d", anna_data.x, anna_data.y, anna_data.z);
 
         nrf_delay_ms(5000);
     }
