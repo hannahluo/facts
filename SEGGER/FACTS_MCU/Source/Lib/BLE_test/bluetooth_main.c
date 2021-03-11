@@ -31,11 +31,11 @@ void double_timer_evt_handler(void* p_context)
     // To-do
     static double cnt = 8;
     cnt += 0.01;
-    raw_gyro_t gyro_fake_data = {.x=cnt, .y=cnt+1, .z=cnt+2};
-    send_raw_gyro(&gyro_fake_data);
+    raw_gyro_t gyro_calf_fake_data = {.x=cnt, .y=cnt+1, .z=cnt+2};
+    send_raw_gyro_calf(&gyro_calf_fake_data);
 
-    raw_accel_t accel_fake_data = {.x=cnt+2, .y=cnt+1, .z=cnt};
-    send_raw_accel(&accel_fake_data);
+    raw_gyro_t gyro_thigh_fake_data = {.x=cnt+2, .y=cnt+1, .z=cnt};
+    send_raw_gyro_thigh(&gyro_thigh_fake_data);
 
     flexion_angle_t angle = cnt;
     send_flexion_angle(&angle);
@@ -167,12 +167,12 @@ int main(void)
 {
     bool erase_bonds=false;
     log_init();
+
     uint32_t device_id[2] = {0};
     uint32_t* device_id_ptr = (uint32_t*)(FICR_ADDR+DEVICE_ID_0);
     device_id[0] = device_id_ptr[0];
     device_id[1] = device_id_ptr[1];
-    NRF_LOG_INFO("J");
-    //NRF_LOG_INFO("Starting device id 0x%x%x", device_id[0], device_id[1]);
+    NRF_LOG_INFO("Starting device id 0x%x%x", device_id[0], device_id[1]);
 
     // Initialize.
     timers_init();

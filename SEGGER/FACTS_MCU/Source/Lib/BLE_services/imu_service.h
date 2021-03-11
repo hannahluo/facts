@@ -22,8 +22,8 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
 
 /* 
  *  FACTS IMU Service: 87C539A0-8E33-4070-9131-8F56AA023E45
- *      Characteristic 1: Raw Gyro    87C539A1-8E33-4070-9131-8F56AA023E45
- *      Characteristic 2: Raw Accel   87C539A2-8E33-4070-9131-8F56AA023E45 (ensure RAW_ACCEL_NEEDED defined)
+ *      Characteristic 1: Raw Gyro Calf    87C539A1-8E33-4070-9131-8F56AA023E45
+ *      Characteristic 2: Raw Gyro Thigh   87C539A2-8E33-4070-9131-8F56AA023E45 (ensure RAW_ACCEL_NEEDED defined)
  */
 
 // Base UUID: 87C50000-8E33-4070-9131-8F56AA023E45
@@ -32,22 +32,18 @@ NRF_SDH_BLE_OBSERVER(_name ## _obs,                       \
 
 // 12th & 13th octets of service & characteristics
 #define BLE_UUID_IMU_SERVICE_UUID                 (0x39A0)
-#define BLE_UUID_RAW_GYRO_UUID                    (0x39A1)
-#ifdef RAW_ACCEL_NEEDED
- #define BLE_UUID_RAW_ACCEL_UUID                  (0x39A2)
-#endif
+#define BLE_UUID_RAW_GYRO_CALF_UUID               (0x39A1)
+#define BLE_UUID_RAW_GYRO_THIGH_UUID                   (0x39A2)
 
 // IMU Service structures
 typedef struct ble_imu_service_s ble_imu_service_t;
 
 typedef enum
 {
-    BLE_RAW_GYRO_EVT_NOTIFY_ENABLED,
-    BLE_RAW_GYRO_EVT_NOTIFY_DISABLED,
-#ifdef RAW_ACCEL_NEEDED
-    BLE_RAW_ACCEL_EVT_NOTIFY_ENABLED,
-    BLE_RAW_ACCEL_EVT_NOTIFY_DISABLED,
-#endif
+    BLE_RAW_GYRO_CALF_EVT_NOTIFY_ENABLED,
+    BLE_RAW_GYRO_CALF_EVT_NOTIFY_DISABLED,
+    BLE_RAW_GYRO_THIGH_EVT_NOTIFY_ENABLED,
+    BLE_RAW_GYRO_THIGH_EVT_NOTIFY_DISABLED,
     NUM_BLE_IMU_EVT_TYPES,
 } ble_imu_evt_t;
 
@@ -68,8 +64,8 @@ typedef struct ble_imu_service_s
     uint16_t connHandle;
     uint16_t serviceHandle;
     uint8_t uuidType;
-    ble_imu_char_t rawGyro;
-    ble_imu_char_t rawAccel;
+    ble_imu_char_t rawGyroCalf;
+    ble_imu_char_t rawGyroThigh;
 } ble_imu_service_t;
 
 // Gyro data
@@ -79,31 +75,19 @@ typedef struct {
     double z;
 } raw_gyro_t;
 
-// Accel data 
-typedef struct {
-    double x;
-    double y;
-    double z;
-} raw_accel_t;
-
 // Service API
 // Initialization function
-uint32_t ble_imu_service_init(ble_imu_service_t* pImuService, ble_imu_evt_handler_t gyroEvtHandler, ble_imu_evt_handler_t accelEvtHandler);
+uint32_t ble_imu_service_init(ble_imu_service_t* pImuService, ble_imu_evt_handler_t gyroCalfEvtHandler, ble_imu_evt_handler_t gyroThighEvtHandler);
 
 // BLE event handler
 void ble_imu_service_on_ble_evt(ble_evt_t const * pBleEvt, void * pContext);
 
 // Gyro X update function
-void raw_gyro_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* gyroVal);
+void raw_gyro_calf_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* gyroVal);
 
-#ifdef RAW_ACCEL_NEEDED
-  // Accel X update function
-  void raw_accel_characteristic_update(ble_imu_service_t* pImuService, raw_accel_t* accelVal);
-#endif
+// Gyro Y update function
+void raw_gyro_thigh_characteristic_update(ble_imu_service_t* pImuService, raw_gyro_t* gyroVal);
 
 // Printing functions (prints to log with debug-level)
 void print_raw_gyro_vals(char* func_name, raw_gyro_t* gyro);
-void print_raw_accel_vals(char* func_name, raw_accel_t* accel);
-
-
 #endif

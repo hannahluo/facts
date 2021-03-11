@@ -429,14 +429,14 @@ void register_limits_handler(ble_calc_evt_handler_t handler)
     m_calc_service.limits.evtHandler = handler;
 }
 
-void send_raw_gyro(raw_gyro_t* gyroReading)
+void send_raw_gyro_calf(raw_gyro_t* gyroReading)
 {
-    raw_gyro_characteristic_update(&m_imu_service, gyroReading);
+    raw_gyro_calf_characteristic_update(&m_imu_service, gyroReading);
 }
 
-void send_raw_accel(raw_accel_t* accelReading)
+void send_raw_gyro_thigh(raw_gyro_t* gyroReading)
 {
-    raw_accel_characteristic_update(&m_imu_service, accelReading);
+    raw_gyro_thigh_characteristic_update(&m_imu_service, gyroReading);
 }
 
 void send_flexion_angle(flexion_angle_t* angle)
