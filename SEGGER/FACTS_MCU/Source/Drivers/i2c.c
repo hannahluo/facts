@@ -7,7 +7,7 @@ bool i2c_init(const nrf_drv_twi_t* i2c) {
        .scl                = kSCLPin,
        .sda                = kSDAPin,
        .frequency          = NRF_DRV_TWI_FREQ_100K,
-       .interrupt_priority = APP_IRQ_PRIORITY_HIGH,
+       .interrupt_priority = APP_IRQ_PRIORITY_LOW,
        .clear_bus_init     = false
     };
 

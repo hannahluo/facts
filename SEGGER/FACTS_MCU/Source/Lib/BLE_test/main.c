@@ -72,6 +72,9 @@
 #define ELSA_I2C_MUXADDR 0x71
 #define ANNA_I2C_MUXADDR 0x70
 
+#define TCA_SELECT_REG   0
+#define TCA_SELECT_SIZE  1
+
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
 
@@ -110,20 +113,31 @@ int main(void)
     nrf_delay_ms(1000);
     // bno055_init(&elsa_imu);
     // bno055_init(&anna_imu);
-
+ 
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
-    tca9548a_select(&elsa_motor, &elsa_mux, HAPTIC_MOTOR_CH0);
-    // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
 
     NRF_LOG_INFO("\r\nMotor Setup");
     NRF_LOG_FLUSH();
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
     drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
     drv2605l_mode(&elsa_motor, 0);
     drv2605l_library(&elsa_motor, 6);
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0);
-    // drv2605l_init(&anna_m1, DRV_I2C_ADDR, &anna_mux);
-    // drv2605l_library(&anna_m1, 6);
+
+    /*tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
+    drv2605l_mode(&elsa_motor, 0);
+    drv2605l_library(&elsa_motor, 6);
+    drv2605l_waveform(&elsa_motor, 0, 47);
+    drv2605l_waveform(&elsa_motor, 1, 0);
+
+    tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
+    drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
+    drv2605l_mode(&elsa_motor, 0);
+    drv2605l_library(&elsa_motor, 6);
+    drv2605l_waveform(&elsa_motor, 0, 47);
+    drv2605l_waveform(&elsa_motor, 1, 0); */
 
     struct bno055_accel_t elsa_data;
     struct bno055_accel_t anna_data;
@@ -134,8 +148,21 @@ int main(void)
     {
         /*NRF_LOG_INFO("Motor Run");
         NRF_LOG_FLUSH();
+        
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
         drv2605l_go(&elsa_motor);
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+        drv2605l_go(&elsa_motor);
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
+        drv2605l_go(&elsa_motor);
+
         nrf_delay_ms(5000);
+
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+        drv2605l_stop(&elsa_motor);
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+        drv2605l_stop(&elsa_motor);
+        tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
         drv2605l_stop(&elsa_motor);*/
 
         /*bool res1 = bno055_read_accel_xyz(&elsa_data);
