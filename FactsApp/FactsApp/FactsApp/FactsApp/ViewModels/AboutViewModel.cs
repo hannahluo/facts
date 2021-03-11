@@ -29,7 +29,7 @@ namespace FactsApp.ViewModels
         private readonly Guid _calcServiceGuid = Guid.Parse("87C539B0-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _flexionAngleGuid = Guid.Parse("87C539B1-8E33-4070-9131-8F56AA023E45");
         IUserDialogs m_dialogs;
-        
+
         private double kneeModelThighLength = 60.0f;
         private double kneeModelBodyLength = 120.0f;
         private double kneeModelFootLength = 25.0f;
@@ -37,7 +37,7 @@ namespace FactsApp.ViewModels
         private double kneeModelArcDisplacement = 25.0f;
 
         private int maxRecentAngles = 40;
-        private int recentAngleSampleRate = 10; // In per ds - the previous sample will go to 500 ms before
+        private int recentAngleSampleRate = 2; // In per ds - the previous sample will go to 500 ms before
         public int angleValuesHeadIndex { get; private set; } = 0;
         public int angleValuesContentSize { get; private set; } = 0;
         public float[] angleValues { get; private set; } = new float[3000];  // In ds
@@ -216,27 +216,27 @@ namespace FactsApp.ViewModels
             m_dialogs = dialog;
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
-            Device.StartTimer(TimeSpan.FromSeconds(0.2), () =>
-                {
-                    // Only update the UI every so often so we don't overload the work we have to do
-                    if (angleValuesHeadIndex % recentAngleSampleRate == 0)
-                    {
-                        UpdateView();
-                    }
+            UpdateView();
+        }
 
-                    angleValuesHeadIndex += 1;
-                    if (angleValuesHeadIndex >= angleValues.Length)
-                    {
-                        angleValuesHeadIndex = 0;
-                    }
+        private void DrawFn()
+        {
+            // Only update the UI every so often so we don't overload the work we have to do
+            if (angleValuesHeadIndex % recentAngleSampleRate == 0)
+            {
+                UpdateView();
+            }
 
-                    if (angleValuesContentSize < angleValues.Length)
-                    {
-                        angleValuesContentSize += 1;
-                    }
+            angleValuesHeadIndex += 1;
+            if (angleValuesHeadIndex >= angleValues.Length)
+            {
+                angleValuesHeadIndex = 0;
+            }
 
-                    return true;
-                });
+            if (angleValuesContentSize < angleValues.Length)
+            {
+                angleValuesContentSize += 1;
+            }
         }
 
         public ICommand OpenWebCommand { get; }
@@ -364,9 +364,9 @@ namespace FactsApp.ViewModels
             ModelWidth = currWidth;
         }
 
-        private float ParseFlexionAngleMsg(byte[] array)
+        private double ParseFlexionAngleMsg(byte[] array)
         {
-            return (float)(BitConverter.ToDouble(array, 0));
+            return (BitConverter.ToDouble(array, 0));
         }
 
         // Start angle read thread
@@ -399,13 +399,14 @@ namespace FactsApp.ViewModels
                 {
                     try
                     {
-                        var angleMsg = await Task.Delay(20).ContinueWith(_ =>
+                        var angleMsg = await Task.Delay(1).ContinueWith(_ =>
                                     { return flexionAngleChar.ReadAsync().Result; });
                         if (angleMsg == null)
                         {
                             break;
                         }
-                        angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg);
+                        angleValues[angleValuesHeadIndex] = (float)Math.Round(ParseFlexionAngleMsg(angleMsg),2);
+                        DrawFn();
 
                     }
                     catch (Plugin.BLE.Abstractions.Exceptions.CharacteristicReadException ex)
