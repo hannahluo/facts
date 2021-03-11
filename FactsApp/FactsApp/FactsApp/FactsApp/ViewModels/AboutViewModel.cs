@@ -394,16 +394,33 @@ namespace FactsApp.ViewModels
             }
 
 
-            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(0.75), () =>
             {
-                var angleMsg = await flexionAngleChar.ReadAsync();
-                if(angleMsg == null || angleMsg.IsFaulted)
+                bool keepReading = true;
+                Task.Run(async () =>
                 {
-                    return false;
-                }
-                angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg.Result);
-                
-                return true;
+                    int cnt = 0;
+                    try
+                    {
+                        var angleMsg = await flexionAngleChar.ReadAsync();
+                        if (angleMsg != null)
+                        {
+                            angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg);
+                        }
+                        else
+                        {
+                            cnt++;
+                        }
+                    }
+                    catch (Plugin.BLE.Abstractions.Exceptions.CharacteristicReadException ex)
+                    {
+                        keepReading = false;
+                        m_dialogs.Alert(ex.Message);
+                    }
+                    
+                });
+
+                return keepReading;
             });
 
 
