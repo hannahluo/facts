@@ -19,6 +19,7 @@ namespace FactsApp.ViewModels
 
         protected IBluetoothLE m_ble = CrossBluetoothLE.Current;
         protected IAdapter m_adapter = CrossBluetoothLE.Current.Adapter;
+        static protected IDevice m_connectedDevice = null;
 
         public bool IsBusy
         {

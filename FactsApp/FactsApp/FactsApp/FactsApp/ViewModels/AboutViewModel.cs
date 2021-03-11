@@ -7,10 +7,29 @@ using Xamarin.Forms.Shapes;
 using Microcharts;
 using SkiaSharp;
 
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Plugin.BLE;
+using Plugin.BLE.Abstractions;
+using Plugin.BLE.Abstractions.Contracts;
+using Plugin.BLE.Abstractions.EventArgs;
+using Plugin.BLE.Abstractions.Extensions;
+using Plugin.Permissions.Abstractions;
+using Plugin.Permissions;
+using Plugin.Settings.Abstractions;
+using Acr.UserDialogs;
+
 namespace FactsApp.ViewModels
 {
     public class AboutViewModel : BaseViewModel
     {
+        private readonly Guid _calcServiceGuid = Guid.Parse("87C539B0-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _flexionAngleGuid = Guid.Parse("87C539B1-8E33-4070-9131-8F56AA023E45");
+        IUserDialogs m_dialogs;
+        
         private double kneeModelThighLength = 60.0f;
         private double kneeModelBodyLength = 120.0f;
         private double kneeModelFootLength = 25.0f;
@@ -192,8 +211,9 @@ namespace FactsApp.ViewModels
                 return headGeometry;
             }
         }
-        public AboutViewModel()
+        public AboutViewModel(IUserDialogs dialog) : base()
         {
+            m_dialogs = dialog;
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
             Device.StartTimer(TimeSpan.FromSeconds(0.1), () =>
@@ -344,6 +364,44 @@ namespace FactsApp.ViewModels
 
             ModelHeight = baseModelHeight;
             ModelWidth = currWidth;
+        }
+
+        private double ParseFlexionAngleMsg(byte[] array)
+        {
+            return BitConverter.ToDouble(array, 0);
+        }
+
+        // Start angle read thread
+        public async void StartAngleReading()
+        {   
+            if(m_connectedDevice == null)
+            {
+                return;
+            }
+
+            var calcService = await m_connectedDevice.GetServiceAsync(_calcServiceGuid);
+            var flexionAngleChar = await calcService.GetCharacteristicAsync(_flexionAngleGuid);
+            if (flexionAngleChar == null)
+            {
+                m_dialogs.Alert("Flexion angle characteristic does not exist!");
+                return;
+            }
+
+            if (!flexionAngleChar.CanRead)
+            {
+                m_dialogs.Alert("Do not have permission to read flexion angle characteristic!");
+                return;
+            }
+
+
+            Device.StartTimer(TimeSpan.FromSeconds(0.001), () =>
+            {
+                var angleMsg = flexionAngleChar.ReadAsync().Result;
+
+                return true;
+            });
+
+
         }
     }
 
