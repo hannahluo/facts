@@ -216,7 +216,7 @@ namespace FactsApp.ViewModels
             m_dialogs = dialog;
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
-            Device.StartTimer(TimeSpan.FromSeconds(0.1), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(0.2), () =>
                 {
                     // Only update the UI every so often so we don't overload the work we have to do
                     if (angleValuesHeadIndex % recentAngleSampleRate == 0)
@@ -393,34 +393,29 @@ namespace FactsApp.ViewModels
                 return;
             }
 
-
-            Device.StartTimer(TimeSpan.FromSeconds(0.75), () =>
+            Task.Run(async () =>
             {
-                bool keepReading = true;
-                Task.Run(async () =>
+                while(true)
                 {
-                    int cnt = 0;
                     try
                     {
-                        var angleMsg = await flexionAngleChar.ReadAsync();
-                        if (angleMsg != null)
+                        var angleMsg = await Task.Delay(20).ContinueWith(_ =>
+                                    { return flexionAngleChar.ReadAsync().Result; });
+                        if (angleMsg == null)
                         {
-                            angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg);
+                            break;
                         }
-                        else
-                        {
-                            cnt++;
-                        }
+                        angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg);
+
                     }
                     catch (Plugin.BLE.Abstractions.Exceptions.CharacteristicReadException ex)
                     {
-                        keepReading = false;
                         m_dialogs.Alert(ex.Message);
+                        break;
                     }
+                }
+                
                     
-                });
-
-                return keepReading;
             });
 
 
