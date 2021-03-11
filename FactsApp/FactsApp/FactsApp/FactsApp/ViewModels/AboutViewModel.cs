@@ -18,10 +18,10 @@ namespace FactsApp.ViewModels
         private double kneeModelArcDisplacement = 25.0f;
 
         private int maxRecentAngles = 40;
-        private int recentAngleSampleRate = 500; // In per ms - the previous sample will go to 500 ms before
+        private int recentAngleSampleRate = 10; // In per ds - the previous sample will go to 500 ms before
         public int angleValuesHeadIndex { get; private set; } = 0;
         public int angleValuesContentSize { get; private set; } = 0;
-        public float[] angleValues { get; private set; } = new float[300000];  // In ms
+        public float[] angleValues { get; private set; } = new float[3000];  // In ds
 
         private double modelHeight = 0.0f;
         public double ModelHeight
@@ -196,7 +196,7 @@ namespace FactsApp.ViewModels
         {
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
 
-            Device.StartTimer(TimeSpan.FromSeconds(0.001), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(0.1), () =>
                 {
                     angleValues[angleValuesHeadIndex] = angleValuesHeadIndex % 100 + 10;
 

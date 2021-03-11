@@ -5,6 +5,7 @@ using FactsApp.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.IO;
+using Xamarin.Essentials;
 
 namespace FactsApp.Views
 {
@@ -26,22 +27,25 @@ namespace FactsApp.Views
         async void SaveDataToFile(object sender, EventArgs args)
         {
             // Use current date and time to ensure no overwriting existing files
-            string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "FactsData" + System.DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".csv");
+            string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), System.DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".csv");
 
             using (StreamWriter writer = File.AppendText(fileName))
             {
-                for (int i = 0; i < m_viewModel.angleValues.Length; ++i)
-                {
-                    writer.Write((i / 1000.0f) + ",");
-                }
-
-                writer.Write(Environment.NewLine);
-
-                int dataIndex = m_viewModel.angleValuesHeadIndex;
+                int dataIndex = m_viewModel.angleValuesHeadIndex - m_viewModel.angleValuesContentSize;
+                if (dataIndex < 0)
+                    dataIndex += m_viewModel.angleValues.Length;
 
                 for (int i = 0; i < m_viewModel.angleValuesContentSize; ++i)
                 {
-                    writer.Write(m_viewModel.angleValues[dataIndex] + ",");
+                    // Avoid the trailing comma on the last entry so we can read this easier
+                    if (i == m_viewModel.angleValuesContentSize - 1)
+                    {
+                        writer.Write(m_viewModel.angleValues[dataIndex]);
+                    }
+                    else
+                    {
+                        writer.Write(m_viewModel.angleValues[dataIndex] + ",");
+                    }
                     dataIndex += 1;
                     if (dataIndex >= m_viewModel.angleValues.Length)
                     {

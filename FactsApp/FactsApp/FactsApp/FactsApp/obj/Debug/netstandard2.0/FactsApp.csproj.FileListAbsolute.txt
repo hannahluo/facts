@@ -18,3 +18,4 @@ C:\Users\krzys\Documents\School\4B\MTE482\facts\FactsApp\FactsApp\FactsApp\Facts
 C:\Users\krzys\Documents\School\4B\MTE482\facts\FactsApp\FactsApp\FactsApp\FactsApp\obj\Debug\netstandard2.0\ref\FactsApp.dll
 C:\Users\krzys\Documents\School\4B\MTE482\facts\FactsApp\FactsApp\FactsApp\FactsApp\obj\Debug\netstandard2.0\FactsApp.pdb
 C:\Users\krzys\Documents\School\4B\MTE482\facts\FactsApp\FactsApp\FactsApp\FactsApp\obj\Debug\netstandard2.0\FactsApp.csprojAssemblyReference.cache
+C:\Users\krzys\Documents\School\4B\MTE482\facts\FactsApp\FactsApp\FactsApp\FactsApp\obj\Debug\netstandard2.0\Views\SessionsPage.xaml.g.cs
