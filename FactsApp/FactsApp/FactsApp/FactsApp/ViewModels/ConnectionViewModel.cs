@@ -188,6 +188,7 @@ namespace FactsApp.ViewModels
                 ScanButtonColour = Color.LightGray;
                 ScanButtonText = "Bluetooth Off";
                 _connDevIdx = -1;
+                m_connectedDevice = null;
             }
             OnPropertyChanged(nameof(IsStateOn));
             OnPropertyChanged(nameof(StateText));
@@ -281,7 +282,11 @@ namespace FactsApp.ViewModels
             }
 
             var connectResult = await Connect(Devices[arg.SelectedItemIndex]);
-            _connDevIdx = arg.SelectedItemIndex;
+            if (connectResult == true)
+            {
+                _connDevIdx = arg.SelectedItemIndex;
+                m_connectedDevice = Devices[_connDevIdx].Device;
+            }
         }
 
         private async Task<bool> Connect(ConnectionItemViewModel device)
@@ -344,6 +349,7 @@ namespace FactsApp.ViewModels
             DisconnectButtonColour = Color.Red;
             ConnectionEstablished = false;
             _connDevIdx = -1;
+            m_connectedDevice = null;
         }
         private void OnLostConnection(object sender, DeviceErrorEventArgs e)
         {
@@ -357,6 +363,7 @@ namespace FactsApp.ViewModels
             ScanButtonText = "Scan";
             ScanButtonColour = Color.Aqua;
             _connDevIdx = -1;
+            m_connectedDevice = null;
         }
     }
 }

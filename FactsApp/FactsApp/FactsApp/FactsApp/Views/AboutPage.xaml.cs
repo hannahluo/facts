@@ -5,6 +5,7 @@ using FactsApp.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using System.IO;
+using Acr.UserDialogs;
 
 namespace FactsApp.Views
 {
@@ -14,13 +15,14 @@ namespace FactsApp.Views
         public AboutPage()
         {
             InitializeComponent();
-            BindingContext = m_viewModel = new AboutViewModel();
+            BindingContext = m_viewModel = new AboutViewModel(UserDialogs.Instance);
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
             m_viewModel.UpdateView();
+            m_viewModel.StartAngleReading();
         }
 
         async void SaveDataToFile(object sender, EventArgs args)
