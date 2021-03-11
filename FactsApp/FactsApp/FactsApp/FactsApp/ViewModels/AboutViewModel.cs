@@ -218,8 +218,6 @@ namespace FactsApp.ViewModels
 
             Device.StartTimer(TimeSpan.FromSeconds(0.1), () =>
                 {
-                    angleValues[angleValuesHeadIndex] = angleValuesHeadIndex % 100 + 10;
-
                     // Only update the UI every so often so we don't overload the work we have to do
                     if (angleValuesHeadIndex % recentAngleSampleRate == 0)
                     {
@@ -366,19 +364,21 @@ namespace FactsApp.ViewModels
             ModelWidth = currWidth;
         }
 
-        private double ParseFlexionAngleMsg(byte[] array)
+        private float ParseFlexionAngleMsg(byte[] array)
         {
-            return BitConverter.ToDouble(array, 0);
+            return (float)(BitConverter.ToDouble(array, 0));
         }
 
         // Start angle read thread
         public async void StartAngleReading()
-        {   
-            if(m_connectedDevice == null)
+        {
+            if (m_connectedDevice == null)
             {
+                m_dialogs.Alert("Device not connected!");
                 return;
             }
 
+            
             var calcService = await m_connectedDevice.GetServiceAsync(_calcServiceGuid);
             var flexionAngleChar = await calcService.GetCharacteristicAsync(_flexionAngleGuid);
             if (flexionAngleChar == null)
@@ -389,15 +389,20 @@ namespace FactsApp.ViewModels
 
             if (!flexionAngleChar.CanRead)
             {
-                m_dialogs.Alert("Do not have permission to read flexion angle characteristic!");
+                m_dialogs.Alert("Do not have read permissions on flexion angle characteristic!");
                 return;
             }
 
 
-            Device.StartTimer(TimeSpan.FromSeconds(0.001), () =>
+            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
             {
-                var angleMsg = flexionAngleChar.ReadAsync().Result;
-
+                var angleMsg = await flexionAngleChar.ReadAsync();
+                if(angleMsg == null || angleMsg.IsFaulted)
+                {
+                    return false;
+                }
+                angleValues[angleValuesHeadIndex] = ParseFlexionAngleMsg(angleMsg.Result);
+                
                 return true;
             });
 
