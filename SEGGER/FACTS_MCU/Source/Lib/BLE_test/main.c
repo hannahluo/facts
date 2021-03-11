@@ -112,7 +112,7 @@ int main(void)
     // bno055_init(&anna_imu);
 
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
-    tca9548a_select(&elsa_motor, &elsa_mux, HAPTIC_MOTOR_CH1);
+    tca9548a_select(&elsa_motor, &elsa_mux, HAPTIC_MOTOR_CH0);
     // tca9548a_init(&anna_mux, ANNA_I2C_MUXADDR, &i2c_drv);
 
     NRF_LOG_INFO("\r\nMotor Setup");
@@ -120,6 +120,8 @@ int main(void)
     drv2605l_init(&elsa_motor, DRV_I2C_ADDR, &elsa_mux);
     drv2605l_mode(&elsa_motor, 0);
     drv2605l_library(&elsa_motor, 6);
+    drv2605l_waveform(&elsa_motor, 0, 47);
+    drv2605l_waveform(&elsa_motor, 1, 0);
     // drv2605l_init(&anna_m1, DRV_I2C_ADDR, &anna_mux);
     // drv2605l_library(&anna_m1, 6);
 
@@ -130,14 +132,11 @@ int main(void)
     NRF_LOG_FLUSH();
     while (true)
     {
-        drv2605l_waveform(&elsa_motor, 0, 47);
-        drv2605l_waveform(&elsa_motor, 1, 0);
-
         /*NRF_LOG_INFO("Motor Run");
         NRF_LOG_FLUSH();
-        drv2605l_go(&elsa_m1);
+        drv2605l_go(&elsa_motor);
         nrf_delay_ms(5000);
-        drv2605l_stop(&elsa_m1);*/
+        drv2605l_stop(&elsa_motor);*/
 
         /*bool res1 = bno055_read_accel_xyz(&elsa_data);
         bool res2 = bno055_read_accel_xyz(&anna_data);
