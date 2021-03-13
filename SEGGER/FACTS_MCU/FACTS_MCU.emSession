@@ -2,13 +2,10 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="115" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="Source/Lib/BLE_test/main.c" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="120" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="404" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="80" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="28" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.h" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="71" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.c" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="28" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../../../../../AppData/Local/SEGGER/SEGGER Embedded Studio/v3/tools.xml" useHWbreakpoint="false"/>
-  <Exceptions set="MemManage;UsageFault_Coprocessor;UsageFault_CheckingError;UsageFault_StateError;BusFault;ExceptionEntryReturnFault;HardFault"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
@@ -29,6 +26,7 @@
  <Project>
   <ProjectSessionItem path="FACTS_MCU"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU"/>
+  <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;BLE_services"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;BLE_Test"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Board Definition"/>
   <ProjectSessionItem path="FACTS_MCU;FACTS_MCU;Config"/>
@@ -72,22 +70,12 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="78" y="21" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.h" selected="0" top="16" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="11" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="14" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="122" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Lib/BLE_test/main.c" selected="0" top="106" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="98" y="381" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="10" path="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" selected="0" top="365" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="160" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Lib/BLE_test/main.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/components/libraries/util/app_error.h" selected="0" top="127" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="28" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.h" selected="0" top="159" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="27" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/drv2605l.c" selected="0" top="15" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="45" y="120" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/tca9548a.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/components/libraries/util/sdk_errors.h" selected="0" top="112" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="2263" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Config/sdk_config.h" selected="0" top="2249" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="172" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.c" selected="0" top="155" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="49" y="9" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="1" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="287" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 5.32a/source/thumb_crt0.s" selected="0" top="275" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="414" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" selected="0" top="404" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="435" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/modules/nrfx/hal/nrf_twim.h" selected="0" top="405" codecName=""/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="300" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/integration/nrfx/nrfx_glue.h" selected="0" top="291" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="63" y="120" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="9" path="Source/Lib/BLE_test/main.c" selected="0" top="105" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="46" y="247" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.c" selected="0" top="269" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="22" y="4806" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/bno055.c" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.h" selected="0" top="4791" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="19" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.h" selected="0" top="6" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="74" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.c" selected="1" top="60" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="53" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="0" top="33" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/nRF5_sdk/components/libraries/fifo" debugSearchPath="" autoConnectCapabilities="3711"/>
+ <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Lib/BLE_services" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>
