@@ -27,7 +27,7 @@ bool i2c_read(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t* data, u
     //NRF_LOG_INFO("reading: %d, on device: %d", *data, dev_addr);
 
     if (err != NRF_SUCCESS) {
-        NRF_LOG_WARNING("failed to read i2c: %d, dev addr: %d", err, dev_addr);
+        NRF_LOG_WARNING("failed to read i2c: %x, dev addr: %x", err, dev_addr);
         return false;
     }
 
@@ -40,7 +40,7 @@ bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t const* 
     //NRF_LOG_INFO("writing: %d, on device: %d", *data, dev_addr);
 
     if (err != NRF_SUCCESS) {
-        NRF_LOG_WARNING("failed to write i2c: %d, dev addr: %d", err, dev_addr);
+        NRF_LOG_WARNING("failed to write i2c: %x, dev addr: %x", err, dev_addr);
         return false;
     }
 

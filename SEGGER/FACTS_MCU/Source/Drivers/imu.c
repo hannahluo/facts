@@ -112,9 +112,7 @@ int8_t BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_ad
         array[stringpos + BNO055_I2C_BUS_WRITE_ARRAY_INDEX] = *(reg_data + stringpos);
     }
 
-    NRF_LOG_INFO("bus write b4");
     BNO055_iERROR = (int8_t)i2c_write(i2c, dev_addr, &array[BNO055_INIT_VALUE], cnt);
-    NRF_LOG_INFO("bus write after");
 
     return (int8_t)BNO055_iERROR;
 }

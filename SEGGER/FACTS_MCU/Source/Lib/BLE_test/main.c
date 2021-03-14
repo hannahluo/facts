@@ -120,7 +120,7 @@ int main(void)
         bool res = bno055_read_raw(&a, &m, &g);
         NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", a.x, a.y, a.z);
         nrf_delay_ms(500);
-        bno055_get_calibration_status();
+        // bno055_get_calibration_status();
         nrf_delay_ms(500);
     }
 }
