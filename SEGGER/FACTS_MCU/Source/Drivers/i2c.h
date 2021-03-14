@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "nrf_twi_sensor.h"
 #include "nrf_drv_twi.h"
 
 static const uint8_t kSCLPin = 27u;

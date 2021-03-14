@@ -2,6 +2,7 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <BreakpointListItem trigger="" line="419" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="Source/Drivers/bno055.h" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="120" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="404" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../nRF5_sdk/modules/nrfx/drivers/src/nrfx_twim.c" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="71" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="Source/Drivers/tca9548a.c" useHWbreakpoint="false"/>
@@ -70,12 +71,16 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="63" y="120" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="9" path="Source/Lib/BLE_test/main.c" selected="0" top="105" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="46" y="247" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.c" selected="0" top="269" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="22" y="4806" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/bno055.c" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.h" selected="0" top="4791" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="19" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.h" selected="0" top="6" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="74" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.c" selected="1" top="60" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="53" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="64" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Lib/BLE_test/main.c" selected="1" top="45" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="83" y="1799" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.c" selected="0" top="1674" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="21" y="562" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/bno055.c" useBinaryEdit="0" left="0" path="Source/Drivers/bno055.h" selected="0" top="551" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="19" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="41" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/imu.c" selected="0" top="30" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="41" y="17" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.c" selected="0" top="3" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="61" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/i2c.c" useBinaryEdit="0" left="0" path="../nRF5_sdk/components/softdevice/s113/headers/nrf_error.h" selected="0" top="50" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="72" y="38" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/i2c.c" selected="0" top="18" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="10" useTextEdit="1" openedFrom="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Drivers/tca9548a.c" useBinaryEdit="0" left="0" path="Source/Drivers/tca9548a.h" selected="0" top="9" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="419" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="Source/Drivers/bno055_support.c" selected="0" top="408" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="FACTS_MCU" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/Hanna/Documents/FYDP/facts/SEGGER/FACTS_MCU/Source/Lib/BLE_services" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

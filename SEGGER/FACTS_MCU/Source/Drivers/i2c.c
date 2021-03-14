@@ -49,5 +49,7 @@ bool i2c_write(const nrf_drv_twi_t* i2c, const uint8_t dev_addr, uint8_t const* 
 
 bool i2c_deinit(nrf_drv_twi_t* i2c) {
     NRF_LOG_INFO("deinitializing i2c");
+    nrfx_twim_disable(i2c);
+    nrfx_twim_uninit(i2c);
     return true; // possibly not needed
 };

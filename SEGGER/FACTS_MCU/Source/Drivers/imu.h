@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include <stdlib.h>
@@ -28,4 +29,4 @@ int8_t BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_ad
 void BNO055_delay_msek(uint32_t msek);
 
 bool deinit(struct bno055_t* bno055);
-
+*/
