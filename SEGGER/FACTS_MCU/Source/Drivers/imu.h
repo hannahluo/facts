@@ -15,8 +15,6 @@ void I2C_routine(struct bno055_t* bno055, nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
 bool bno055_setup(struct bno055_t* bno055, nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
-void bno055_set_external_xtal(bool use_xtal);
-
 void bno055_get_calibration_status();
 
 bool bno055_read_raw(struct bno055_accel_t* accel_xyz, struct bno055_mag_t* mag_xyz, struct bno055_gyro_t* gyro_xyz);

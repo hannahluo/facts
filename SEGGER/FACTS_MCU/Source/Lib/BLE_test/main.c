@@ -63,12 +63,8 @@ int main(void)
     i2c_init(&i2c_drv);
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
-    uint8_t rst_msk = BNO055_SYS_RST_MSK;
-    BNO055_I2C_bus_write(&i2c_drv, 0x28, BNO055_SYS_RST_REG, &rst_msk, 1);
-    nrf_delay_ms(30);
-    bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR);
-    // bno055_set_external_xtal(true); // if reading raw data
-    nrf_delay_ms(70);
+    bno055_setup(&elsa_imu, &i2c_drv, 0x28);
+    nrf_delay_ms(100);
 
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
 
@@ -94,10 +90,6 @@ int main(void)
     drv2605l_library(&elsa_motor, 6);
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0); */
-
-    //struct bno055_accel_t a;
-    //struct bno055_mag_t m;
-    //struct bno055_gyro_t g;
 
     NRF_LOG_INFO("Entering Loop");
     NRF_LOG_FLUSH();
@@ -127,7 +119,7 @@ int main(void)
         bno055_read_euler_hrp(&ew);
         NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
         nrf_delay_ms(500);
-        // bno055_get_calibration_status();
+        bno055_get_calibration_status();
         nrf_delay_ms(500);
     }
 }
