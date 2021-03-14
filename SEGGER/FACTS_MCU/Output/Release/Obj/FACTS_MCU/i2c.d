@@ -5,8 +5,6 @@ Output/Release/Obj/FACTS_MCU/i2c.o: \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/__crossworks.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdint.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdbool.h \
- ../nRF5_sdk/components/libraries/twi_sensor/nrf_twi_sensor.h \
- ../nRF5_sdk/components/libraries/twi_mngr/nrf_twi_mngr.h \
  ../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h \
  ../nRF5_sdk/modules/nrfx/nrfx.h \
  ../nRF5_sdk/integration/nrfx/nrfx_config.h Config/sdk_config.h \
@@ -62,17 +60,15 @@ Output/Release/Obj/FACTS_MCU/i2c.o: \
  ../nRF5_sdk/modules/nrfx/hal/nrf_twim.h \
  ../nRF5_sdk/modules/nrfx/drivers/include/nrfx_twi.h \
  ../nRF5_sdk/modules/nrfx/hal/nrf_twi.h \
- ../nRF5_sdk/components/libraries/queue/nrf_queue.h \
- C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/string.h \
- ../nRF5_sdk/components/libraries/log/nrf_log_instance.h \
- ../nRF5_sdk/components/libraries/experimental_section_vars/nrf_section.h \
- ../nRF5_sdk/components/libraries/log/nrf_log_types.h \
- ../nRF5_sdk/components/libraries/balloc/nrf_balloc.h \
  ../nRF5_sdk/components/libraries/log/nrf_log.h \
  ../nRF5_sdk/components/libraries/util/sdk_common.h \
+ C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/string.h \
  ../nRF5_sdk/components/libraries/util/sdk_os.h \
  ../nRF5_sdk/components/libraries/util/app_util.h \
  ../nRF5_sdk/components/libraries/util/sdk_macros.h \
+ ../nRF5_sdk/components/libraries/experimental_section_vars/nrf_section.h \
  ../nRF5_sdk/components/libraries/strerror/nrf_strerror.h \
  ../nRF5_sdk/components/libraries/log/src/nrf_log_internal.h \
+ ../nRF5_sdk/components/libraries/log/nrf_log_instance.h \
+ ../nRF5_sdk/components/libraries/log/nrf_log_types.h \
  ../nRF5_sdk/components/libraries/log/nrf_log_types.h

@@ -1,12 +1,11 @@
-Output/Release/Obj/FACTS_MCU/imu.o: \
- C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\imu.c \
- C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\imu.h \
+Output/Release/Obj/FACTS_MCU/bno055.o: \
+ C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\bno055.c \
+ C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\bno055.h \
+ C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\i2c.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdlib.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/__crossworks.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdint.h \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdbool.h \
- C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\bno055.h \
- C:\Users\Hanna\Documents\FYDP\facts\SEGGER\FACTS_MCU\Source\Drivers\i2c.h \
  ../nRF5_sdk/integration/nrfx/legacy/nrf_drv_twi.h \
  ../nRF5_sdk/modules/nrfx/nrfx.h \
  ../nRF5_sdk/integration/nrfx/nrfx_config.h Config/sdk_config.h \
@@ -73,5 +72,4 @@ Output/Release/Obj/FACTS_MCU/imu.o: \
  ../nRF5_sdk/components/libraries/log/src/nrf_log_internal.h \
  ../nRF5_sdk/components/libraries/log/nrf_log_instance.h \
  ../nRF5_sdk/components/libraries/log/nrf_log_types.h \
- ../nRF5_sdk/components/libraries/log/nrf_log_types.h \
- ../nRF5_sdk/components/libraries/delay/nrf_delay.h
+ ../nRF5_sdk/components/libraries/log/nrf_log_types.h

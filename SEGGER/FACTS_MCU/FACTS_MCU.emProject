@@ -164,8 +164,12 @@
       </file>
     </folder>
     <folder Name="Drivers">
-      <file file_name="Source/Drivers/bno055.c" />
-      <file file_name="Source/Drivers/bno055.h" />
+      <file file_name="Source/Drivers/bno055.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Drivers/bno055.h">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
       <file file_name="Source/Drivers/drv2605l.c">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>

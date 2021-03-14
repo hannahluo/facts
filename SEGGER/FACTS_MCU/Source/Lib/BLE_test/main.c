@@ -12,6 +12,7 @@
 #include "nrf_log_default_backends.h"
 
 #include "i2c.h"
+#include "bno055.h"
 #include "imu.h"
 #include "tca9548a.h"
 #include "drv2605l.h"
@@ -63,14 +64,11 @@ int main(void)
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
     uint8_t rst_msk = BNO055_SYS_RST_MSK;
-    BNO055_I2C_bus_write(i2c, dev_addr, BNO055_SYS_RST_REG, &rst_msk, 1);
+    BNO055_I2C_bus_write(&i2c_drv, 0x28, BNO055_SYS_RST_REG, &rst_msk, 1);
     nrf_delay_ms(30);
     bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR);
     // bno055_set_external_xtal(true); // if reading raw data
-    uint8_t op_mode = 0;
-    BNO055_I2C_bus_read(i2c, dev_addr, BNO055_CHIP_ID_REG, &id, 1);
-    NRF_LOG_INFO("op mode: %x", op_mode);
-    nrf_delay_ms(200);
+    nrf_delay_ms(70);
 
     tca9548a_init(&elsa_mux, 0x70, &i2c_drv);
 
@@ -126,7 +124,7 @@ int main(void)
 
         //bool res = bno055_read_raw(&a, &m, &g);
         struct bno055_euler_t ew;
-        bno055_read_euler_hrp(&euler_hrp);
+        bno055_read_euler_hrp(&ew);
         NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
         nrf_delay_ms(500);
         // bno055_get_calibration_status();

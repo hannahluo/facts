@@ -71,7 +71,7 @@ bool bno055_setup(struct bno055_t* bno055, nrf_drv_twi_t* i2c, uint8_t dev_addr)
 
     // Set the requested operating mode (see section 3.3)
     // err += bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
-    op_mode = BNO055_OPERATION_MODE_NDOF;
+    uint8_t op_mode = BNO055_OPERATION_MODE_NDOF;
     err += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
     NRF_LOG_INFO("err9 = %d", err);
 
