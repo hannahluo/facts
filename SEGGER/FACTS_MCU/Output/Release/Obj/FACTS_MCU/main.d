@@ -81,6 +81,5 @@ Output/Release/Obj/FACTS_MCU/main.o: \
  C:/Program\ Files/SEGGER/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.32a/include/stdlib.h \
  ../nRF5_sdk/components/libraries/balloc/nrf_balloc.h \
  ../nRF5_sdk/components/libraries/log/nrf_log_default_backends.h \
- Source/Drivers/i2c.h Source/Drivers/bno055.h Source/Drivers/imu.h \
- Source/Drivers/bno055.h Source/Drivers/tca9548a.h \
- Source/Drivers/drv2605l.h
+ Source/Drivers/i2c.h Source/Drivers/imu.h Source/Drivers/bno055.h \
+ Source/Drivers/tca9548a.h Source/Drivers/drv2605l.h

@@ -69,6 +69,56 @@ bool bno055_read_raw(struct bno055_accel_t* accel_xyz, struct bno055_mag_t* mag_
     return (err == BNO055_SUCCESS);
 }
 
+bool bno055_read_ew(struct bno055_euler_t *euler, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
+    /* Variable used to return value of
+     * communication routine*/
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    uint8_t data_u8[BNO055_EULER_HRP_DATA_SIZE] = {
+        BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE
+    };
+
+    /* Read the six byte of Euler hrp data*/
+    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+                                    BNO055_EULER_H_LSB_VALUEH_REG,
+                                    data_u8,
+                                    BNO055_EULER_HRP_DATA_SIZE);
+
+    /* Data h*/
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_LSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_LSB],
+        BNO055_EULER_H_LSB_VALUEH);
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_MSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_MSB],
+        BNO055_EULER_H_MSB_VALUEH);
+    euler->h =
+        (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
+              (data_u8[BNO055_SENSOR_DATA_EULER_HRP_H_LSB]));
+
+    /* Data r*/
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_LSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_LSB],
+        BNO055_EULER_R_LSB_VALUER);
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_MSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_MSB],
+        BNO055_EULER_R_MSB_VALUER);
+    euler->r =
+        (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
+              (data_u8[BNO055_SENSOR_DATA_EULER_HRP_R_LSB]));
+
+    /* Data p*/
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_LSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_LSB],
+        BNO055_EULER_P_LSB_VALUEP);
+    data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_MSB] = BNO055_GET_BITSLICE(
+        data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_MSB],
+        BNO055_EULER_P_MSB_VALUEP);
+    euler->p =
+        (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
+              (data_u8[BNO055_SENSOR_DATA_EULER_HRP_P_LSB]));
+
+    return (com_rslt == 0) ? true : false;
+}
+
 int8_t BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
 {
     uint8_t array[2];

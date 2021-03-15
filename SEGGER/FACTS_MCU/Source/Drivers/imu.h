@@ -19,6 +19,8 @@ void bno055_get_calibration_status();
 
 bool bno055_read_raw(struct bno055_accel_t* accel_xyz, struct bno055_mag_t* mag_xyz, struct bno055_gyro_t* gyro_xyz);
 
+bool bno055_read_ew(struct bno055_euler_t *euler, nrf_drv_twi_t* i2c, uint8_t dev_addr);
+
 int8_t BNO055_I2C_bus_read(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt);
 
 int8_t BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt);

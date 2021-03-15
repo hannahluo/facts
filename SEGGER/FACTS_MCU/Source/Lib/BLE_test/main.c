@@ -12,7 +12,7 @@
 #include "nrf_log_default_backends.h"
 
 #include "i2c.h"
-#include "bno055.h"
+// #include "bno055.h"
 #include "imu.h"
 #include "tca9548a.h"
 #include "drv2605l.h"
@@ -116,10 +116,10 @@ int main(void)
         tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
         drv2605l_stop(&elsa_motor);*/
         
-        bno055_read_euler_hrp(&ew, ELSA_I2C_IMUADDR);
+        bno055_read_ew(&ew, &i2c_drv, ELSA_I2C_IMUADDR);
         NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
         nrf_delay_ms(500);
-        bno055_read_euler_hrp(&ew, ANNA_I2C_IMUADDR);
+        bno055_read_ew(&ew, &i2c_drv, ANNA_I2C_IMUADDR);
         NRF_LOG_INFO("anna accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
         // bno055_get_calibration_status();
         nrf_delay_ms(500);
