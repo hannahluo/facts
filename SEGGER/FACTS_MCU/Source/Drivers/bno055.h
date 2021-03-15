@@ -2702,7 +2702,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_p(s16 *euler_p_s16);
  *  @retval 1 -> BNO055_ERROR
  *
  */
-BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_hrp(struct bno055_euler_t *euler);
+BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_hrp(struct bno055_euler_t *euler, uint8_t dev_addr);
 
 /**************************************************/
 /**\name QUATERNION DATA READ FUNCTIONS */

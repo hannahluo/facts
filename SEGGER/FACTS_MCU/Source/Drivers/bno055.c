@@ -1760,7 +1760,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_p(s16 *euler_p_s16)
  *  @retval 1 -> BNO055_ERROR
  *
  */
-BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_hrp(struct bno055_euler_t *euler)
+BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_hrp(struct bno055_euler_t *euler, uint8_t dev_addr)
 {
     /* Variable used to return value of
      * communication routine*/
@@ -1796,7 +1796,7 @@ BNO055_RETURN_FUNCTION_TYPE bno055_read_euler_hrp(struct bno055_euler_t *euler)
         if ((stat_s8 == BNO055_SUCCESS) || (p_bno055->page_id == BNO055_PAGE_ZERO))
         {
             /* Read the six byte of Euler hrp data*/
-            com_rslt = p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
+            com_rslt = p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, dev_addr,
                                                       BNO055_EULER_H_LSB_VALUEH_REG,
                                                       data_u8,
                                                       BNO055_EULER_HRP_DATA_SIZE);

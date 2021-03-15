@@ -45,6 +45,7 @@ bool bno055_setup(struct bno055_t* bno055, nrf_drv_twi_t* i2c, uint8_t dev_addr)
     return (err == BNO055_SUCCESS);
 };
 
+// SET UP A DEV ADDY
 void bno055_get_calibration_status() {
     uint8_t accel_calib_status = BNO055_INIT_VALUE;
     uint8_t gyro_calib_status = BNO055_INIT_VALUE;
