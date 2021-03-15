@@ -92,7 +92,6 @@ int main(void)
     drv2605l_waveform(&elsa_motor, 0, 47);
     drv2605l_waveform(&elsa_motor, 1, 0); */
 
-    struct bno055_euler_t ew;
     NRF_LOG_INFO("Entering Loop");
     NRF_LOG_FLUSH();
     while (true)
@@ -116,12 +115,6 @@ int main(void)
         tca9548a_write(&i2c_drv, 0x70, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
         drv2605l_stop(&elsa_motor);*/
         
-        bno055_read_ew(&ew, &i2c_drv, ELSA_I2C_IMUADDR);
-        NRF_LOG_INFO("elsa accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
-        nrf_delay_ms(500);
-        bno055_read_ew(&ew, &i2c_drv, ANNA_I2C_IMUADDR);
-        NRF_LOG_INFO("anna accel x: %d y: %d z: %d", ew.h, ew.r, ew.p);
-        // bno055_get_calibration_status();
         nrf_delay_ms(500);
     }
 }
