@@ -1,34 +1,28 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
-**********************************************************************
+#pragma once
 
--------------------------- END-OF-HEADER -----------------------------
-
-File    : main.c
-Purpose : Generic application start
-
-*/
-
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-/*********************************************************************
-*
-*       main()
-*
-*  Function description
-*   Application entry point.
-*/
-int main(void) {
-  int i;
+#include "i2c.h"
 
-  for (i = 0; i < 100; i++) {
-    printf("Hello World %d!\n", i);
-  }
-  do {
-    i++;
-  } while (1);
-}
+static const uint8_t kRegAddrLength = 1u;
+static const uint8_t kI2cMuxInit = 0u;
+static const uint8_t kRegDataLength = 1u;
+static const uint8_t kWriteDataLength = kRegAddrLength + kRegDataLength;
 
-/*************************** End of file ****************************/
+typedef struct {
+    // channels is a bit field of active channels where a set bit = active channel
+    // uint8_t channel; /**< which channels to write to */
+    uint8_t mux_addr; /**< i2c device address of tca9548a */
+
+    nrf_drv_twi_t* i2c;
+} tca9548a_t;
+
+bool tca9548a_init(tca9548a_t* i2c_mux, uint8_t mux_addr, nrf_drv_twi_t* i2c);
+
+bool tca9548a_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint8_t data_length);
+
+bool tca9548a_read(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t* reg_addr, uint8_t* data, uint8_t data_length);
+
+bool tca9548a_deinit(tca9548a_t* i2c_mux);
