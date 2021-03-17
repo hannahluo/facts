@@ -64,7 +64,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
     }
     
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write config to mux ch0");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch0 for init");
         return -1;
     }
     if(!drv2605l_init(motor, DRV_I2C_ADDR, mux)) {
@@ -76,7 +76,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
     drv2605l_waveform(motor, 0, 47);
     drv2605l_waveform(motor, 1, 0);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write config to mux ch1");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch1 for init");
         return -1;
     }
     if(!drv2605l_init(motor, DRV_I2C_ADDR, mux)) {
@@ -88,7 +88,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
     drv2605l_waveform(motor, 0, 47);
     drv2605l_waveform(motor, 1, 0);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write config to mux ch2");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch2 for init");
         return -1;
     }
     if(!drv2605l_init(motor, DRV_I2C_ADDR, mux)) {
@@ -123,17 +123,17 @@ int8_t haptic_module_init()
 int8_t turn_on_motors(drv2605l_t* motor, uint8_t mux_addr)
 {
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failede to write go to mux ch0");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch0 for go");
         return -1;
     }
     drv2605l_go(motor);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write go to mux ch1");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch1 for go");
         return -1;
     }
     drv2605l_go(motor);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write go to mux ch2");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch2 for go");
         return -1;
     }
     drv2605l_go(motor);
@@ -144,17 +144,17 @@ int8_t turn_on_motors(drv2605l_t* motor, uint8_t mux_addr)
 int8_t turn_off_motors(drv2605l_t* motor, uint8_t mux_addr)
 {
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write stop to mux ch0");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch0 for stop");
         return -1;
     }
     drv2605l_stop(motor);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write stop to mux ch1");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch1 for stop");
         return -1;
     }
     drv2605l_stop(motor);
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE)) {
-        NRF_LOG_ERROR("Failed to write stop to mux ch2");
+        NRF_LOG_ERROR("Failed to set motor channel to mux ch2 for stop");
         return -1;
     }
     drv2605l_stop(motor);
