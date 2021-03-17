@@ -123,11 +123,6 @@ void init_cal_handler(void const * data, uint8_t size)
     start_cal = 1;
 }
 
-void limits_handler(void const* data, uint8_t size)
-{
-    limits_t* limits = (limits_t*)data;
-}
-
 // Initialize ble module
 void ble_module_init()
 { 
@@ -136,7 +131,7 @@ void ble_module_init()
     register_init_cal_handler(&init_cal_handler);
     register_calf_joint_axis_handler(&calf_joint_axis_handler);
     register_thigh_joint_axis_handler(&thigh_joint_axis_handler);
-    register_limits_handler(&limits_handler);
+    register_limits_handler(NULL);
     NRF_LOG_INFO("\r\n ***BLE Setup End*** \r\n");
 }
 
