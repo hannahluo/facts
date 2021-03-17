@@ -234,14 +234,6 @@ int8_t i2c_module_init()
     return 0;
 }
 
-void scale_gyro(struct bno055_gyro_t* bno055Gyro, raw_gyro_t* gyro)
-{
-    /* Convert the raw gyro xyz to rps*/
-    gyro->x = (double)(bno055Gyro->x / BNO055_GYRO_DIV_RPS);
-    gyro->y = (double)(bno055Gyro->y / BNO055_GYRO_DIV_RPS);
-    gyro->z = (double)(bno055Gyro->z / BNO055_GYRO_DIV_RPS);
-}
-
 // Calibration
 void calibrate_imu()
 {
@@ -252,8 +244,8 @@ void calibrate_imu()
 // Calibration
 int8_t calibrate_facts()
 {
-    struct bno055_gyro_t bno055GyroThigh = {.x=0,.y=0,.z=0};
-    struct bno055_gyro_t bno055GyroCalf = {.x=0,.y=0,.z=0};
+    struct bno055_gyro_double_t bno055GyroThigh = {.x=0,.y=0,.z=0};
+    struct bno055_gyro_double_t bno055GyroCalf = {.x=0,.y=0,.z=0};
 
     raw_gyro_t gyroCalf = {.x = 0,.y=0,.z=0};
     raw_gyro_t gyroThigh = {.x=0,.y=0,.z=0};
@@ -275,18 +267,21 @@ int8_t calibrate_facts()
     // Wait for joint axis to be recvd
     while(!calfAxisUpdated || !thighAxisUpdated) {
         // Read
-        if(!bno055_read_gyro(&bno055GyroThigh, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        if(!bno055_convert_double_gyr_xyz_rps(&bno055GyroThigh, &i2c_drv, ELSA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read raw gyro from elsa(thigh)");
             return -1;
         }
-        if(!bno055_read_gyro(&bno055GyroCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        if(!bno055_convert_double_gyr_xyz_rps(&bno055GyroCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read raw gyro from anna(calf)");
             return -1;
         }
         
-        // Scale to double
-        scale_gyro(&bno055GyroThigh, &gyroThigh);
-        scale_gyro(&bno055GyroCalf, &gyroCalf);
+        gyroCalf.x = bno055GyroCalf.x;
+        gyroCalf.y = bno055GyroCalf.y;
+        gyroCalf.z = bno055GyroCalf.z;
+        gyroThigh.x = bno055GyroThigh.x;
+        gyroThigh.y = bno055GyroThigh.y;
+        gyroThigh.z = bno055GyroThigh.z;
 
         // Write to BLE module
         send_raw_gyro_calf(&gyroCalf);
