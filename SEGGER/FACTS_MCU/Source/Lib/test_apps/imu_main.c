@@ -11,15 +11,13 @@
 #include "nrf_log_default_backends.h"
 
 #include "i2c.h"
-// #include "bno055.h"
+#include "bno055.h"
 #include "imu.h"
-#include "tca9548a.h"
-#include "drv2605l.h"
-//#include "haptic_motors.h"
+#include "angle_calculation.h"
 
 // Test defines
-#define GYRO_TESTING
-#define QUAT_TESTING
+//#define GYRO_TESTING
+//#define QUAT_TESTING
 
 #define DRV_I2C_ADDR     0x5A
 #define ELSA_I2C_IMUADDR 0x29
@@ -130,11 +128,20 @@ int8_t test_gyro()
     return 0;
 }
 
+void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
+{
+    const double scale = (1.0 / (1 << 14));
+    quat->w = (double)bno055Quat->w * scale;
+    quat->x = (double)bno055Quat->x * scale;
+    quat->y = (double)bno055Quat->y * scale;
+    quat->z = (double)bno055Quat->z * scale;
+}
+
 // testing quat
 int8_t test_quat()
 {
-    vector_t thighAxisVec = {.x=thighAxis.x, .y=thighAxis.y, .z=thighAxis.z};
-    vector_t calfAxisVec = {.x=calfAxis.x, .y=calfAxis.y, .z=calfAxis.z};
+    vector_t thighAxisVec = {.x=1, .y=0, .z=0};
+    vector_t calfAxisVec = {.x=1, .y=0, .z=0};
     struct bno055_quaternion_t bno055QuatCalf = {.w=0, .x=0, .y=0, .z=0};
     struct bno055_quaternion_t bno055QuatThigh = {.w=0, .x=0, .y=0, .z=0};
     quat_t quatCalf = {.w=0,.x=0,.y=0,.z=0};

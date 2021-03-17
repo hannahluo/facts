@@ -190,7 +190,7 @@
       </file>
     </folder>
     <file file_name="Source/main.c">
-      <configuration Name="Release" build_exclude_from_build="No" />
+      <configuration Name="Release" build_exclude_from_build="Yes" />
     </file>
     <folder Name="BLE_services">
       <file file_name="Source/Lib/BLE_services/calibration_service.h">
@@ -220,6 +220,12 @@
       </file>
       <file file_name="Source/Lib/test_apps/angle_calc_main.c" />
       <configuration Name="Release" build_exclude_from_build="Yes" />
+      <file file_name="Source/Lib/test_apps/haptic_main.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="Source/Lib/test_apps/imu_main.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
     </folder>
   </project>
   <configuration
