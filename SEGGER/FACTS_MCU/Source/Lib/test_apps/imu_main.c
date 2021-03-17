@@ -15,11 +15,16 @@
 #include "imu.h"
 #include "angle_calculation.h"
 
+#include <math.h>
+
 // Test defines
 //#define GYRO_TESTING
 //#define QUAT_TESTING
 
-#define DRV_I2C_ADDR     0x5A
+#ifdef QUAT_TESTING
+#define USE_EULER
+#endif
+
 #define ELSA_I2C_IMUADDR 0x29
 #define ANNA_I2C_IMUADDR 0x28
 
@@ -31,6 +36,12 @@ static nrf_drv_twi_t i2c_drv = NRF_DRV_TWI_INSTANCE(TWI_INSTANCE_ID);
 
 static struct bno055_t elsa_imu;
 static struct bno055_t anna_imu;
+
+typedef struct {
+    double roll;
+    double pitch;
+    double yaw;
+} euler_t;
 
 static void log_init(void)
 {
@@ -128,6 +139,25 @@ int8_t test_gyro()
     return 0;
 }
 
+// see: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
+void quat_to_euler(quat_t* quat, euler_t* euler)
+{
+    double sinr_cosp = 2 * (quat->w * quat->x + quat->y * quat->z);
+    double cosr_cosp = 1 - 2 * (quat->x * quat->x + quat->y * quat->y);
+    euler->roll = atan2(sinr_cosp, cosr_cosp);
+
+    double sinp = 2 * (quat->w * quat->y - quat->z * quat->x);
+    if (abs(sinp) >= 1) {
+        euler->pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+    } else {
+        euler->pitch = asin(sinp);
+    }
+
+    double siny_cosp = 2 * (quat->w * quat->z + quat->x * quat->y);
+    double cosy_cosp = 1 - 2 * (quat->y * quat->y + quat->z * quat->z);
+    euler->yaw = atan2(siny_cosp, cosy_cosp);
+}
+
 void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
 {
     const double scale = (1.0 / (1 << 14));
@@ -150,6 +180,8 @@ int8_t test_quat()
 
     update_joint_axes(&calfAxisVec, &thighAxisVec);
     double angle = 0;
+    euler_t eulerCalf = {.pitch=0, .roll=0, .yaw=0};
+    euler_t eulerThigh = {.pitch=0, .roll=0, .yaw=0};
     while(1) {
         // Read quaternion
         if(!bno055_read_quat(&bno055QuatCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
@@ -163,18 +195,34 @@ int8_t test_quat()
 
         // Convert to double
         conv_quat_double(&bno055QuatCalf, &quatCalf);
+#ifdef USE_EULER
+        quat_to_euler(&quatCalf, &eulerCalf);
+        NRF_LOG_INFO("Anna(Calf) Euler Readings: ");
+        NRF_LOG_INFO("Pitch: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerCalf.pitch));
+        NRF_LOG_INFO("Roll: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerCalf.roll));
+        NRF_LOG_INFO("Yaw: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(eulerCalf.yaw));
+#else
         NRF_LOG_INFO("Anna(Calf) Quat Readings: ");
         NRF_LOG_INFO("W: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.w));
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(quatCalf.z));
+#endif
 
         conv_quat_double(&bno055QuatThigh, &quatThigh);
+#ifdef USE_EULER
+        quat_to_euler(&quatThigh, &eulerThigh);
+        NRF_LOG_INFO("Elsa(Thigh) Euler Readings: ");
+        NRF_LOG_INFO("Pitch: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerThigh.pitch));
+        NRF_LOG_INFO("Roll: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerThigh.roll));
+        NRF_LOG_INFO("Yaw: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(eulerThigh.yaw));
+#else
         NRF_LOG_INFO("Elsa(Thigh) Quat Readings: ");
         NRF_LOG_INFO("W: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.w));
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(quatThigh.z));
+#endif
         
         // Calc Shit
         angle = calculate_angle(&quatCalf, &quatThigh);
@@ -199,7 +247,12 @@ int main()
     NRF_LOG_INFO("Gyro testing enabled");
 #endif
 #ifdef QUAT_TESTING
-    NRF_LOG_INFO("Quat testing enabled");
+#ifdef USE_EULER
+    NRF_LOG_INFO("Quat testing with euler prints enabled");
+#else
+    NRF_LOG_INFO("Quat testing with quat prints enabled");
+#endif
+
 #endif
 
     if(i2c_module_init() < 0) {
