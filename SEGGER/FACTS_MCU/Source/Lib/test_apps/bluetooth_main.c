@@ -16,6 +16,13 @@
 
 #include "bluetooth.h"
 
+#include "i2c.h"
+// #include "bno055.h"
+#include "imu.h"
+#include "tca9548a.h"
+#include "drv2605l.h"
+//#include "haptic_motors.h"
+
 APP_TIMER_DEF(m_double_timer_id);
 APP_TIMER_DEF(m_uint_timer_id);
 

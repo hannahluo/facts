@@ -157,17 +157,19 @@
       <file file_name="../nRF5_sdk/components/softdevice/common/nrf_sdh_soc.c" />
     </folder>
     <folder Name="Lib">
-      <file file_name="Source/Lib/angle_calculation.c" />
-      <file file_name="Source/Lib/angle_calculation.h" />
+      <file file_name="Source/Lib/angle_calculation.c">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
+      <file file_name="Source/Lib/angle_calculation.h">
+        <configuration Name="Release" build_exclude_from_build="No" />
+      </file>
       <file file_name="Source/Lib/bluetooth.c">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
       <file file_name="Source/Lib/bluetooth.h">
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
-      <file file_name="Source/Lib/sensor_fusion.c" />
-      <file file_name="Source/Lib/sensor_fusion.h" />
-      <configuration Name="Release" build_exclude_from_build="Yes" />
+      <configuration Name="Release" build_exclude_from_build="No" />
     </folder>
     <folder Name="Drivers">
       <file file_name="Source/Drivers/bno055.c" />
@@ -188,7 +190,7 @@
       </file>
     </folder>
     <file file_name="Source/main.c">
-      <configuration Name="Release" build_exclude_from_build="Yes" />
+      <configuration Name="Release" build_exclude_from_build="No" />
     </file>
     <folder Name="BLE_services">
       <file file_name="Source/Lib/BLE_services/calibration_service.h">
@@ -211,7 +213,14 @@
         <configuration Name="Release" build_exclude_from_build="No" />
       </file>
     </folder>
-    <file file_name="Source/Lib/BLE_test/bluetooth_main.c" />
+    <folder Name="Testing">
+      <file file_name="Source/Lib/test_apps/bluetooth_main.c" />
+      <file file_name="Source/Lib/test_apps/drivers_main.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+      </file>
+      <file file_name="Source/Lib/test_apps/angle_calc_main.c" />
+      <configuration Name="Release" build_exclude_from_build="Yes" />
+    </folder>
   </project>
   <configuration
     Name="Release"
