@@ -22,7 +22,6 @@
 #include "imu.h"
 #include "tca9548a.h"
 #include "drv2605l.h"
-#include "haptic_motors.h"
 
 #define DRV_I2C_ADDR     0x5A
 #define ELSA_I2C_IMUADDR 0x29
@@ -143,6 +142,11 @@ void ble_module_init()
 
 int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 {
+    if(!tca9548a_init(mux, mux_addr, &i2c_drv)) {
+        NRF_LOG_ERROR("Failed to init comm to mux");
+        return -1;
+    }
+    
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
         NRF_LOG_ERROR("Failed to write config to mux ch0");
         return -1;
@@ -259,8 +263,16 @@ int8_t calibrate_facts()
     raw_gyro_t gyroCalf = {.x = 0,.y=0,.z=0};
     raw_gyro_t gyroThigh = {.x=0,.y=0,.z=0};
 
-    // set to gyro mode
-    // set units and setup
+    // set rps units
+    if(!bno055_set_gyr_unit(BNO055_GYRO_UNIT_RPS, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to set elsa gyro IMU units");
+        return -1;
+    }
+
+    if(!bno055_set_gyr_unit(BNO055_GYRO_UNIT_RPS, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to set anna gyro IMU units");
+        return -1;
+    }
 
     // Wait for app to start FACTS cal sequence
     while(start_cal){};
