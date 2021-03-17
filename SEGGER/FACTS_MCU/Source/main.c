@@ -63,9 +63,7 @@ static void log_init(void)
 {
     ret_code_t err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-
     NRF_LOG_DEFAULT_BACKENDS_INIT();
-    
 }
 
 static void timers_init(void)
@@ -92,23 +90,38 @@ static void power_management_init(void)
 void calf_joint_axis_handler(void const * data, uint8_t size)
 {
     // print out data
-    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    if(size >= sizeof(joint_axis_t)) {
+        memcpy(&calfAxis, data, sizeof(joint_axis_t));
+        calfAxisUpdated = 1;
+    } else {
+        // improper, use default
+        calfAxis.x = 1;
+        calfAxis.y = 0;
+        calfAxis.z = 0;
+        calfAxisUpdated = 1;
+    }
 }
 
 void thigh_joint_axis_handler(void const * data, uint8_t size)
 {
-    // print out data
-    joint_axis_t* jointAxis = (joint_axis_t*)(data);
+    // update
+    if(size >= sizeof(joint_axis_t)) {
+        joint_axis_t* jointAxis = (joint_axis_t*)(data);
+        memcpy(&thighAxis, data, sizeof(joint_axis_t));
+        thighAxisUpdated = 1;
+    } else {
+        // use default
+        thighAxis.x = 1;
+        thighAxis.y = 0;
+        thighAxis.z = 0;
+        thighAxisUpdated = 1;
+    }
 }
 
 void init_cal_handler(void const * data, uint8_t size)
 {
-    bool isCal = *(bool*)(data);
-    if(isCal) {
-        NRF_LOG_DEBUG("init_cal_handler: init calibration on");
-    } else {
-        NRF_LOG_DEBUG("init_cal_handler: init calibration off");
-    }
+    // Whenever recv anything, start cal
+    start_cal = 1;
 }
 
 void limits_handler(void const* data, uint8_t size)
@@ -187,26 +200,39 @@ int8_t haptic_module_init()
     return 0;
 }
 
-void imu_module_init()
+int8_t imu_module_init()
 {
     NRF_LOG_INFO("\r\n***IMU Setup Start***\r\n");
-    bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR);
-    bno055_setup(&anna_imu, &i2c_drv, ANNA_I2C_IMUADDR);
+    if(!bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to init elsa imu");
+        return -1;
+    }
+    if(!bno055_setup(&anna_imu, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to init anna imu");
+        return -1;
+    }
     nrf_delay_ms(100);
 
     // remap?
 
     NRF_LOG_INFO("\r\n***IMU Setup End***\r\n");
+
+    return 0;
 }
 
 // Initialize I2C
-void i2c_module_init()
+int8_t i2c_module_init()
 {
     NRF_LOG_INFO("\r\n***I2C Setup Start***\r\n");
-    i2c_init(&i2c_drv);
+    if(!i2c_init(&i2c_drv)) {
+        NRF_LOG_ERROR("Failed to init i2c");
+        return -1;
+    }
     while (nrf_drv_twi_is_busy(&i2c_drv)) {};
     nrf_delay_ms(1000);
     NRF_LOG_INFO("\r\n***I2C Setup End***\r\n");
+    
+    return 0;
 }
 
 void scale_gyro(struct bno055_gyro_t* bno055Gyro, raw_gyro_t* gyro)
@@ -275,24 +301,46 @@ void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
     quat->z = (double)bno055Quat->z * scale;
 }
 
-void turn_on_motors(drv2605l_t* motor, uint8_t mux_addr)
+int8_t turn_on_motors(drv2605l_t* motor, uint8_t mux_addr)
 {
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failede to write go to mux ch0");
+        return -1;
+    }
     drv2605l_go(motor);
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failed to write go to mux ch1");
+        return -1;
+    }
     drv2605l_go(motor);
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failed to write go to mux ch2");
+        return -1;
+    }
     drv2605l_go(motor);
+
+    return 0;
 }
 
-void turn_off_motors(drv2605l_t* motor, uint8_t mux_addr)
+int8_t turn_off_motors(drv2605l_t* motor, uint8_t mux_addr)
 {
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failed to write stop to mux ch0");
+        return -1;
+    }
     drv2605l_stop(motor);
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH1, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failed to write stop to mux ch1");
+        return -1;
+    }
     drv2605l_stop(motor);
-    tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE);
+    if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH2, TCA_SELECT_SIZE)) {
+        NRF_LOG_ERROR("Failed to write stop to mux ch2");
+        return -1;
+    }
     drv2605l_stop(motor);
+
+    return 0;
 }
 
 // Calculate
@@ -334,15 +382,27 @@ int8_t get_facts()
             if(!motorsRunning) {
                 // Turn on
                 motorsRunning = 1;
-                turn_on_motors(&elsa_motor, ELSA_I2C_MUXADDR);
-                turn_on_motors(&anna_motor, ANNA_I2C_MUXADDR);
+                if(turn_on_motors(&elsa_motor, ELSA_I2C_MUXADDR) < 0) {
+                    NRF_LOG_ERROR("Failed to turn on elsa motor");
+                    return -1;
+                }
+                if(turn_on_motors(&anna_motor, ANNA_I2C_MUXADDR) < 0) {
+                    NRF_LOG_ERROR("Failed to turn off elsa motor");
+                    return -1;
+                }
             }
         } else {
             if(motorsRunning) {
                 // Turn off
                 motorsRunning = 0;
-                turn_off_motors(&elsa_motor, ELSA_I2C_MUXADDR);
-                turn_off_motors(&anna_motor, ANNA_I2C_MUXADDR);
+                if(turn_off_motors(&elsa_motor, ELSA_I2C_MUXADDR) < 0) {
+                    NRF_LOG_ERROR("Failed to turn off elsa motor");
+                    return -1;
+                }
+                if(turn_off_motors(&anna_motor, ANNA_I2C_MUXADDR) < 0) {
+                    NRF_LOG_ERROR("Failed to turn off anna motor");
+                    return -1;
+                }
             }
         }
     }
@@ -366,6 +426,9 @@ void cleanup()
 
     // i2c
     i2c_deinit(&i2c_drv);
+
+    // Push all logs out
+    NRF_LOG_FLUSH();
 }
 
 #define FICR_BASE_ADDR         (0x10000000)
@@ -385,19 +448,36 @@ int main()
     timers_init();
     power_management_init();
     ble_module_init();
-    i2c_module_init();
-    imu_module_init();
-    haptic_module_init();
+    if(i2c_module_init() < 0) {
+        NRF_LOG_ERROR("Failed to init i2c");
+        cleanup();
+        return -1;
+    }
+    if(imu_module_init() < 0) {
+        NRF_LOG_ERROR("Failed to init imu");
+        cleanup();
+        return -1;
+    }
+    if(haptic_module_init() < 0) {
+        NRF_LOG_ERROR("Failed to init haptics");
+        cleanup();
+        return -1;
+    }
 
     // Calibration
     calibrate_imu();
     if(calibrate_facts() < 0) {
         NRF_LOG_ERROR("Failed to calibrate FACTS properly. Shutting down");
+        cleanup();
         return -1;
     }
     
     // Calculation
-    get_facts();
+    if(get_facts() < 0) {
+        NRF_LOG_ERROR("Failed to get FACTS");
+        cleanup();
+        return -1;
+    }
 
     NRF_LOG_INFO("***Shutting Down Facts***");
 }
