@@ -124,6 +124,7 @@ int8_t test_gyro()
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroCalf.z));
+        NRF_LOG_FLUSH();
 
         if(!bno055_convert_double_gyr_xyz_rps(&gyroThigh, &i2c_drv, ELSA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read elsa(thigh) gyro");
@@ -134,6 +135,7 @@ int8_t test_gyro()
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroThigh.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroThigh.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroThigh.z));
+        NRF_LOG_FLUSH();
     }
 
     return 0;
@@ -201,12 +203,14 @@ int8_t test_quat()
         NRF_LOG_INFO("Pitch: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerCalf.pitch));
         NRF_LOG_INFO("Roll: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerCalf.roll));
         NRF_LOG_INFO("Yaw: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(eulerCalf.yaw));
+        NRF_LOG_FLUSH();
 #else
         NRF_LOG_INFO("Anna(Calf) Quat Readings: ");
         NRF_LOG_INFO("W: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.w));
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatCalf.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(quatCalf.z));
+        NRF_LOG_FLUSH();
 #endif
 
         conv_quat_double(&bno055QuatThigh, &quatThigh);
@@ -216,17 +220,20 @@ int8_t test_quat()
         NRF_LOG_INFO("Pitch: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerThigh.pitch));
         NRF_LOG_INFO("Roll: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(eulerThigh.roll));
         NRF_LOG_INFO("Yaw: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(eulerThigh.yaw));
+        NRF_LOG_FLUSH();
 #else
         NRF_LOG_INFO("Elsa(Thigh) Quat Readings: ");
         NRF_LOG_INFO("W: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.w));
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(quatThigh.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(quatThigh.z));
+        NRF_LOG_FLUSH();
 #endif
         
         // Calc Shit
         angle = calculate_angle(&quatCalf, &quatThigh);
         NRF_LOG_INFO("Angle Estimation: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(angle));
+        NRF_LOG_FLUSH();
     }
 }
 

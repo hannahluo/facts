@@ -105,7 +105,6 @@ void thigh_joint_axis_handler(void const * data, uint8_t size)
 {
     // update
     if(size >= sizeof(joint_axis_t)) {
-        joint_axis_t* jointAxis = (joint_axis_t*)(data);
         memcpy(&thighAxis, data, sizeof(joint_axis_t));
         thighAxisUpdated = 1;
     } else {
@@ -465,6 +464,8 @@ int main()
         cleanup();
         return -1;
     }
+
+    start_advertising(false);
 
     // Calibration
     calibrate_imu();
