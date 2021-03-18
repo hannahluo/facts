@@ -21,6 +21,9 @@
 #define TCA_SELECT_REG   0
 #define TCA_SELECT_SIZE  1
 
+#define ENABLE_ELSA
+//#define ENABLE_ANNA
+
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
 
@@ -58,6 +61,7 @@ int8_t i2c_module_init()
 
 int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 {
+    NRF_LOG_INFO("\r\n***Motor Setup Start***");
     if(!tca9548a_init(mux, mux_addr, &i2c_drv)) {
         NRF_LOG_ERROR("Failed to init comm to mux");
         return -1;
@@ -99,6 +103,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
     drv2605l_library(motor, 6);
     drv2605l_waveform(motor, 0, 47);
     drv2605l_waveform(motor, 1, 0);
+    NRF_LOG_INFO("\r\n***Motor Setup End***\r\n");
 
     return 0;
 }
@@ -106,16 +111,21 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 // Initialize haptic
 int8_t haptic_module_init()
 {
-    NRF_LOG_INFO("\r\n ***Motor Setup Start*** \r\n");
+#ifdef ENABLE_ELSA
+    NRF_LOG_INFO("\r\n ***Haptic Module Setup Start*** \r\n");
     if(motor_init(&elsa_motor, &elsa_mux, ELSA_I2C_MUXADDR) < 0) {
         NRF_LOG_ERROR("Failed to initialize elsa(thigh) haptics");
         return -1;
     }
+#endif
+
+#ifdef ENABLE_ANNA
     if(motor_init(&anna_motor, &anna_mux, ANNA_I2C_MUXADDR) < 0) {
         NRF_LOG_ERROR("Failed to initialize anna(calf) haptics");
         return -1;
     }
-    NRF_LOG_INFO("\r\n ***Motor Setup End*** \r\n");
+#endif
+    NRF_LOG_INFO("\r\n ***Haptic Module Setup End*** \r\n");
 
     return 0;
 }
@@ -173,6 +183,15 @@ int main(void)
 {
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
     NRF_LOG_DEFAULT_BACKENDS_INIT();
+#ifdef ENABLE_ELSA
+    NRF_LOG_INFO("Elsa motors enabled");
+#endif
+
+#ifdef ENABLE_ANNA
+    NRF_LOG_INFO("Anna motors enabled");
+#endif
+
+    NRF_LOG_FLUSH();
 
     // add error handling
     NRF_LOG_INFO("\r\nInitializing...");
@@ -197,25 +216,33 @@ int main(void)
         if(cnt % 2 == 0) {
             NRF_LOG_INFO("Motor Run");
             NRF_LOG_FLUSH();
+#ifdef ENABLE_ELSA
             if(turn_on_motors(&elsa_motor, ELSA_I2C_MUXADDR) < 0) {
                 NRF_LOG_ERROR("Failed to turn on elsa motor");
                 break;
             }
+#endif
+#ifdef ENABLE_ANNA
             if(turn_on_motors(&anna_motor, ANNA_I2C_MUXADDR) < 0) {
                 NRF_LOG_ERROR("Failed to turn on anna motor");
                 break;
             }
+#endif
         } else {
             NRF_LOG_INFO("Motor Off");
             NRF_LOG_FLUSH();
+#ifdef ENABLE_ELSA
             if(turn_off_motors(&elsa_motor, ELSA_I2C_MUXADDR) < 0) {
                 NRF_LOG_ERROR("Failed to turn off elsa motor");
                 break;
             }
+#endif
+#ifdef ENABLE_ANNA
             if(turn_off_motors(&anna_motor, ANNA_I2C_MUXADDR) < 0) {
                 NRF_LOG_ERROR("Failed to turn off anna motor");
                 break;
             }
+#endif
         }
         
         nrf_delay_ms(3000);
