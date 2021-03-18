@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj": {}
+    "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj": {
+    "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
+        "projectUniqueName": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
         "projectName": "FactsApp",
-        "projectPath": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
-        "packagesPath": "C:\\Users\\krzys\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\obj\\",
+        "projectPath": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
+        "packagesPath": "C:\\Users\\jackj\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\krzys\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jackj\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -44,6 +44,10 @@
         "netstandard2.0": {
           "targetAlias": "netstandard2.0",
           "dependencies": {
+            "Accord.Math": {
+              "target": "Package",
+              "version": "[3.8.0, )"
+            },
             "Acr.UserDialogs": {
               "target": "Package",
               "version": "[7.1.0.475, )"
