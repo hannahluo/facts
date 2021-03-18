@@ -31,6 +31,7 @@
 
     <TabBar>
         <ShellContent Title="Connect" Icon="icon_feed.png" Route="ConnectPage"  ContentTemplate="{DataTemplate local:ConnectionPage}" />
+        <ShellContent Title="Calibrate" Icon ="calibration_icon.png" ContentTemplate="{DataTemplate local:CalibrationPage}" />
         <ShellContent Title="Main" Icon="icon_about.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
         <ShellContent Title="Sessions" Icon="icon_feed.png" Route="SessionsPage" ContentTemplate="{DataTemplate local:SessionsPage}" />
     </TabBar>

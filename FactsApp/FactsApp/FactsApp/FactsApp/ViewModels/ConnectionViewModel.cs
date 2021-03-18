@@ -128,7 +128,6 @@ namespace FactsApp.ViewModels
 
         public ConnectionViewModel(IUserDialogs dialog) : base()
         {
-            
             m_permissions = CrossPermissions.Current;
             // Register event handlers for various events
             m_ble.StateChanged += OnStateChanged;
@@ -166,6 +165,7 @@ namespace FactsApp.ViewModels
             DisconnectButtonEnabled = true;
             DisconnectButtonText = "Disconnect";
             DisconnectButtonColour = Color.Red;
+            
         }
         private void FinishedScanning(object sender, EventArgs e)
         {
@@ -282,11 +282,19 @@ namespace FactsApp.ViewModels
             }
 
             var connectResult = await Connect(Devices[arg.SelectedItemIndex]);
+<<<<<<< HEAD
             if (connectResult == true)
+=======
+            if(connectResult == true)
+>>>>>>> app_ble
             {
                 _connDevIdx = arg.SelectedItemIndex;
                 m_connectedDevice = Devices[_connDevIdx].Device;
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> app_ble
         }
 
         private async Task<bool> Connect(ConnectionItemViewModel device)
