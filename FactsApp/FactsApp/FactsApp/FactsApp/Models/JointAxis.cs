@@ -102,12 +102,17 @@ namespace FactsApp.Models
         }
 
         private readonly Guid _imuRawServiceGuid = Guid.Parse("87C539A0-8E33-4070-9131-8F56AA023E45");
-        private readonly Guid _rawGyroCalfServiceGuid = Guid.Parse("87C539A1-8E33-4070-9131-8F56AA023E45");
-        private readonly Guid _rawGyroThighServiceGuid = Guid.Parse("87C539A2-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _rawGyroCalfCharGuid = Guid.Parse("87C539A1-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _rawGyroThighCharGuid = Guid.Parse("87C539A2-8E33-4070-9131-8F56AA023E45");
         private readonly int _numDataPoints = 10;
         private readonly int _waitLength = 1000; // ms
         private RawGyro[] _rawGyroCalfReadings;
         private RawGyro[] _rawGyroThighReadings;
+
+        private readonly Guid _calibServiceGuid = Guid.Parse("87C53994-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _initCalCharGuid = Guid.Parse("87C53995-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _calfJointAxisCharGuid = Guid.Parse("87C53996-8E33-4070-9131-8F56AA023E45");
+        private readonly Guid _thighJointAxisCharGuid = Guid.Parse("87C53997-8E33-4070-9131-8F56AA023E45");
 
         private struct RawGyro
         {
@@ -159,8 +164,8 @@ namespace FactsApp.Models
         public async Task<bool> GetRawData(IDevice device, IUserDialogs dialog)
         {
             var calService = await device.GetServiceAsync(_imuRawServiceGuid);
-            var rawGyroThighChar = await calService.GetCharacteristicAsync(_rawGyroThighServiceGuid);
-            var rawGyroCalfChar = await calService.GetCharacteristicAsync(_rawGyroCalfServiceGuid);
+            var rawGyroThighChar = await calService.GetCharacteristicAsync(_rawGyroThighCharGuid);
+            var rawGyroCalfChar = await calService.GetCharacteristicAsync(_rawGyroCalfCharGuid);
             if(rawGyroCalfChar == null || rawGyroThighChar == null)
             {
                 dialog.Alert("Could not find corresponding characteristics");
@@ -181,6 +186,9 @@ namespace FactsApp.Models
                     return false;
                 }
                 _rawGyroCalfReadings[i] = ParseRawGyroMessage(calfMsg.Result);
+                CalfX = _rawGyroCalfReadings[i].X;
+                CalfY = _rawGyroCalfReadings[i].Y;
+                CalfZ = _rawGyroCalfReadings[i].Z;
 
                 var thighMsg = Task.Delay(_waitLength).ContinueWith(_ =>
                                                         { return rawGyroThighChar.ReadAsync().Result; } );
@@ -189,6 +197,9 @@ namespace FactsApp.Models
                     return false;
                 }
                 _rawGyroThighReadings[i] = ParseRawGyroMessage(thighMsg.Result);
+                ThighX = _rawGyroThighReadings[i].X;
+                ThighY = _rawGyroThighReadings[i].Y;
+                ThighZ = _rawGyroThighReadings[i].Z;
             }
             return true;
         }
@@ -196,6 +207,45 @@ namespace FactsApp.Models
         // Perform calibration routine
         public async Task<bool> Calibrate()
         {
+            CalfX = _rawGyroCalfReadings[9].X;
+            CalfY = _rawGyroCalfReadings[9].Y;
+            CalfZ = _rawGyroCalfReadings[9].Z;
+
+            ThighX = _rawGyroThighReadings[9].X;
+            ThighY = _rawGyroThighReadings[9].Y;
+            ThighZ = _rawGyroThighReadings[9].Z;
+            return true;
+        }
+
+        // Send results
+        public async Task<bool> SendResult(IDevice device, IUserDialogs dialog)
+        {
+            var calibService = await device.GetServiceAsync(_calibServiceGuid);
+            var calfJointAxisChar = await calibService.GetCharacteristicAsync(_calfJointAxisCharGuid);
+            var thighJointAxisChar = await calibService.GetCharacteristicAsync(_thighJointAxisCharGuid);
+            if (calfJointAxisChar == null || thighJointAxisChar == null)
+            {
+                dialog.Alert("Could not find corresponding characteristics");
+                return false;
+            }
+            if (!calfJointAxisChar.CanWrite || !thighJointAxisChar.CanWrite)
+            {
+                dialog.Alert("Characteristics do not have the correct write permissions");
+                return false;
+            }
+
+            var sendBuff = new byte[sizeof(double) * 3];
+
+            BitConverter.GetBytes(CalfX).CopyTo(sendBuff, 0);
+            BitConverter.GetBytes(CalfY).CopyTo(sendBuff, 8);
+            BitConverter.GetBytes(CalfZ).CopyTo(sendBuff, 16);
+            await calfJointAxisChar.WriteAsync(sendBuff);
+            
+            BitConverter.GetBytes(ThighX).CopyTo(sendBuff, 0);
+            BitConverter.GetBytes(ThighY).CopyTo(sendBuff, 8);
+            BitConverter.GetBytes(ThighZ).CopyTo(sendBuff, 16);
+            await thighJointAxisChar.WriteAsync(sendBuff);
+
             return true;
         }
     }

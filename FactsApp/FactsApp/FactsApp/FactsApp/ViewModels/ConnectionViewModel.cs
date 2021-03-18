@@ -282,19 +282,11 @@ namespace FactsApp.ViewModels
             }
 
             var connectResult = await Connect(Devices[arg.SelectedItemIndex]);
-<<<<<<< HEAD
             if (connectResult == true)
-=======
-            if(connectResult == true)
->>>>>>> app_ble
             {
                 _connDevIdx = arg.SelectedItemIndex;
                 m_connectedDevice = Devices[_connDevIdx].Device;
             }
-<<<<<<< HEAD
-=======
-
->>>>>>> app_ble
         }
 
         private async Task<bool> Connect(ConnectionItemViewModel device)

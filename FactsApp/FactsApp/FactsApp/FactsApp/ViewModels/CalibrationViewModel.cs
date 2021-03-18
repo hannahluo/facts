@@ -102,7 +102,7 @@ namespace FactsApp.ViewModels
 
         public async void OnCalibrateButtonClicked(object sender, EventArgs e)
         {
-            if(m_connectedDevice == null)
+            if (m_connectedDevice == null)
             {
                 m_dialogs.Alert("Not connected to any device!");
                 return;
@@ -114,13 +114,33 @@ namespace FactsApp.ViewModels
 
             // Start collecting calibration data from device
             var result = await DeviceJointAxis.GetRawData(m_connectedDevice, m_dialogs);
-            if(!result)
+            if (!result)
             {
-                m_dialogs.Alert("Calibration Failed! Please reconnect and try again.");
+                m_dialogs.Alert("Could not gather raw gyro data from device. Please restart.");
                 CalibrateButtonText = "Calibration Failed";
                 CalibrateButtonEnabled = false;
                 CalibrateButtonColour = Color.Red;
                 return;
+            }
+
+            result = await DeviceJointAxis.Calibrate();
+            if (!result)
+            {
+                m_dialogs.Alert("Error during calibration routine. Please restart.");
+                CalibrateButtonText = "Calibration Failed";
+                CalibrateButtonEnabled = false;
+                CalibrateButtonColour = Color.Red;
+                return;
+            }
+
+            // Send results to FACTS dev
+            result = await DeviceJointAxis.SendResult(m_connectedDevice, m_dialogs);
+            if(!result)
+            {
+                m_dialogs.Alert("Could not send calibration result to device. Please restart");
+                CalibrateButtonText = "Calibration Failed";
+                CalibrateButtonEnabled = false;
+                CalibrateButtonColour = Color.Red;
             }
 
             // Display Results
@@ -129,12 +149,7 @@ namespace FactsApp.ViewModels
             CalibrateButtonEnabled = true;
             CalibrateButtonColour = Color.Aqua;
             ResultVisible = true;
-            DeviceJointAxis.CalfX++;
-            DeviceJointAxis.CalfY++;
-            DeviceJointAxis.CalfZ++;
-            DeviceJointAxis.ThighX++;
-            DeviceJointAxis.ThighY++;
-            DeviceJointAxis.ThighZ++;
+
         }
 
         public void OnAppearing()
