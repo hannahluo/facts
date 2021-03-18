@@ -123,7 +123,7 @@ namespace FactsApp.ViewModels
                 return;
             }
 
-            result = await DeviceJointAxis.Calibrate();
+            result = await DeviceJointAxis.Calibrate(m_dialogs);
             if (!result)
             {
                 m_dialogs.Alert("Error during calibration routine. Please restart.");
