@@ -108,10 +108,10 @@
     <AndroidResource Include="Resources\drawable\walk_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\leg_dab.gif" />
+    <AndroidResource Include="Resources\drawable\calibration_icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\calibration_icon.png" />
+    <AndroidResource Include="Resources\drawable\leg_dab.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

@@ -5,54 +5,56 @@
              x:Class="FactsApp.Views.AboutPage"
              xmlns:vm="clr-namespace:FactsApp.ViewModels"
              Title="{Binding Title}">
-    <StackLayout x:Name="AngleDispStackLayout" Margin="20">
-        <Label TextColor="{Binding FlexionAngleColor}"
-               FontSize="30"
-               HorizontalOptions="Center">
-            <Label.FormattedText>
-                <FormattedString>
-                    <Span Text="Flexion Angle: " />
-                    <Span Text="{Binding FlexionAngleValue}" />
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-        <AbsoluteLayout HeightRequest="{Binding ModelHeight}"
-                        WidthRequest="{Binding ModelWidth}">
-            <Polyline Points="{Binding AngleLinePoints}"
-                      Stroke="{Binding AngleLineColor}"
+    <ScrollView>
+        <StackLayout x:Name="AngleDispStackLayout" Margin="20">
+            <Label TextColor="{Binding FlexionAngleColor}"
+                   FontSize="30"
+                   HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Flexion Angle: " />
+                        <Span Text="{Binding FlexionAngleValue}" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <AbsoluteLayout HeightRequest="{Binding ModelHeight}"
+                            WidthRequest="{Binding ModelWidth}">
+                <Polyline Points="{Binding AngleLinePoints}"
+                          Stroke="{Binding AngleLineColor}"
+                          StrokeThickness="3"
+                          StrokeDashArray="0.75,0.75"
+                          StrokeDashOffset="1"
+                          WidthRequest="500"
+                          HeightRequest="500"/>
+                <Path Stroke="{Binding AngleLineColor}"
                       StrokeThickness="3"
+                      Data="{Binding AngleArc}"
                       StrokeDashArray="0.75,0.75"
                       StrokeDashOffset="1"
                       WidthRequest="500"
                       HeightRequest="500"/>
-            <Path Stroke="{Binding AngleLineColor}"
-                  StrokeThickness="3"
-                  Data="{Binding AngleArc}"
-                  StrokeDashArray="0.75,0.75"
-                  StrokeDashOffset="1"
-                  WidthRequest="500"
-                  HeightRequest="500"/>
-            <Polyline Points="{Binding BodyModelPoints}"
-                      Stroke="Black" 
+                <Polyline Points="{Binding BodyModelPoints}"
+                          Stroke="Black" 
+                          StrokeThickness="10"
+                          StrokeLineJoin="Round"
+                          WidthRequest="500"
+                          HeightRequest="500"/>
+                <Path Stroke="Black"
+                      Fill="White"
                       StrokeThickness="10"
-                      StrokeLineJoin="Round"
+                      Data="{Binding HeadGeometry}"
                       WidthRequest="500"
                       HeightRequest="500"/>
-            <Path Stroke="Black"
-                  Fill="White"
-                  StrokeThickness="10"
-                  Data="{Binding HeadGeometry}"
-                  WidthRequest="500"
-                  HeightRequest="500"/>
 
-        </AbsoluteLayout>
-        <forms:ChartView Chart="{Binding RecentAngleChart}" 
-                         HeightRequest="150"/>
-        <Button Text="Save Session"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                Clicked="SaveDataToFile"/>
-    </StackLayout>
+            </AbsoluteLayout>
+            <forms:ChartView Chart="{Binding RecentAngleChart}" 
+                             HeightRequest="150"/>
+            <Button Text="Save Session"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Clicked="SaveDataToFile"/>
+        </StackLayout>
+    </ScrollView>
 
-    
+
 </ContentPage>

@@ -1252,23 +1252,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jackj\\.nuget\\packages\\": {},
+    "C:\\Users\\krzys\\.nuget\\packages\\": {},
     "C:\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
+      "projectUniqueName": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
       "projectName": "FactsApp",
-      "projectPath": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
-      "packagesPath": "C:\\Users\\jackj\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jackj\\Documents\\Tron Files\\4B\\MTE 482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\obj\\",
+      "projectPath": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\FactsApp.csproj",
+      "packagesPath": "C:\\Users\\krzys\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\krzys\\Documents\\School\\4B\\MTE482\\facts\\FactsApp\\FactsApp\\FactsApp\\FactsApp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
-        "C:\\Users\\jackj\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\krzys\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
