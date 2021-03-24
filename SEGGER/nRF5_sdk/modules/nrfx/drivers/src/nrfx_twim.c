@@ -384,6 +384,13 @@ __STATIC_INLINE void twim_list_enable_handle(NRF_TWIM_Type * p_twim, uint32_t fl
     }
 }
 
+#define JACK_TWI_ADDRESS          (0x40003000)
+#define JACK_TXD_BYTE_SENT        (0x11c)
+#define JACK_PSEL_SCL_OFFSET      (0x508)
+#define JACK_PSEL_SDA_OFFSET      (0x50C)
+#define JACK_TXD_REG              (0x51C)
+#define JACK_ENABLE               (0x500)
+#define JACK_TWI_FREQ             (0x524)
 __STATIC_INLINE nrfx_err_t twim_xfer(twim_control_block_t        * p_cb,
                                      NRF_TWIM_Type               * p_twim,
                                      nrfx_twim_xfer_desc_t const * p_xfer_desc,
@@ -472,6 +479,8 @@ __STATIC_INLINE nrfx_err_t twim_xfer(twim_control_block_t        * p_cb,
         nrf_twim_task_trigger(p_twim, NRF_TWIM_TASK_RESUME);
         break;
     case NRFX_TWIM_XFER_TX:
+        NRF_LOG_INFO("JACK p_twim reg addr: 0x%x", (uint32_t)(p_twim->TXD.PTR));
+        NRF_LOG_INFO("JACK p_twim reg size: 0x%x", (uint32_t)(p_twim->TXD.MAXCNT));
         nrf_twim_tx_buffer_set(p_twim, p_xfer_desc->p_primary_buf, p_xfer_desc->primary_length);
         if (NRFX_TWIM_FLAG_TX_NO_STOP & flags)
         {
@@ -496,11 +505,44 @@ __STATIC_INLINE nrfx_err_t twim_xfer(twim_control_block_t        * p_cb,
         err_code = NRFX_ERROR_INVALID_PARAM;
         break;
     }
+/*
+#define JACK_TWI_ADDRESS          (0x40003000)
+#define JACK_TXD_BYTE_SENT        (0x11c)
+#define JACK_PSEL_SCL_OFFSET      (0x508)
+#define JACK_PSEL_SDA_OFFSET      (0x50C)
+#define JACK_TXD_REG              (0x51C)
+#define JACK_ENABLE               (0x500)
+#define JACK_TWI_FREQ             (0x524)
+*/
+    /*uint32_t val = 0;
+    volatile uint32_t* txd_byte_sent = (uint32_t*)(JACK_TWI_ADDRESS+JACK_TXD_BYTE_SENT);
+    val = *txd_byte_sent;
+    NRF_LOG_DEBUG("txd_byte_sent: 0x%x", val);
+    volatile uint32_t* psel_scl = (uint32_t*)(JACK_TWI_ADDRESS+JACK_PSEL_SCL_OFFSET);
+    val = *psel_scl;
+    NRF_LOG_DEBUG("psel_scl: 0x%x", val);
+    volatile uint32_t* psel_sda = (uint32_t*)(JACK_TWI_ADDRESS+JACK_PSEL_SDA_OFFSET);
+    val = *psel_sda;
+    NRF_LOG_DEBUG("psel_sda: 0x%x", val);
+    volatile uint32_t* psel_txd = (uint32_t*)(JACK_TWI_ADDRESS+JACK_TXD_REG);
+    val = *psel_txd;
+    NRF_LOG_DEBUG("txd: 0x%x", val);
+    volatile uint32_t* jack_enable = (uint32_t*)(JACK_TWI_ADDRESS+JACK_ENABLE);
+    val = *jack_enable;
+    NRF_LOG_DEBUG("enable: 0x%x", val);
+    volatile uint32_t* jack_twi_freq = (uint32_t*)(JACK_TWI_ADDRESS+JACK_TWI_FREQ);
+    val = *jack_twi_freq;
+    NRF_LOG_DEBUG("freq: 0x%x", val);*/
 
     if (!(flags & NRFX_TWIM_FLAG_HOLD_XFER) && (p_xfer_desc->type != NRFX_TWIM_XFER_TXTX))
     {
         nrf_twim_task_trigger(p_twim, start_task);
     }
+    /*val = *txd_byte_sent;
+    NRF_LOG_DEBUG("txd_byte_sent: 0x%x", val);
+    volatile uint32_t* jack_twi_start_task = (uint32_t*)(JACK_TWI_ADDRESS+0x008);
+    val = *jack_twi_start_task;
+    NRF_LOG_DEBUG("start_task: 0x%x", val);*/
 
     if (p_cb->handler)
     {
