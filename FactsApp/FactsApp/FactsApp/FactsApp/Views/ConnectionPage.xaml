@@ -47,7 +47,8 @@
                       ItemsSource="{Binding Devices}"
                       IsPullToRefreshEnabled="False"
                       RowHeight="80"
-                      ItemTemplate="{StaticResource ConnectionItemTemplate}">
+                      ItemTemplate="{StaticResource ConnectionItemTemplate}"
+                      IsVisible="{Binding DevicesVisible}">
                 <ListView.Header>
                     <StackLayout Orientation="Vertical">
                         <Label Text="Available Connections" TextColor="Black" 

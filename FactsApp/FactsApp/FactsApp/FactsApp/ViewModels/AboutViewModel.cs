@@ -29,6 +29,7 @@ namespace FactsApp.ViewModels
         private readonly Guid _calcServiceGuid = Guid.Parse("87C539B0-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _flexionAngleGuid = Guid.Parse("87C539B1-8E33-4070-9131-8F56AA023E45");
         IUserDialogs m_dialogs;
+        private bool angleThreadEnabled = false;
 
         private double kneeModelThighLength = 60.0f;
         private double kneeModelBodyLength = 120.0f;
@@ -369,6 +370,32 @@ namespace FactsApp.ViewModels
             return (BitConverter.ToDouble(array, 0));
         }
 
+        private async void AngleReadingThread(ICharacteristic flexionAngleChar)
+        {
+            angleThreadEnabled = true;
+            while (true)
+            {
+                var angleMsg = await Task.Delay(1).ContinueWith(_ =>
+                {
+                    if(m_connectedDevice == null)
+                    {
+                        return null;
+                    }
+                    return flexionAngleChar.ReadAsync().Result; 
+                });
+                if (angleMsg == null)
+                {
+                    break;
+                }
+                else
+                {
+                    angleValues[angleValuesHeadIndex] = (float)Math.Round(ParseFlexionAngleMsg(angleMsg), 2);
+                    DrawFn();
+                }
+            }
+            angleThreadEnabled = false;
+        }
+
         // Start angle read thread
         public async void StartAngleReading()
         {
@@ -378,7 +405,11 @@ namespace FactsApp.ViewModels
                 return;
             }
 
-            
+            if(angleThreadEnabled == true)
+            {
+                return;
+            }
+
             var calcService = await m_connectedDevice.GetServiceAsync(_calcServiceGuid);
             var flexionAngleChar = await calcService.GetCharacteristicAsync(_flexionAngleGuid);
             if (flexionAngleChar == null)
@@ -392,34 +423,7 @@ namespace FactsApp.ViewModels
                 m_dialogs.Alert("Do not have read permissions on flexion angle characteristic!");
                 return;
             }
-
-            Task.Run(async () =>
-            {
-                while(true)
-                {
-                    try
-                    {
-                        var angleMsg = await Task.Delay(1).ContinueWith(_ =>
-                                    { return flexionAngleChar.ReadAsync().Result; });
-                        if (angleMsg == null)
-                        {
-                            break;
-                        }
-                        angleValues[angleValuesHeadIndex] = (float)Math.Round(ParseFlexionAngleMsg(angleMsg),2);
-                        DrawFn();
-
-                    }
-                    catch (Plugin.BLE.Abstractions.Exceptions.CharacteristicReadException ex)
-                    {
-                        m_dialogs.Alert(ex.Message);
-                        break;
-                    }
-                }
-                
-                    
-            });
-
-
+            AngleReadingThread(flexionAngleChar);
         }
     }
 
