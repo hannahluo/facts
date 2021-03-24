@@ -84,7 +84,7 @@
 #define TWIM_PIN_INIT(_pin) nrf_gpio_cfg((_pin),                     \
                                          NRF_GPIO_PIN_DIR_INPUT,     \
                                          NRF_GPIO_PIN_INPUT_CONNECT, \
-                                         NRF_GPIO_PIN_PULLUP,        \
+                                         NRF_GPIO_PIN_NOPULL,        \
                                          NRF_GPIO_PIN_S0D1,          \
                                          NRF_GPIO_PIN_NOSENSE)
 
@@ -383,6 +383,7 @@ __STATIC_INLINE void twim_list_enable_handle(NRF_TWIM_Type * p_twim, uint32_t fl
         nrf_twim_rx_list_disable(p_twim);
     }
 }
+
 __STATIC_INLINE nrfx_err_t twim_xfer(twim_control_block_t        * p_cb,
                                      NRF_TWIM_Type               * p_twim,
                                      nrfx_twim_xfer_desc_t const * p_xfer_desc,

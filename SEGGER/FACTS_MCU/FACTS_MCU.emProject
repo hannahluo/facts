@@ -228,6 +228,9 @@
       <file file_name="Source/Lib/test_apps/imu_main.c">
         <configuration Name="Release" build_exclude_from_build="Yes" />
       </file>
+      <file file_name="gpio_main.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+      </file>
     </folder>
   </project>
   <configuration
