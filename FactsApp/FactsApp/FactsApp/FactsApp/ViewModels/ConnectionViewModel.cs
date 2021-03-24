@@ -122,6 +122,19 @@ namespace FactsApp.ViewModels
                 }
             }
         }
+        private bool _deviceListVisible = false;
+        public bool DeviceListVisible
+        {
+            get => _deviceListVisible;
+            set
+            {
+                if (value != _deviceListVisible)
+                {
+                    _deviceListVisible = value;
+                    OnPropertyChanged(nameof(DeviceListVisible));
+                }
+            }
+        }
         private int _connDevIdx = -1;
         public ObservableCollection<ConnectionItemViewModel> Devices { get; set; } = new ObservableCollection<ConnectionItemViewModel>();
 
@@ -172,6 +185,7 @@ namespace FactsApp.ViewModels
             ScanButtonEnabled = true;
             ScanButtonText = "Scan";
             ScanButtonColour = Color.Aqua;
+            DeviceListVisible = true;
         }
 
         public void OnStateChanged(object sender, BluetoothStateChangedArgs e)
@@ -213,6 +227,7 @@ namespace FactsApp.ViewModels
 
             // Scan for available devices
             Scan();
+            DeviceListVisible = false;
         }
 
         private async void CheckPermissions()
