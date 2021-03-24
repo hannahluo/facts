@@ -18,7 +18,7 @@
 #include <math.h>
 
 // Test defines
-//#define GYRO_TESTING
+#define GYRO_TESTING
 //#define QUAT_TESTING
 
 #ifdef QUAT_TESTING

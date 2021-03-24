@@ -36,21 +36,23 @@ int main()
     // nrf_gpio_pin_pull_get(TEST_PIN_SCL);
     // nrf_gpio_pin_pull_get(TEST_PIN_SDA);
 
-    nrf_gpio_cfg(IMU_RESET_PIN,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0D1, NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_cfg(IMU_RESET_PIN,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0S1, NRF_GPIO_PIN_NOSENSE);
     nrf_gpio_pin_clear(IMU_RESET_PIN);
+    nrf_gpio_cfg(MUX_RESET_PIN,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0S1, NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_pin_clear(MUX_RESET_PIN);
 
-    //nrf_gpio_cfg(TEST_PIN_SCL,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0S1, NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_cfg(TEST_PIN_SCL,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0S1, NRF_GPIO_PIN_NOSENSE);
     nrf_gpio_cfg(TEST_PIN_SDA,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0S1, NRF_GPIO_PIN_NOSENSE);
-    //nrf_gpio_pin_clear(TEST_PIN_SCL);
+    nrf_gpio_pin_clear(TEST_PIN_SCL);
     nrf_gpio_pin_clear(TEST_PIN_SDA);
 
-    nrf_delay_ms(1000);
-    nrf_gpio_pin_set(IMU_RESET_PIN);
+    //nrf_delay_ms(1000);
+    //nrf_gpio_pin_set(IMU_RESET_PIN);
 
     while(1)
     {
         nrf_delay_ms(1000);
-        //nrf_gpio_pin_toggle(TEST_PIN_SCL);
+        nrf_gpio_pin_toggle(TEST_PIN_SCL);
         nrf_gpio_pin_toggle(TEST_PIN_SDA);
     }
 

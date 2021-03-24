@@ -179,6 +179,10 @@ void haptic_module_deinit()
     NRF_LOG_FLUSH();
 }
 
+#define CLK_REG_BASE           (0x40000000)
+#define CLK_REG_OFFSET         (0x418)
+#define CLK_REG_HF_OFFSET      (0x40c)
+
 int main(void)
 {
     APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -190,6 +194,15 @@ int main(void)
 #ifdef ENABLE_ANNA
     NRF_LOG_INFO("Anna motors enabled");
 #endif
+
+    uint32_t clk_val = 0;
+    volatile uint32_t* clk_reg_ptr = (uint32_t*)(CLK_REG_BASE+CLK_REG_OFFSET);
+    clk_val = *clk_reg_ptr;
+    NRF_LOG_INFO("Clk Reg val 0x%x", clk_val);
+    volatile uint32_t* hf_clk_reg_ptr = (uint32_t*)(CLK_REG_BASE+CLK_REG_HF_OFFSET);
+    clk_val = *hf_clk_reg_ptr;
+    NRF_LOG_INFO("Hf clk reg val 0x%x", clk_val);
+
 
     NRF_LOG_FLUSH();
 
