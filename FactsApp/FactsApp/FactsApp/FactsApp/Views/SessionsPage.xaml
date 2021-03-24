@@ -16,8 +16,26 @@
                 </FormattedString>
             </Label.FormattedText>
         </Label>
-        <forms:ChartView Chart="{Binding AngleChart}" 
-                         HeightRequest="150"/>
+        <StackLayout Orientation="Horizontal"
+                         Spacing="0">
+            <StackLayout Orientation="Vertical"
+                             Margin="0"
+                             Spacing="50">
+                <Label Text="180"
+                           TextColor="Black"
+                           FontSize="10"/>
+                <Label Text="90"
+                           TextColor="Black"
+                           FontSize="10"/>
+                <Label Text="0"
+                           TextColor="Black"
+                           FontSize="10"/>
+
+            </StackLayout>
+            <forms:ChartView Chart="{Binding AngleChart}" 
+                                HeightRequest="150"
+                                WidthRequest="350"/>
+        </StackLayout>
         <ScrollView>
             <StackLayout x:Name="AllFiles"/>
         </ScrollView>
