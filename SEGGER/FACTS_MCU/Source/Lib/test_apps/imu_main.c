@@ -18,11 +18,11 @@
 #include <math.h>
 
 // Test defines
-#define GYRO_TESTING
-//#define QUAT_TESTING
+//#define GYRO_TESTING
+#define QUAT_TESTING
 
 #ifdef QUAT_TESTING
-#define USE_EULER
+//#define USE_EULER
 #endif
 
 #define ELSA_I2C_IMUADDR 0x29
@@ -80,6 +80,26 @@ int8_t imu_module_init()
 
     // remap?
 
+    int8_t elsa_syscal = 0;
+    while(elsa_syscal < 2) {
+        elsa_syscal = bno055_get_syscal_status(&i2c_drv, ELSA_I2C_IMUADDR);
+        if(elsa_syscal < 0) {
+            NRF_LOG_ERROR("Failed to read cal status for elsa imu");
+            return -1;
+        }
+        nrf_delay_ms(100);
+    }
+    
+    int8_t anna_syscal = 0;
+    while(anna_syscal < 2) {
+        anna_syscal = bno055_get_syscal_status(&i2c_drv, ANNA_I2C_IMUADDR);
+        if(anna_syscal < 0) {
+            NRF_LOG_ERROR("Failed to read cal status for anna imu");
+            return -1;
+        }
+        nrf_delay_ms(100);
+    }
+
     NRF_LOG_INFO("\r\n***IMU Setup End***\r\n");
 
     return 0;
@@ -116,16 +136,6 @@ int8_t test_gyro()
     struct bno055_gyro_double_t gyroCalf = {.x=0,.y=0,.z=0};
     struct bno055_gyro_double_t gyroThigh = {.x=0,.y=0,.z=0};
     while(1) {
-        if(!bno055_convert_double_gyr_xyz_rps(&gyroCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
-            NRF_LOG_ERROR("Failed to read anna(calf) gyro");
-            return -1;
-        }
-        NRF_LOG_INFO("Anna(Calf) Gyro Readings: ");
-        NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.x));
-        NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.y));
-        NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroCalf.z));
-        NRF_LOG_FLUSH();
-
         if(!bno055_convert_double_gyr_xyz_rps(&gyroThigh, &i2c_drv, ELSA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read elsa(thigh) gyro");
             return -1;
@@ -136,6 +146,18 @@ int8_t test_gyro()
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroThigh.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroThigh.z));
         NRF_LOG_FLUSH();
+        
+        if(!bno055_convert_double_gyr_xyz_rps(&gyroCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
+            NRF_LOG_ERROR("Failed to read anna(calf) gyro");
+            return -1;
+        }
+        NRF_LOG_INFO("Anna(Calf) Gyro Readings: ");
+        NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.x));
+        NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(gyroCalf.y));
+        NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroCalf.z));
+        NRF_LOG_FLUSH();
+
+        nrf_delay_ms(5000);
     }
 
     return 0;
@@ -172,8 +194,8 @@ void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
 // testing quat
 int8_t test_quat()
 {
-    vector_t thighAxisVec = {.x=1, .y=0, .z=0};
-    vector_t calfAxisVec = {.x=1, .y=0, .z=0};
+    vector_t thighAxisVec = {.x=0, .y=1, .z=0};
+    vector_t calfAxisVec = {.x=0, .y=1, .z=0};
     struct bno055_quaternion_t bno055QuatCalf = {.w=0, .x=0, .y=0, .z=0};
     struct bno055_quaternion_t bno055QuatThigh = {.w=0, .x=0, .y=0, .z=0};
     quat_t quatCalf = {.w=0,.x=0,.y=0,.z=0};
@@ -234,6 +256,8 @@ int8_t test_quat()
         angle = calculate_angle(&quatCalf, &quatThigh);
         NRF_LOG_INFO("Angle Estimation: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(angle));
         NRF_LOG_FLUSH();
+
+        nrf_delay_ms(1000);
     }
 }
 
@@ -273,11 +297,6 @@ int main()
         cleanup();
         return -1;
     }
-
-    NRF_LOG_INFO("Reading calibration");
-    bno055_get_calibration_status(&i2c_drv, ELSA_I2C_IMUADDR);
-    bno055_get_calibration_status(&i2c_drv, ANNA_I2C_IMUADDR);
-    NRF_LOG_INFO("Done");
 
 #ifdef GYRO_TESTING
     test_gyro();

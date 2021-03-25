@@ -64,6 +64,31 @@ void bno055_get_calibration_status(nrf_drv_twi_t* i2c, uint8_t dev_addr) {
       accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status);
 }
 
+int8_t bno055_get_syscal_status(nrf_drv_twi_t* i2c, uint8_t dev_addr) {
+    uint8_t calib_status = BNO055_INIT_VALUE;
+    uint32_t err = BNO055_INIT_VALUE;
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+
+    uint8_t accel_calib_status = BNO055_INIT_VALUE;
+    uint8_t gyro_calib_status = BNO055_INIT_VALUE;
+    uint8_t mag_calib_status = BNO055_INIT_VALUE;
+    uint8_t sys_calib_status = BNO055_INIT_VALUE;
+
+    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr, BNO055_CALIB_STAT_ADDR, &calib_status, 1);
+    if(com_rslt != 0) {
+        return -1;
+    }
+    sys_calib_status= (calib_status>> 6) & 0x03;
+    gyro_calib_status = (calib_status >> 4) & 0x03;
+    accel_calib_status = (calib_status >> 2) & 0x03;
+    mag_calib_status = calib_status & 0x03;
+
+    NRF_LOG_INFO("BNO055 CALIB STAT: acc %d, mag %d, gyr %d, sys %d", 
+      accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status);
+
+    return sys_calib_status;
+}
+
 bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 remap_z_sign,
  nrf_drv_twi_t* i2c, uint8_t dev_addr) {
     BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
@@ -241,7 +266,7 @@ bool bno055_gyro_setup(uint8_t gyro_range, uint8_t gyro_bw, nrf_drv_twi_t* i2c, 
 
     op_mode = BNO055_OPERATION_MODE_NDOF;
     com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_read_accel(struct bno055_accel_t *accel, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
@@ -283,7 +308,7 @@ bool bno055_read_accel(struct bno055_accel_t *accel, nrf_drv_twi_t* i2c, uint8_t
         (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_XYZ_Z_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
               (data_u8[BNO055_SENSOR_DATA_XYZ_Z_LSB]));
 
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_read_gyro(struct bno055_gyro_t *gyro, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
@@ -325,7 +350,7 @@ bool bno055_read_gyro(struct bno055_gyro_t *gyro, nrf_drv_twi_t* i2c, uint8_t de
         (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_XYZ_Z_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
               (data_u8[BNO055_SENSOR_DATA_XYZ_Z_LSB]));
 
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_read_quat(struct bno055_quaternion_t *quaternion, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
@@ -386,7 +411,7 @@ bool bno055_read_quat(struct bno055_quaternion_t *quaternion, nrf_drv_twi_t* i2c
         (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_QUATERNION_WXYZ_Z_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
               (data_u8[BNO055_SENSOR_DATA_QUATERNION_WXYZ_Z_LSB]));
 
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_set_data_out_format(uint8_t data_output_format, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
@@ -411,12 +436,12 @@ bool bno055_set_data_out_format(uint8_t data_output_format, nrf_drv_twi_t* i2c, 
 
     op_mode = BNO055_OPERATION_MODE_NDOF;
     com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_convert_double_acc_xyz_msq(struct bno055_accel_double_t *accel_xyz, nrf_drv_twi_t* i2c,
  uint8_t dev_addr) {
-    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_SUCCESS;
     struct bno055_accel_t reg_accel_xyz = { BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE };
 
     bool succ = bno055_set_acc_unit(BNO055_ACCEL_UNIT_MSQ, i2c, dev_addr);
@@ -433,14 +458,16 @@ bool bno055_convert_double_acc_xyz_msq(struct bno055_accel_double_t *accel_xyz, 
         {
             com_rslt = BNO055_ERROR;
         }
+    } else {
+        com_rslt = BNO055_ERROR;
     }
 
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 bool bno055_convert_double_gyr_xyz_rps(struct bno055_gyro_double_t *gyro_xyz, nrf_drv_twi_t* i2c,
  uint8_t dev_addr) {
-    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_SUCCESS;
     struct bno055_gyro_t reg_gyro_xyz = { BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE };
 
     bool succ = bno055_set_gyr_unit(BNO055_GYRO_UNIT_RPS, i2c, dev_addr);
@@ -455,9 +482,11 @@ bool bno055_convert_double_gyr_xyz_rps(struct bno055_gyro_double_t *gyro_xyz, nr
         } else {
             com_rslt = BNO055_ERROR;
         }
+    } else {
+            com_rslt = BNO055_ERROR;
     }
 
-    return (com_rslt == 0) ? true : false;
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
 int8_t BNO055_I2C_bus_write(nrf_drv_twi_t* i2c, uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt)
