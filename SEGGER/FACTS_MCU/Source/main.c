@@ -32,6 +32,8 @@
 #define TCA_SELECT_REG   0
 #define TCA_SELECT_SIZE  1
 
+//#define ENABLE_HAPTICS
+
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
 
@@ -182,6 +184,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 }
 
 // Initialize haptic
+#ifdef ENABLE_HAPTICS
 int8_t haptic_module_init()
 {
     NRF_LOG_INFO("\r\n ***Motor Setup Start*** \r\n");
@@ -197,6 +200,7 @@ int8_t haptic_module_init()
 
     return 0;
 }
+#endif
 
 int8_t imu_module_init()
 {
@@ -302,6 +306,7 @@ void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
     quat->z = (double)bno055Quat->z * scale;
 }
 
+#ifdef ENABLE_HAPTICS
 int8_t turn_on_motors(drv2605l_t* motor, uint8_t mux_addr)
 {
     if(!tca9548a_write(&i2c_drv, mux_addr, TCA_SELECT_REG, &HAPTIC_MOTOR_CH0, TCA_SELECT_SIZE)) {
@@ -343,6 +348,7 @@ int8_t turn_off_motors(drv2605l_t* motor, uint8_t mux_addr)
 
     return 0;
 }
+#endif
 
 // Calculate
 int8_t get_facts()
@@ -378,6 +384,7 @@ int8_t get_facts()
         // Send to BLE
         send_flexion_angle(&angle);
 
+#ifdef ENABLE_HAPTICS
         // Check against limits
         if((angle < angleLim.minLimit || angle > angleLim.maxLimit)) {
             if(!motorsRunning) {
@@ -406,6 +413,7 @@ int8_t get_facts()
                 }
             }
         }
+#endif
     }
 
     return 0;
@@ -459,11 +467,14 @@ int main()
         cleanup();
         return -1;
     }
+#ifdef ENABLE_HAPTICS
     if(haptic_module_init() < 0) {
         NRF_LOG_ERROR("Failed to init haptics");
         cleanup();
         return -1;
     }
+    NRF_LOG_INFO("Haptic feedback enabled");
+#endif
 
     start_advertising(false);
 
