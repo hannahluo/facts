@@ -34,7 +34,7 @@
 #define MANUFACTURER_NAME               "FACTS"                                 /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
-#define APP_ADV_DURATION                18000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
+#define APP_ADV_DURATION                36000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                       /**< A tag identifying the SoftDevice BLE configuration. */
 
@@ -296,12 +296,12 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             uint8_t data_length = 0;
             err_code = nrf_ble_gatt_data_length_get(&m_gatt, m_conn_handle, &data_length);
             APP_ERROR_CHECK(err_code);
-            NRF_LOG_INFO("Conn Data length is %d", data_length);
+            NRF_LOG_DEBUG("Conn Data length is %d", data_length);
             
             // Check att mtu
             uint16_t att_mtu_length = 0;
             att_mtu_length = nrf_ble_gatt_eff_mtu_get(&m_gatt, m_conn_handle);
-            NRF_LOG_INFO("ATT MTU length is %d", att_mtu_length);
+            NRF_LOG_DEBUG("ATT MTU length is %d", att_mtu_length);
             break;
 
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST:
