@@ -217,6 +217,26 @@ int8_t imu_module_init()
 
     // remap?
 
+    int8_t elsa_syscal = 0;
+    while(elsa_syscal < 2) {
+        elsa_syscal = bno055_get_syscal_status(&i2c_drv, ELSA_I2C_IMUADDR);
+        if(elsa_syscal < 0) {
+            NRF_LOG_ERROR("Failed to read cal status for elsa imu");
+            return -1;
+        }
+        nrf_delay_ms(100);
+    }
+    
+    int8_t anna_syscal = 0;
+    while(anna_syscal < 2) {
+        anna_syscal = bno055_get_syscal_status(&i2c_drv, ANNA_I2C_IMUADDR);
+        if(anna_syscal < 0) {
+            NRF_LOG_ERROR("Failed to read cal status for anna imu");
+            return -1;
+        }
+        nrf_delay_ms(100);
+    }
+
     NRF_LOG_INFO("\r\n***IMU Setup End***\r\n");
 
     return 0;
