@@ -241,9 +241,9 @@ bool bno055_gyro_setup(uint8_t gyro_range, uint8_t gyro_bw, nrf_drv_twi_t* i2c, 
     uint8_t data_u8r = BNO055_INIT_VALUE;
 
     uint8_t op_mode = BNO055_OPERATION_MODE_CONFIG;
-    com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
+    com_rslt = BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
 
-    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+    com_rslt += BNO055_I2C_bus_read(i2c, dev_addr,
                                     BNO055_GYRO_CONFIG_ADDR,
                                     &data_u8r,
                                     BNO055_GEN_READ_WRITE_LENGTH);
@@ -350,6 +350,14 @@ bool bno055_read_gyro(struct bno055_gyro_t *gyro, nrf_drv_twi_t* i2c, uint8_t de
         (s16)((((s32)((s8)data_u8[BNO055_SENSOR_DATA_XYZ_Z_MSB])) << BNO055_SHIFT_EIGHT_BITS) |
               (data_u8[BNO055_SENSOR_DATA_XYZ_Z_LSB]));
 
+    return (com_rslt == BNO055_SUCCESS) ? true : false;
+}
+
+bool bno055_quat_setup(nrf_drv_twi_t* i2c, uint8_t dev_addr)
+{
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    uint8_t op_mode = BNO055_OPERATION_MODE_NDOF;
+    com_rslt = BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
     return (com_rslt == BNO055_SUCCESS) ? true : false;
 }
 
@@ -470,20 +478,16 @@ bool bno055_convert_double_gyr_xyz_rps(struct bno055_gyro_double_t *gyro_xyz, nr
     BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_SUCCESS;
     struct bno055_gyro_t reg_gyro_xyz = { BNO055_INIT_VALUE, BNO055_INIT_VALUE, BNO055_INIT_VALUE };
 
-    bool succ = bno055_set_gyr_unit(BNO055_GYRO_UNIT_RPS, i2c, dev_addr);
+    /* Read gyro raw x data */
+    bool succ = bno055_read_gyro(&reg_gyro_xyz, i2c, dev_addr);
     if (succ) {
-        /* Read gyro raw x data */
-        succ = bno055_read_gyro(&reg_gyro_xyz, i2c, dev_addr);
-        if (succ) {
-            /* Convert the raw gyro xyz to rps*/
-            gyro_xyz->x = (double)(reg_gyro_xyz.x / BNO055_GYRO_DIV_RPS);
-            gyro_xyz->y = (double)(reg_gyro_xyz.y / BNO055_GYRO_DIV_RPS);
-            gyro_xyz->z = (double)(reg_gyro_xyz.z / BNO055_GYRO_DIV_RPS);
-        } else {
-            com_rslt = BNO055_ERROR;
-        }
+        /* Convert the raw gyro xyz to rps*/
+        gyro_xyz->x = (double)(reg_gyro_xyz.x / BNO055_GYRO_DIV_RPS);
+        gyro_xyz->y = (double)(reg_gyro_xyz.y / BNO055_GYRO_DIV_RPS);
+        gyro_xyz->z = (double)(reg_gyro_xyz.z / BNO055_GYRO_DIV_RPS);
+        com_rslt = BNO055_SUCCESS;
     } else {
-            com_rslt = BNO055_ERROR;
+        com_rslt = BNO055_ERROR;
     }
 
     return (com_rslt == BNO055_SUCCESS) ? true : false;

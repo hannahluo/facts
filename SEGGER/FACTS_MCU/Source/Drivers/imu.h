@@ -38,6 +38,8 @@ bool bno055_read_accel(struct bno055_accel_t *accel, nrf_drv_twi_t* i2c, uint8_t
 
 bool bno055_read_gyro(struct bno055_gyro_t *gyro, nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
+bool bno055_quat_setup(nrf_drv_twi_t* i2c, uint8_t dev_addr);
+
 bool bno055_read_quat(struct bno055_quaternion_t *quaternion, nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
 bool bno055_set_data_out_format(uint8_t data_output_format, nrf_drv_twi_t* i2c, uint8_t dev_addr);
