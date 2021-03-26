@@ -136,6 +136,7 @@ void ble_module_init()
     NRF_LOG_INFO("\r\n ***BLE Setup End*** \r\n");
 }
 
+#ifdef ENABLE_HAPTICS
 int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 {
     if(!tca9548a_init(mux, mux_addr, &i2c_drv)) {
@@ -182,6 +183,7 @@ int8_t motor_init(drv2605l_t* motor, tca9548a_t* mux, uint8_t mux_addr)
 
     return 0;
 }
+#endif
 
 // Initialize haptic
 #ifdef ENABLE_HAPTICS
@@ -284,9 +286,6 @@ int8_t calibrate_facts()
         return -1;
     }
 
-    // Wait for app to start FACTS cal sequence
-    while(start_cal){};
-
     // Wait for joint axis to be recvd
     while(!calfAxisUpdated || !thighAxisUpdated) {
         // Read
@@ -294,10 +293,20 @@ int8_t calibrate_facts()
             NRF_LOG_ERROR("Failed to read raw gyro from elsa(thigh)");
             return -1;
         }
+        NRF_LOG_INFO("Elsa(Thigh) Gyro Readings: ");
+        NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroThigh.x));
+        NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroThigh.y));
+        NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(bno055GyroThigh.z));
+        NRF_LOG_FLUSH();
         if(!bno055_convert_double_gyr_xyz_rps(&bno055GyroCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read raw gyro from anna(calf)");
             return -1;
         }
+        NRF_LOG_INFO("Anna(Calf) Gyro Readings pt1: ");
+        NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroCalf.x));
+        NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroCalf.y));
+        NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(bno055GyroCalf.z));
+        NRF_LOG_FLUSH();
         
         gyroCalf.x = bno055GyroCalf.x;
         gyroCalf.y = bno055GyroCalf.y;
@@ -309,9 +318,7 @@ int8_t calibrate_facts()
         // Write to BLE module
         send_raw_gyro_calf(&gyroCalf);
         send_raw_gyro_thigh(&gyroThigh);
-
-        // Wait for bus to clear
-        nrf_delay_ms(100);
+        nrf_delay_ms(10);
     }
 
     return 0;
@@ -383,6 +390,17 @@ int8_t get_facts()
 
     update_joint_axes(&calfAxisVec, &thighAxisVec);
     double angle = 0;
+
+    if(!bno055_quat_setup(&i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to setup anna quat read");
+        return -1;
+    }
+
+    if(!bno055_quat_setup(&i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to setup elsa quat read");
+        return -1;
+    }
+
     while(1) {
         // Read quaternion
         if(!bno055_read_quat(&bno055QuatCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
@@ -403,6 +421,7 @@ int8_t get_facts()
 
         // Send to BLE
         send_flexion_angle(&angle);
+        NRF_LOG_INFO("Angle Estimation: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(angle));
 
 #ifdef ENABLE_HAPTICS
         // Check against limits
@@ -445,6 +464,7 @@ void cleanup()
     deinit(&elsa_imu);
     deinit(&anna_imu);
 
+#ifdef ENABLE_HAPTICS
     // motor
     drv2605l_deinit(&elsa_motor);
     drv2605l_deinit(&anna_motor);
@@ -452,6 +472,7 @@ void cleanup()
     // mux
     tca9548a_deinit(&elsa_mux);
     tca9548a_deinit(&anna_mux);
+#endif
 
     // i2c
     i2c_deinit(&i2c_drv);
@@ -499,7 +520,6 @@ int main()
     start_advertising(false);
 
     // Calibration
-    calibrate_imu();
     if(calibrate_facts() < 0) {
         NRF_LOG_ERROR("Failed to calibrate FACTS properly. Shutting down");
         cleanup();

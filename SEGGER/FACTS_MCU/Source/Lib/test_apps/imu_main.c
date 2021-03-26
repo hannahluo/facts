@@ -18,8 +18,8 @@
 #include <math.h>
 
 // Test defines
-//#define GYRO_TESTING
-#define QUAT_TESTING
+#define GYRO_TESTING
+//#define QUAT_TESTING
 
 #ifdef QUAT_TESTING
 //#define USE_EULER
@@ -78,9 +78,7 @@ int8_t imu_module_init()
     }
     nrf_delay_ms(100);
 
-    // remap?
-
-    int8_t elsa_syscal = 0;
+    /*int8_t elsa_syscal = 0;
     while(elsa_syscal < 2) {
         elsa_syscal = bno055_get_syscal_status(&i2c_drv, ELSA_I2C_IMUADDR);
         if(elsa_syscal < 0) {
@@ -98,7 +96,7 @@ int8_t imu_module_init()
             return -1;
         }
         nrf_delay_ms(100);
-    }
+    }*/
 
     NRF_LOG_INFO("\r\n***IMU Setup End***\r\n");
 
@@ -157,7 +155,7 @@ int8_t test_gyro()
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(gyroCalf.z));
         NRF_LOG_FLUSH();
 
-        nrf_delay_ms(5000);
+        nrf_delay_ms(500);
     }
 
     return 0;
@@ -206,6 +204,17 @@ int8_t test_quat()
     double angle = 0;
     euler_t eulerCalf = {.pitch=0, .roll=0, .yaw=0};
     euler_t eulerThigh = {.pitch=0, .roll=0, .yaw=0};
+
+    if(!bno055_quat_setup(&i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to setup anna quat read");
+        return -1;
+    }
+
+    if(!bno055_quat_setup(&i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to setup elsa quat read");
+        return -1;
+    }
+
     while(1) {
         // Read quaternion
         if(!bno055_read_quat(&bno055QuatCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
