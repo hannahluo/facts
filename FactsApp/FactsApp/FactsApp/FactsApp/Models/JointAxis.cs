@@ -203,9 +203,6 @@ namespace FactsApp.Models
                     return false;
                 }
                 ParseRawGyroMessage(ref _rawGyroCalfReadings, i, calfMsg.Result);
-                CalfX = _rawGyroCalfReadings.X[i];
-                CalfY = _rawGyroCalfReadings.Y[i];
-                CalfZ = _rawGyroCalfReadings.Z[i];
 
                 var thighMsg = Task.Delay(_waitLength).ContinueWith(_ =>
                                                         { return rawGyroThighChar.ReadAsync().Result; } );
@@ -214,16 +211,8 @@ namespace FactsApp.Models
                     return false;
                 }
                 ParseRawGyroMessage(ref _rawGyroThighReadings, i, thighMsg.Result);
-                ThighX = _rawGyroThighReadings.X[i];
-                ThighY = _rawGyroThighReadings.Y[i];
-                ThighZ = _rawGyroThighReadings.Z[i];
             }
             return true;
-        }
-
-        private double CrossProduct(double ax, double ay, double az, double cx, double cy, double cz)
-        {
-            return 0.0;
         }
 
         private Vector JointAxisFromSph(double phi, double theta)
@@ -248,13 +237,6 @@ namespace FactsApp.Models
         // 
         public async Task<bool> Calibrate(IUserDialogs dialog)
         {
-            /*CalfX = _rawGyroCalfReadings.X[9];
-            CalfY = _rawGyroCalfReadings.Y[9];
-            CalfZ = _rawGyroCalfReadings.Z[9];
-
-            ThighX = _rawGyroThighReadings.X[9];
-            ThighY = _rawGyroThighReadings.Y[9];
-            ThighZ = _rawGyroThighReadings.Z[9];*/
             double[][] temp_inputs = Jagged.ColumnVector(new[] { 0.03, 0.1947, 0.425, 0.626, 1.253, 2.500, 3.740 });
 
             double[][] inputs = Jagged.CreateAs(new double[_numDataPoints, 6]);
@@ -284,17 +266,20 @@ namespace FactsApp.Models
 
             LeastSquaresGradientFunction gradient = (double[] parameters, double[] gyro, double[] result) =>
             {
-                Func<double[], double> grad_func = param_in =>
-                {
-                    Vector thighGyro = new Vector(gyro[0], gyro[1], gyro[2]);
-                    Vector calfGyro = new Vector(gyro[3], gyro[4], gyro[5]);
-                    Vector thighAxis = JointAxisFromSph(param_in[0], param_in[2]);
-                    Vector calfAxis = JointAxisFromSph(param_in[1], param_in[3]);
-                    return CrossProductNorm(ref thighGyro, ref thighAxis) - CrossProductNorm(ref calfGyro, ref calfAxis);
-                };
-
-                var grad_calc = new FiniteDifferences(4, grad_func);
-                result = grad_calc.Gradient(parameters);
+                var phi_1 = parameters[0];
+                var phi_2 = parameters[1];
+                var theta_1 = parameters[2];
+                var theta_2 = parameters[3];
+                var g1x = gyro[0];
+                var g1y = gyro[1];
+                var g1z = gyro[2];
+                var g2x = gyro[3];
+                var g2y = gyro[4];
+                var g2z = gyro[5];
+                result[0] = (2 * (g1x * Math.Cos(phi_1) + g1z * Math.Cos(theta_1) * Math.Sin(phi_1)) * (g1x * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Cos(theta_1)) + 2 * (g1y * Math.Cos(phi_1) + g1z * Math.Sin(phi_1) * Math.Sin(theta_1)) * (g1y * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Sin(theta_1)) - 2 * Math.Cos(phi_1) * Math.Sin(phi_1) * Math.Pow(g1y * Math.Cos(theta_1) - g1x * Math.Sin(theta_1), 2)) / (2 * Math.Pow(Math.Abs(Math.Pow(Math.Cos(phi_1) * (g1y * Math.Cos(theta_1) - g1x * Math.Sin(theta_1)), 2)) + Math.Abs(Math.Pow(g1x * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Cos(theta_1), 2)) + Math.Abs(Math.Pow(g1y * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Sin(theta_1), 2)), 0.5));
+                result[1] = -1*(2 * (g2x * Math.Cos(phi_2) + g2z * Math.Cos(theta_2) * Math.Sin(phi_2)) * (g2x * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Cos(theta_2)) + 2 * (g2y * Math.Cos(phi_2) + g2z * Math.Sin(phi_2) * Math.Sin(theta_2)) * (g2y * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Sin(theta_2)) - 2 * Math.Cos(phi_2) * Math.Sin(phi_2) * Math.Pow(g2y * Math.Cos(theta_2) - g2x * Math.Sin(theta_2), 2)) / (2 * Math.Pow(Math.Abs(Math.Pow(Math.Cos(phi_2) * (g2y * Math.Cos(theta_2) - g2x * Math.Sin(theta_2)), 2)) + Math.Abs(Math.Pow(g2x * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Cos(theta_2), 2)) + Math.Abs(Math.Pow(g2y * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Sin(theta_2), 2)), 0.5));
+                result[2] = -(Math.Cos(phi_1) * (g1y * Math.Cos(theta_1) - g1x * Math.Sin(theta_1)) * (g1z * Math.Sin(phi_1) + g1x * Math.Cos(phi_1) * Math.Cos(theta_1) + g1y * Math.Cos(phi_1) * Math.Sin(theta_1))) / Math.Pow(Math.Abs(Math.Pow(Math.Cos(phi_1) * (g1y * Math.Cos(theta_1) - g1x * Math.Sin(theta_1)), 2)) + Math.Abs(Math.Pow(g1x * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Cos(theta_1), 2)) + Math.Abs(Math.Pow(g1y * Math.Sin(phi_1) - g1z * Math.Cos(phi_1) * Math.Sin(theta_1), 2)), 0.5);
+                result[3] = (Math.Cos(phi_2) * (g2y * Math.Cos(theta_2) - g2x * Math.Sin(theta_2)) * (g2z * Math.Sin(phi_2) + g2x * Math.Cos(phi_2) * Math.Cos(theta_2) + g2y * Math.Cos(phi_2) * Math.Sin(theta_2))) / Math.Pow(Math.Abs(Math.Pow(Math.Cos(phi_2) * (g1y * Math.Cos(theta_2) - g2x * Math.Sin(theta_2)), 2)) + Math.Abs(Math.Pow(g2x * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Cos(theta_2), 2)) + Math.Abs(Math.Pow(g2y * Math.Sin(phi_2) - g2z * Math.Cos(phi_2) * Math.Sin(theta_2), 2)), 0.5);
             };
 
             var gn = new GaussNewton(parameters: 4)
