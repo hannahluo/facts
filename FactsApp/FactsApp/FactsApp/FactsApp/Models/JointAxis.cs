@@ -107,8 +107,8 @@ namespace FactsApp.Models
         private readonly Guid _imuRawServiceGuid = Guid.Parse("87C539A0-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _rawGyroCalfCharGuid = Guid.Parse("87C539A1-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _rawGyroThighCharGuid = Guid.Parse("87C539A2-8E33-4070-9131-8F56AA023E45");
-        private readonly int _numDataPoints = 10;
-        private readonly int _waitLength = 1000; // ms
+        private readonly int _numDataPoints = 100;
+        private readonly int _waitLength = 100; // ms
         private RawGyro _rawGyroCalfReadings;
         private RawGyro _rawGyroThighReadings;
 
@@ -209,7 +209,7 @@ namespace FactsApp.Models
 
                 var thighMsg = Task.Delay(_waitLength).ContinueWith(_ =>
                                                         { return rawGyroThighChar.ReadAsync().Result; } );
-                if(thighMsg == null || calfMsg.IsFaulted)
+                if(thighMsg == null || thighMsg.IsFaulted)
                 {
                     return false;
                 }
@@ -233,7 +233,7 @@ namespace FactsApp.Models
 
         private double Norm(ref Vector vec)
         {
-            return Math.Sqrt(Math.Pow(vec.X, 2) + Math.Pow(vec.Y, 2) + Math.Pow(vec.Z, 2));
+            return Math.Sqrt(vec.X*vec.X + vec.Y*vec.Y + vec.Z*vec.Z);
         }
 
         private double CrossProductNorm(ref Vector a, ref Vector b)
@@ -255,8 +255,9 @@ namespace FactsApp.Models
             ThighX = _rawGyroThighReadings.X[9];
             ThighY = _rawGyroThighReadings.Y[9];
             ThighZ = _rawGyroThighReadings.Z[9];*/
+            double[][] temp_inputs = Jagged.ColumnVector(new[] { 0.03, 0.1947, 0.425, 0.626, 1.253, 2.500, 3.740 });
 
-            double[][] inputs = Jagged.CreateAs(new double[_numDataPoints, _numDataPoints]);
+            double[][] inputs = Jagged.CreateAs(new double[_numDataPoints, 6]);
             double[] outputs = new double[_numDataPoints];
             for(int i = 0; i < _numDataPoints; i++)
             {
@@ -278,7 +279,7 @@ namespace FactsApp.Models
                 Vector thighAxis = JointAxisFromSph(parameters[0], parameters[2]);
                 Vector calfAxis = JointAxisFromSph(parameters[1], parameters[3]);
 
-                return Math.Pow(CrossProductNorm(ref thighGyro, ref thighAxis) - CrossProductNorm(ref calfGyro, ref calfAxis), 2);
+                return CrossProductNorm(ref thighGyro, ref thighAxis) - CrossProductNorm(ref calfGyro, ref calfAxis);
             };
 
             LeastSquaresGradientFunction gradient = (double[] parameters, double[] gyro, double[] result) =>
@@ -289,7 +290,7 @@ namespace FactsApp.Models
                     Vector calfGyro = new Vector(gyro[3], gyro[4], gyro[5]);
                     Vector thighAxis = JointAxisFromSph(param_in[0], param_in[2]);
                     Vector calfAxis = JointAxisFromSph(param_in[1], param_in[3]);
-                    return Math.Pow(CrossProductNorm(ref thighGyro, ref thighAxis) - CrossProductNorm(ref calfGyro, ref calfAxis), 2);
+                    return CrossProductNorm(ref thighGyro, ref thighAxis) - CrossProductNorm(ref calfGyro, ref calfAxis);
                 };
 
                 var grad_calc = new FiniteDifferences(4, grad_func);
@@ -300,7 +301,7 @@ namespace FactsApp.Models
             {
                 Function = function,
                 Gradient = gradient,
-                Solution = new double[] { 1.0, 1.0, 1.0, 1.0 }
+                Solution = new double[] { 0.0, 0.0, 0.0, 0.0 }
             };
 
             gn.MaxIterations = 20;

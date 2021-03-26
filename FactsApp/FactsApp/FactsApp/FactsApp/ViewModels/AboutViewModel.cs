@@ -370,6 +370,11 @@ namespace FactsApp.ViewModels
             return (BitConverter.ToDouble(array, 0));
         }
 
+        private double ConvertRadToDeg(double angle_rad)
+        {
+            return angle_rad *(180/Math.PI);
+        }
+
         private async void AngleReadingThread(ICharacteristic flexionAngleChar)
         {
             angleThreadEnabled = true;
@@ -381,7 +386,7 @@ namespace FactsApp.ViewModels
                     {
                         return null;
                     }
-                    return flexionAngleChar.ReadAsync().Result; 
+                    return flexionAngleChar.ReadAsync().Result;
                 });
                 if (angleMsg == null)
                 {
@@ -389,7 +394,8 @@ namespace FactsApp.ViewModels
                 }
                 else
                 {
-                    angleValues[angleValuesHeadIndex] = (float)Math.Round(ParseFlexionAngleMsg(angleMsg), 2);
+                    double angle = ConvertRadToDeg(ParseFlexionAngleMsg(angleMsg));
+                    angleValues[angleValuesHeadIndex] = (float)Math.Round(angle, 2);
                     DrawFn();
                 }
             }
