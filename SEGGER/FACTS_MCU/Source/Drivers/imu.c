@@ -95,7 +95,7 @@ bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 rema
     uint8_t data_u8r = BNO055_INIT_VALUE;
 
     uint8_t op_mode = BNO055_OPERATION_MODE_CONFIG;
-    com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
+    com_rslt = BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
 
     switch (remap_axis) {
         case BNO055_REMAP_X_Y:
@@ -104,7 +104,7 @@ bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 rema
         case BNO055_REMAP_X_Y_Z_TYPE0:
         case BNO055_REMAP_X_Y_Z_TYPE1:
         case BNO055_DEFAULT_AXIS:
-            com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+            com_rslt += BNO055_I2C_bus_read(i2c, dev_addr,
                                             BNO055_REMAP_AXIS_VALUE_REG,
                                             &data_u8r,
                                             BNO055_GEN_READ_WRITE_LENGTH);
@@ -118,7 +118,7 @@ bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 rema
             break;
         default:
             /* Write the default axis remap value */
-            com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+            com_rslt += BNO055_I2C_bus_read(i2c, dev_addr,
                                             BNO055_REMAP_AXIS_VALUE_REG,
                                             &data_u8r,
                                             BNO055_GEN_READ_WRITE_LENGTH);
@@ -133,7 +133,7 @@ bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 rema
     }
 
     /* Write the value of x-axis remap */
-    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+    com_rslt += BNO055_I2C_bus_read(i2c, dev_addr,
                                     BNO055_AXIS_MAP_SIGN_ADDR,
                                     &data_u8r,
                                     BNO055_GEN_READ_WRITE_LENGTH);
@@ -151,6 +151,40 @@ bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 rema
     com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
     return (com_rslt == 0) ? true : false;
 }
+
+bool bno055_get_remap_sign(u8 *remap_sign_reg, nrf_drv_twi_t* i2c, uint8_t dev_addr)
+{
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    uint8_t data_u8r = BNO055_INIT_VALUE;
+
+    /* Read the value of z-axis remap sign*/
+    com_rslt = p_bno055->BNO055_I2C_bus_read(i2c, dev_addr,
+                                              BNO055_AXIS_MAP_SIGN_ADDR,
+                                              &data_u8r,
+                                              BNO055_GEN_READ_WRITE_LENGTH);
+    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_X_SIGN);
+    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_Y_SIGN);
+    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_Z_SIGN);
+
+    return (com_rslt == 0) ? true : false;
+}
+
+bool bno055_get_remap_axis(u8 *remap_axis_reg, nrf_drv_twi_t* i2c, uint8_t dev_addr)
+{
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    uint8_t data_u8r = BNO055_INIT_VALUE;
+    
+    /* Read the value of axis remap*/
+    com_rslt = p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
+                                              BNO055_REMAP_AXIS_VALUE_REG,
+                                              &data_u8r,
+                                              BNO055_GEN_READ_WRITE_LENGTH);
+    *remap_axis_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_AXIS_VALUE);
+
+    return (com_rslt == 0) ? true : false;
+}
+
+
 
 bool bno055_set_acc_unit(uint8_t accel_unit, nrf_drv_twi_t* i2c, uint8_t dev_addr) {
     BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
@@ -355,7 +389,7 @@ bool bno055_read_gyro(struct bno055_gyro_t *gyro, nrf_drv_twi_t* i2c, uint8_t de
 
 bool bno055_quat_setup(nrf_drv_twi_t* i2c, uint8_t dev_addr)
 {
-    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_ERROR;
+    BNO055_RETURN_FUNCTION_TYPE com_rslt = BNO055_SUCCESS;
     uint8_t op_mode = BNO055_OPERATION_MODE_NDOF;
     com_rslt = BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
     return (com_rslt == BNO055_SUCCESS) ? true : false;
@@ -427,10 +461,10 @@ bool bno055_set_data_out_format(uint8_t data_output_format, nrf_drv_twi_t* i2c, 
     uint8_t data_u8r = BNO055_INIT_VALUE;
 
     uint8_t op_mode = BNO055_OPERATION_MODE_CONFIG;
-    com_rslt += BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
+    com_rslt = BNO055_I2C_bus_write(i2c, dev_addr, BNO055_OPERATION_MODE_REG, &op_mode, 1);
 
     /* Write the data output format */
-    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
+    com_rslt += BNO055_I2C_bus_read(i2c, dev_addr,
                                     BNO055_DATA_OUTPUT_FORMAT_REG,
                                     &data_u8r,
                                     BNO055_GEN_READ_WRITE_LENGTH);

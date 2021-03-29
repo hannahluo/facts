@@ -145,11 +145,17 @@ double calculate_angle(quat_t* calfQuat, quat_t* thighQuat)
     
 
     // Find angle between calfVec and thighVec
-    double dotProd = DOT_PROD(calfVec, thighVec);
-    double magCalfVec = MAG_VEC(calfVec);
-    double magThighVec = MAG_VEC(thighVec);
+    //double dotProd = DOT_PROD(calfVec, thighVec);
+    //double magCalfVec = MAG_VEC(calfVec);
+    //double magThighVec = MAG_VEC(thighVec);
 
-    return acos(DOT_PROD(calfVec, thighVec) / (MAG_VEC(calfVec)*MAG_VEC(thighVec)));
+    //return acos(DOT_PROD(calfVec, thighVec) / (MAG_VEC(calfVec)*MAG_VEC(thighVec)));
+    vector_t cross = {.x=0, .y=0, .z=0};
+    cross_product(&calfVec, &thighVec, &cross);
+    double magCross = MAG_VEC(cross);
+    double dotProd = DOT_PROD(calfVec, thighVec);
+
+    return atan2(magCross, dotProd);
 }
 
 #ifndef NDEBUG

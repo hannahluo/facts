@@ -25,6 +25,10 @@ int8_t bno055_get_syscal_status(nrf_drv_twi_t* i2c, uint8_t dev_addr);
 bool bno055_remap_setup(u8 remap_axis, u8 remap_x_sign, u8 remap_y_sign, u8 remap_z_sign,
  nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
+bool bno055_get_remap_sign(u8 *remap_sign_reg, nrf_drv_twi_t* i2c, uint8_t dev_addr);
+
+bool bno055_get_remap_axis(u8 *remap_axis_reg, nrf_drv_twi_t* i2c, uint8_t dev_addr);
+
 bool bno055_set_acc_unit(uint8_t accel_unit, nrf_drv_twi_t* i2c, uint8_t dev_addr);
 
 bool bno055_accel_setup(uint8_t accel_unit, uint8_t accel_range, uint8_t accel_bw, nrf_drv_twi_t* i2c,
