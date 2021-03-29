@@ -38,7 +38,7 @@ namespace FactsApp.ViewModels
         private double kneeModelArcDisplacement = 25.0f;
 
         private int maxRecentAngles = 40;
-        private int recentAngleSampleRate = 2; // In per ds - the previous sample will go to 500 ms before
+        private int recentAngleSampleRate = 1; // In per ds - the previous sample will go to 500 ms before
         public int angleValuesHeadIndex { get; private set; } = 0;
         public int angleValuesContentSize { get; private set; } = 0;
         public float[] angleValues { get; private set; } = new float[3000];  // In ds
@@ -91,6 +91,23 @@ namespace FactsApp.ViewModels
             get
             {
                 return flexionAngleValue;
+            }
+        }
+
+        private int flexionAngleDisplay = 90;
+        public int FlexionAngleDisplay
+        {
+            set
+            {
+                if (value != flexionAngleDisplay)
+                {
+                    flexionAngleDisplay = value;
+                    OnPropertyChanged(nameof(FlexionAngleDisplay));
+                }
+            }
+            get
+            {
+                return flexionAngleDisplay;
             }
         }
 
@@ -254,8 +271,7 @@ namespace FactsApp.ViewModels
             int currWidth = (int)(Application.Current.MainPage.Width);
 
             FlexionAngleValue = angleValues[angleValuesHeadIndex];
-
-            if (FlexionAngleValue > 150) FlexionAngleValue = 45;
+            FlexionAngleDisplay = (int)FlexionAngleValue;
 
             if (FlexionAngleValue > 90)
             {
@@ -378,7 +394,7 @@ namespace FactsApp.ViewModels
         private async void AngleReadingThread(ICharacteristic flexionAngleChar)
         {
             angleThreadEnabled = true;
-            while (true)
+            while (angleThreadEnabled)
             {
                 var angleMsg = await Task.Delay(1).ContinueWith(_ =>
                 {
@@ -390,7 +406,7 @@ namespace FactsApp.ViewModels
                 });
                 if (angleMsg == null)
                 {
-                    break;
+                    angleThreadEnabled = false;
                 }
                 else
                 {
@@ -399,7 +415,6 @@ namespace FactsApp.ViewModels
                     DrawFn();
                 }
             }
-            angleThreadEnabled = false;
         }
 
         // Start angle read thread
@@ -430,6 +445,11 @@ namespace FactsApp.ViewModels
                 return;
             }
             AngleReadingThread(flexionAngleChar);
+        }
+
+        public async void StopAngleReading()
+        {
+            angleThreadEnabled = false;
         }
     }
 

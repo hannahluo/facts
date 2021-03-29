@@ -26,6 +26,12 @@ namespace FactsApp.Views
             m_viewModel.StartAngleReading();
         }
 
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            m_viewModel.StopAngleReading();
+        }
+
         async void SaveDataToFile(object sender, EventArgs args)
         {
             // Use current date and time to ensure no overwriting existing files

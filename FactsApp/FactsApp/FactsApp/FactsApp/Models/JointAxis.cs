@@ -107,7 +107,7 @@ namespace FactsApp.Models
         private readonly Guid _imuRawServiceGuid = Guid.Parse("87C539A0-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _rawGyroCalfCharGuid = Guid.Parse("87C539A1-8E33-4070-9131-8F56AA023E45");
         private readonly Guid _rawGyroThighCharGuid = Guid.Parse("87C539A2-8E33-4070-9131-8F56AA023E45");
-        private readonly int _numDataPoints = 100;
+        private readonly int _numDataPoints = 50;
         private readonly int _waitLength = 100; // ms
         private RawGyro _rawGyroCalfReadings;
         private RawGyro _rawGyroThighReadings;
@@ -180,9 +180,25 @@ namespace FactsApp.Models
         // Get raw gyro data from device
         public async Task<bool> GetRawData(IDevice device, IUserDialogs dialog)
         {
-            var calService = await device.GetServiceAsync(_imuRawServiceGuid);
-            var rawGyroThighChar = await calService.GetCharacteristicAsync(_rawGyroThighCharGuid);
-            var rawGyroCalfChar = await calService.GetCharacteristicAsync(_rawGyroCalfCharGuid);
+            var calibService = await device.GetServiceAsync(_calibServiceGuid);
+            var initCalChar = await calibService.GetCharacteristicAsync(_initCalCharGuid);
+            if(initCalChar == null)
+            {
+                dialog.Alert("Could not find init cal char");
+                return false;
+            }
+            if(!initCalChar.CanWrite)
+            {
+                dialog.Alert("Init cal does not have correct write permissions");
+                return false;
+            }
+            var sendBuff = new byte[1];
+            sendBuff[0] = 1;
+            await initCalChar.WriteAsync(sendBuff);
+
+            var imuService = await device.GetServiceAsync(_imuRawServiceGuid);
+            var rawGyroThighChar = await imuService.GetCharacteristicAsync(_rawGyroThighCharGuid);
+            var rawGyroCalfChar = await imuService.GetCharacteristicAsync(_rawGyroCalfCharGuid);
             if(rawGyroCalfChar == null || rawGyroThighChar == null)
             {
                 dialog.Alert("Could not find corresponding characteristics");
@@ -299,12 +315,29 @@ namespace FactsApp.Models
             }
             Vector thigh = JointAxisFromSph(gn.Solution[0], gn.Solution[2]);
             Vector calf = JointAxisFromSph(gn.Solution[1], gn.Solution[3]);
+            if(Double.IsNaN(calf.X) || Double.IsNaN(thigh.X))
+            {
+                return false;
+            }
             CalfX = calf.X;
             CalfY = calf.Y;
             CalfZ = calf.Z;
             ThighX = thigh.X;
             ThighY = thigh.Y;
             ThighZ = thigh.Z;
+
+            if (CalfZ > 0)
+            {
+                CalfX *= -1;
+                CalfY *= -1;
+                CalfZ *= -1;
+            }
+            if (ThighZ > 0)
+            {
+                ThighX *= -1;
+                ThighY *= -1;
+                ThighZ *= -1;
+            }
 
             return true;
         }

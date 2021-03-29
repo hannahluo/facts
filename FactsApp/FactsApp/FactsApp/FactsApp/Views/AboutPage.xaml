@@ -13,7 +13,7 @@
                 <Label.FormattedText>
                     <FormattedString>
                         <Span Text="Flexion Angle: " />
-                        <Span Text="{Binding FlexionAngleValue}" />
+                        <Span Text="{Binding FlexionAngleDisplay}" />
                     </FormattedString>
                 </Label.FormattedText>
             </Label>

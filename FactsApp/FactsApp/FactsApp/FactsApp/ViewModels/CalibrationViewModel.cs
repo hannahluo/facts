@@ -76,7 +76,7 @@ namespace FactsApp.ViewModels
             }
         }
 
-        private string _directionLabelText = "Please walk around and move both thigh and calf for 15s";
+        private string _directionLabelText = "Please walk around and move both thigh and calf";
         public string DirectionLabelText
         {
             get => _directionLabelText;
@@ -111,37 +111,40 @@ namespace FactsApp.ViewModels
             CalibrateButtonText = "Calibrating";
             CalibrateButtonEnabled = false;
             CalibrateButtonColour = Color.LightGray;
+            bool doneCal = false;
 
             // Start collecting calibration data from device
-            var result = await DeviceJointAxis.GetRawData(m_connectedDevice, m_dialogs);
-            if (!result)
+            while(!doneCal)
             {
-                m_dialogs.Alert("Could not gather raw gyro data from device. Please restart.");
-                CalibrateButtonText = "Calibration Failed";
-                CalibrateButtonEnabled = false;
-                CalibrateButtonColour = Color.Red;
-                return;
+                var result = await DeviceJointAxis.GetRawData(m_connectedDevice, m_dialogs);
+                if (!result)
+                {
+                    m_dialogs.Alert("Could not gather raw gyro data from device. Please restart.");
+                    CalibrateButtonText = "Calibration Failed";
+                    CalibrateButtonEnabled = false;
+                    CalibrateButtonColour = Color.Red;
+                    return;
+                }
+
+                result = await DeviceJointAxis.Calibrate(m_dialogs);
+                if (!result)
+                {
+                    continue;
+                }
+
+                // Send results to FACTS dev
+                result = await DeviceJointAxis.SendResult(m_connectedDevice, m_dialogs);
+                if (!result)
+                {
+                    m_dialogs.Alert("Could not send calibration result to device. Please restart");
+                    CalibrateButtonText = "Calibration Failed";
+                    CalibrateButtonEnabled = false;
+                    CalibrateButtonColour = Color.Red;
+                    return;
+                }
+                doneCal = true;
             }
 
-            result = await DeviceJointAxis.Calibrate(m_dialogs);
-            if (!result)
-            {
-                m_dialogs.Alert("Error during calibration routine. Please restart.");
-                CalibrateButtonText = "Calibration Failed";
-                CalibrateButtonEnabled = false;
-                CalibrateButtonColour = Color.Red;
-                return;
-            }
-
-            // Send results to FACTS dev
-            result = await DeviceJointAxis.SendResult(m_connectedDevice, m_dialogs);
-            if(!result)
-            {
-                m_dialogs.Alert("Could not send calibration result to device. Please restart");
-                CalibrateButtonText = "Calibration Failed";
-                CalibrateButtonEnabled = false;
-                CalibrateButtonColour = Color.Red;
-            }
 
             // Display Results
             m_dialogs.Alert("Calibration Successful!");
