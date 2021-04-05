@@ -158,13 +158,11 @@ bool bno055_get_remap_sign(u8 *remap_sign_reg, nrf_drv_twi_t* i2c, uint8_t dev_a
     uint8_t data_u8r = BNO055_INIT_VALUE;
 
     /* Read the value of z-axis remap sign*/
-    com_rslt = p_bno055->BNO055_I2C_bus_read(i2c, dev_addr,
+    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
                                               BNO055_AXIS_MAP_SIGN_ADDR,
                                               &data_u8r,
                                               BNO055_GEN_READ_WRITE_LENGTH);
-    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_X_SIGN);
-    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_Y_SIGN);
-    *remap_sign_reg = BNO055_GET_BITSLICE(data_u8r, BNO055_REMAP_Z_SIGN);
+    *remap_sign_reg = data_u8r;
 
     return (com_rslt == 0) ? true : false;
 }
@@ -175,7 +173,7 @@ bool bno055_get_remap_axis(u8 *remap_axis_reg, nrf_drv_twi_t* i2c, uint8_t dev_a
     uint8_t data_u8r = BNO055_INIT_VALUE;
     
     /* Read the value of axis remap*/
-    com_rslt = p_bno055->BNO055_BUS_READ_FUNC(p_bno055->i2c, p_bno055->dev_addr,
+    com_rslt = BNO055_I2C_bus_read(i2c, dev_addr,
                                               BNO055_REMAP_AXIS_VALUE_REG,
                                               &data_u8r,
                                               BNO055_GEN_READ_WRITE_LENGTH);

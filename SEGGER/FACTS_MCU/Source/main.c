@@ -10,6 +10,7 @@
 #include "sensorsim.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_delay.h"
+#include "nrf_gpio.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -29,10 +30,14 @@
 #define ELSA_I2C_MUXADDR 0x71
 #define ANNA_I2C_MUXADDR 0x70
 
+#define ELSA_IMU_RESET_PIN     (14)
+#define ANNA_IMU_RESET_PIN     (11)
+
 #define TCA_SELECT_REG   0
 #define TCA_SELECT_SIZE  1
 
 //#define ENABLE_HAPTICS
+#define ENABLE_CALIBRATION
 
 /* TWI instance ID. */
 #define TWI_INSTANCE_ID     0
@@ -53,11 +58,11 @@ static uint8_t HAPTIC_MOTOR_CH0 = 1 << 0;
 static uint8_t HAPTIC_MOTOR_CH1 = 1 << 1;
 static uint8_t HAPTIC_MOTOR_CH2 = 1 << 2;
 
-static uint8_t start_cal = 0;
-static joint_axis_t calfAxis = {.x=0,.y=0,.z=0};
-static joint_axis_t thighAxis = {.x=0,.y=0,.z=0};
-static uint8_t calfAxisUpdated = 0;
-static uint8_t thighAxisUpdated = 0;
+volatile uint8_t start_cal = 0;
+volatile joint_axis_t calfAxis = {.x=0,.y=0,.z=0};
+volatile joint_axis_t thighAxis = {.x=0,.y=0,.z=0};
+volatile uint8_t calfAxisUpdated = 0;
+volatile uint8_t thighAxisUpdated = 0;
 static limits_t angleLim = {.minLimit = 0, .maxLimit = 100};
 
 static void log_init(void)
@@ -207,6 +212,16 @@ int8_t haptic_module_init()
 int8_t imu_module_init()
 {
     NRF_LOG_INFO("\r\n***IMU Setup Start***\r\n");
+    nrf_gpio_cfg(ELSA_IMU_RESET_PIN,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0D1, NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_pin_clear(ELSA_IMU_RESET_PIN);
+    nrf_gpio_cfg(ANNA_IMU_RESET_PIN,NRF_GPIO_PIN_DIR_OUTPUT,NRF_GPIO_PIN_INPUT_DISCONNECT, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_S0D1, NRF_GPIO_PIN_NOSENSE);
+    nrf_gpio_pin_clear(ANNA_IMU_RESET_PIN);
+
+    nrf_delay_ms(500);
+    nrf_gpio_pin_set(ELSA_IMU_RESET_PIN);
+    nrf_gpio_pin_set(ANNA_IMU_RESET_PIN);
+    nrf_delay_ms(1000);
+
     if(!bno055_setup(&elsa_imu, &i2c_drv, ELSA_I2C_IMUADDR)) {
         NRF_LOG_ERROR("Failed to init elsa imu");
         return -1;
@@ -215,29 +230,76 @@ int8_t imu_module_init()
         NRF_LOG_ERROR("Failed to init anna imu");
         return -1;
     }
-    nrf_delay_ms(100);
+    nrf_delay_ms(1000);
 
-    // remap?
+    // DK
+    //if(!bno055_remap_setup(BNO055_DEFAULT_AXIS, 1, 1, 0, &i2c_drv, ANNA_I2C_IMUADDR)) {
+    //    NRF_LOG_ERROR("Failed to set elsa axis remap");
+    //    return -1;
+    //}
+    //if(!bno055_remap_setup(BNO055_DEFAULT_AXIS, 0, 0, 0, &i2c_drv, ELSA_I2C_IMUADDR)) {
+    //    NRF_LOG_ERROR("Failed to set anna axis remap");
+    //    return -1;
+    //}
 
-    int8_t elsa_syscal = 0;
-    while(elsa_syscal < 2) {
-        elsa_syscal = bno055_get_syscal_status(&i2c_drv, ELSA_I2C_IMUADDR);
-        if(elsa_syscal < 0) {
-            NRF_LOG_ERROR("Failed to read cal status for elsa imu");
-            return -1;
-        }
-        nrf_delay_ms(100);
+    // Remap on the test rig
+    if(!bno055_remap_setup(BNO055_DEFAULT_AXIS, 0, 0, 0, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to set elsa axis remap");
+        return -1;
     }
+    nrf_delay_ms(10);
+    uint8_t axis_reg = 0;
+    uint8_t sign_reg = 0;
+    if(!bno055_get_remap_axis(&axis_reg, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to read anna axis remap");
+        return -1;
+    }
+    nrf_delay_ms(10);
+    if(!bno055_get_remap_sign(&sign_reg, &i2c_drv, ANNA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to read anna axis sign");
+        return -1;
+    }
+    nrf_delay_ms(10);
+    NRF_LOG_INFO("Anna remap axis 0x%x remap sign 0x%x", axis_reg, sign_reg);
+
+    if(!bno055_remap_setup(BNO055_DEFAULT_AXIS, 1, 0, 1, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to set anna axis remap");
+        return -1;
+    }
+    nrf_delay_ms(10);
+    axis_reg = 0;
+    sign_reg = 0;
+    if(!bno055_get_remap_axis(&axis_reg, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to read anna axis remap");
+        return -1;
+    }
+    nrf_delay_ms(10);
+    if(!bno055_get_remap_sign(&sign_reg, &i2c_drv, ELSA_I2C_IMUADDR)) {
+        NRF_LOG_ERROR("Failed to read anna axis sign");
+        return -1;
+    }
+    nrf_delay_ms(10);
+    NRF_LOG_INFO("Elsa remap axis 0x%x remap sign 0x%x", axis_reg, sign_reg);
+
+    //int8_t elsa_syscal = 0;
+    //while(elsa_syscal < 2) {
+    //    elsa_syscal = bno055_get_syscal_status(&i2c_drv, ELSA_I2C_IMUADDR);
+    //    if(elsa_syscal < 0) {
+    //        NRF_LOG_ERROR("Failed to read cal status for elsa imu");
+    //        return -1;
+    //    }
+    //    nrf_delay_ms(100);
+    //}
     
-    int8_t anna_syscal = 0;
-    while(anna_syscal < 2) {
-        anna_syscal = bno055_get_syscal_status(&i2c_drv, ANNA_I2C_IMUADDR);
-        if(anna_syscal < 0) {
-            NRF_LOG_ERROR("Failed to read cal status for anna imu");
-            return -1;
-        }
-        nrf_delay_ms(100);
-    }
+    //int8_t anna_syscal = 0;
+    //while(anna_syscal < 2) {
+    //    anna_syscal = bno055_get_syscal_status(&i2c_drv, ANNA_I2C_IMUADDR);
+    //    if(anna_syscal < 0) {
+    //        NRF_LOG_ERROR("Failed to read cal status for anna imu");
+    //        return -1;
+    //    }
+    //    nrf_delay_ms(100);
+    //}
 
     NRF_LOG_INFO("\r\n***IMU Setup End***\r\n");
 
@@ -264,9 +326,11 @@ void calibrate_imu()
 {
     bno055_get_calibration_status(&i2c_drv, ELSA_I2C_IMUADDR);
     bno055_get_calibration_status(&i2c_drv, ANNA_I2C_IMUADDR);
+    NRF_LOG_FLUSH();
 } 
 
 // Calibration
+#ifdef ENABLE_CALIBRATION
 int8_t calibrate_facts()
 {
     struct bno055_gyro_double_t bno055GyroThigh = {.x=0,.y=0,.z=0};
@@ -302,7 +366,7 @@ int8_t calibrate_facts()
             NRF_LOG_ERROR("Failed to read raw gyro from anna(calf)");
             return -1;
         }
-        NRF_LOG_INFO("Anna(Calf) Gyro Readings pt1: ");
+        NRF_LOG_INFO("Anna(Calf) Gyro Readings: ");
         NRF_LOG_INFO("X: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroCalf.x));
         NRF_LOG_INFO("Y: " NRF_LOG_FLOAT_MARKER " ", NRF_LOG_FLOAT(bno055GyroCalf.y));
         NRF_LOG_INFO("Z: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(bno055GyroCalf.z));
@@ -318,11 +382,16 @@ int8_t calibrate_facts()
         // Write to BLE module
         send_raw_gyro_calf(&gyroCalf);
         send_raw_gyro_thigh(&gyroThigh);
-        nrf_delay_ms(10);
+        nrf_delay_ms(50);
     }
+
+    start_cal = 0;
+    calfAxisUpdated = 0;
+    thighAxisUpdated = 0;
 
     return 0;
 }
+#endif
 
 void conv_quat_double(struct bno055_quaternion_t* bno055Quat, quat_t* quat)
 {
@@ -380,8 +449,15 @@ int8_t turn_off_motors(drv2605l_t* motor, uint8_t mux_addr)
 // Calculate
 int8_t get_facts()
 {
+#ifdef ENABLE_CALIBRATION
     vector_t thighAxisVec = {.x=thighAxis.x, .y=thighAxis.y, .z=thighAxis.z};
     vector_t calfAxisVec = {.x=calfAxis.x, .y=calfAxis.y, .z=calfAxis.z};
+#else
+    vector_t thighAxisVec = {.x=0, .y=0, .z=1};
+    vector_t calfAxisVec = {.x=0, .y=0, .z=1};
+    //vector_t thighAxisVec = {.x=0, .y=1, .z=0};
+    //vector_t calfAxisVec = {.x=0, .y=1, .z=0};
+#endif
     struct bno055_quaternion_t bno055QuatCalf = {.w=0, .x=0, .y=0, .z=0};
     struct bno055_quaternion_t bno055QuatThigh = {.w=0, .x=0, .y=0, .z=0};
     quat_t quatCalf = {.w=0,.x=0,.y=0,.z=0};
@@ -401,7 +477,7 @@ int8_t get_facts()
         return -1;
     }
 
-    while(1) {
+    while(!start_cal) {
         // Read quaternion
         if(!bno055_read_quat(&bno055QuatCalf, &i2c_drv, ANNA_I2C_IMUADDR)) {
             NRF_LOG_ERROR("Failed to read quaternion from anna(calf)");
@@ -421,7 +497,8 @@ int8_t get_facts()
 
         // Send to BLE
         send_flexion_angle(&angle);
-        NRF_LOG_INFO("Angle Estimation: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(angle));
+        //NRF_LOG_INFO("Angle Estimation: " NRF_LOG_FLOAT_MARKER " \r\n", NRF_LOG_FLOAT(angle));
+        //calibrate_imu();
 
 #ifdef ENABLE_HAPTICS
         // Check against limits
@@ -498,6 +575,7 @@ int main()
     timers_init();
     power_management_init();
     ble_module_init();
+    NRF_LOG_FLUSH();
     if(i2c_module_init() < 0) {
         NRF_LOG_ERROR("Failed to init i2c");
         cleanup();
@@ -518,20 +596,24 @@ int main()
 #endif
 
     start_advertising(false);
-
-    // Calibration
-    if(calibrate_facts() < 0) {
-        NRF_LOG_ERROR("Failed to calibrate FACTS properly. Shutting down");
-        cleanup();
-        return -1;
-    }
+    while(1) {
+#ifdef ENABLE_CALIBRATION
+      // Calibration
+      if(calibrate_facts() < 0) {
+          NRF_LOG_ERROR("Failed to calibrate FACTS properly. Shutting down");
+          cleanup();
+          return -1;
+      }
+#endif
     
-    // Calculation
-    if(get_facts() < 0) {
-        NRF_LOG_ERROR("Failed to get FACTS");
-        cleanup();
-        return -1;
+      // Calculation
+      if(get_facts() < 0) {
+          NRF_LOG_ERROR("Failed to get FACTS");
+          cleanup();
+          return -1;
+      }
     }
+
 
     NRF_LOG_INFO("***Shutting Down Facts***");
 }

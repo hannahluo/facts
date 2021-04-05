@@ -172,7 +172,9 @@
       <configuration Name="Release" build_exclude_from_build="No" />
     </folder>
     <folder Name="Drivers">
-      <file file_name="Source/Drivers/bno055.c" />
+      <file file_name="Source/Drivers/bno055.c">
+        <configuration Name="Debug" build_exclude_from_build="No" />
+      </file>
       <file file_name="Source/Drivers/bno055.h" />
       <file file_name="Source/Drivers/drv2605l.c" />
       <file file_name="Source/Drivers/drv2605l.h" />
@@ -190,7 +192,7 @@
       </file>
     </folder>
     <file file_name="Source/main.c">
-      <configuration Name="Release" build_exclude_from_build="Yes" />
+      <configuration Name="Release" build_exclude_from_build="No" />
     </file>
     <folder Name="BLE_services">
       <file file_name="Source/Lib/BLE_services/calibration_service.h">
@@ -218,7 +220,7 @@
         <configuration Name="Release" build_exclude_from_build="Yes" />
       </file>
       <file file_name="Source/Lib/test_apps/drivers_main.c">
-        <configuration Name="Release" build_exclude_from_build="No" />
+        <configuration Name="Release" build_exclude_from_build="Yes" />
       </file>
       <file file_name="Source/Lib/test_apps/angle_calc_main.c" />
       <configuration Name="Release" build_exclude_from_build="Yes" />
@@ -231,11 +233,19 @@
       <file file_name="gpio_main.c">
         <configuration Name="Release" build_exclude_from_build="Yes" />
       </file>
+      <configuration Name="Debug" build_exclude_from_build="Yes" />
+      <file file_name="Source/Lib/test_apps/demo_main.c">
+        <configuration Name="Release" build_exclude_from_build="Yes" />
+      </file>
     </folder>
+    <configuration
+      Name="Debug"
+      c_preprocessor_definitions="DEVELOP_IN_NRF52832;NRFX_COREDEP_DELAY_US_LOOP_CYCLES=3" />
   </project>
   <configuration
     Name="Release"
     c_preprocessor_definitions="NDEBUG"
     gcc_optimization_level="Optimize For Size"
     link_time_optimization="No" />
+  <configuration Name="Debug" />
 </solution>
